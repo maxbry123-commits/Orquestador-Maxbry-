@@ -1,0 +1,59 @@
+name: Extract Fables ZIP into Información_code_osquestador
+
+on:
+  push:
+    paths:
+      - '.github/workflows/extract-fables-zip.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  extract-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract ZIP into the same root
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='Información_code_osquestador'
+          ZIP=$(find "$ROOT" -maxdepth 1 -type f -iname '*.zip' -print -quit)
+          test -n "$ZIP"
+          mkdir -p /tmp/fables_extract
+          rm -rf /tmp/fables_extract/*
+          unzip -q "$ZIP" -d /tmp/fables_extract
+          find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d -print0 | while IFS= read -r -d '' d; do
+            if [ "$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 1 ] && [ "$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 0 ]; then
+              cp -a "$d"/. "$ROOT"/
+            fi
+          done
+          find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type f -exec cp -a {} "$ROOT"/ \;
+          find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d | while IFS= read -r d; do
+            cp -a "$d"/. "$ROOT"/
+          done
+
+      - name: Verify extraction
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='Información_code_osquestador'
+          test "$(find "$ROOT" -type f | wc -l)" -gt 1
+          echo "Extracted files:"
+          find "$ROOT" -type f -print | sort
+
+      - name: Commit extracted files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$ROOT" 2>/dev/null || git add -- 'Información_code_osquestador'
+          if git diff --cached --quiet; then
+            echo 'No new extracted files to commit.'
+            exit 0
+          fi
+          git commit -m 'Extract Fables ZIP into Información_code_osquestador'
+          git push
