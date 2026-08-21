@@ -25,15 +25,14 @@ jobs:
           mkdir -p /tmp/fables_extract
           rm -rf /tmp/fables_extract/*
           unzip -q "$ZIP" -d /tmp/fables_extract
-          find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d -print0 | while IFS= read -r -d '' d; do
-            if [ "$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 1 ] && [ "$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 0 ]; then
-              cp -a "$d"/. "$ROOT"/
-            fi
-          done
-          find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type f -exec cp -a {} "$ROOT"/ \;
-          find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d | while IFS= read -r d; do
+          topdirs=$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d | wc -l)
+          topfiles=$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type f | wc -l)
+          if [ "$topdirs" -eq 1 ] && [ "$topfiles" -eq 0 ]; then
+            d=$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d -print -quit)
             cp -a "$d"/. "$ROOT"/
-          done
+          else
+            cp -a /tmp/fables_extract/. "$ROOT"/
+          fi
 
       - name: Verify extraction
         shell: bash
@@ -48,9 +47,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          ROOT='Información_code_osquestador'
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- "$ROOT" 2>/dev/null || git add -- 'Información_code_osquestador'
+          git add -- "$ROOT"
           if git diff --cached --quiet; then
             echo 'No new extracted files to commit.'
             exit 0
