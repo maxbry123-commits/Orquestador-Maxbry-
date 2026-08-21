@@ -15,33 +15,49 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract ZIP into the same root
+      - name: Extract ZIP and flatten its wrapper into the same root
         shell: bash
         run: |
           set -euo pipefail
           ROOT='Información_code_osquestador'
           ZIP=$(find "$ROOT" -maxdepth 1 -type f -iname '*.zip' -print -quit)
           test -n "$ZIP"
+          ZIPBASE=$(basename "$ZIP" .zip)
           mkdir -p /tmp/fables_extract
           rm -rf /tmp/fables_extract/*
           unzip -q "$ZIP" -d /tmp/fables_extract
-          topdirs=$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d | wc -l)
-          topfiles=$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type f | wc -l)
-          if [ "$topdirs" -eq 1 ] && [ "$topfiles" -eq 0 ]; then
-            d=$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d -print -quit)
-            cp -a "$d"/. "$ROOT"/
+
+          # If the ZIP contains a wrapper directory named like the ZIP,
+          # deploy that directory's contents directly into Información_code_osquestador.
+          WRAPPER="/tmp/fables_extract/$ZIPBASE"
+          if [ -d "$WRAPPER" ]; then
+            cp -a "$WRAPPER"/. "$ROOT"/
           else
-            cp -a /tmp/fables_extract/. "$ROOT"/
+            topdirs=$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d | wc -l)
+            topfiles=$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type f | wc -l)
+            if [ "$topdirs" -eq 1 ] && [ "$topfiles" -eq 0 ]; then
+              d=$(find /tmp/fables_extract -mindepth 1 -maxdepth 1 -type d -print -quit)
+              cp -a "$d"/. "$ROOT"/
+            else
+              cp -a /tmp/fables_extract/. "$ROOT"/
+            fi
           fi
 
-      - name: Verify extraction
+          # Remove the extracted ZIP wrapper from the repository root if it exists.
+          rm -rf "$ROOT/$ZIPBASE"
+
+      - name: Verify deployment
         shell: bash
         run: |
           set -euo pipefail
           ROOT='Información_code_osquestador'
+          ZIP=$(find "$ROOT" -maxdepth 1 -type f -iname '*.zip' -print -quit)
+          test -n "$ZIP"
+          ZIPBASE=$(basename "$ZIP" .zip)
+          test ! -d "$ROOT/$ZIPBASE"
           test "$(find "$ROOT" -type f | wc -l)" -gt 1
-          echo "Extracted files:"
-          find "$ROOT" -type f -print | sort
+          echo 'Contenido final de Información_code_osquestador:'
+          find "$ROOT" -print | sort
 
       - name: Commit extracted files
         shell: bash
@@ -52,8 +68,8 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- "$ROOT"
           if git diff --cached --quiet; then
-            echo 'No new extracted files to commit.'
+            echo 'No changes to commit.'
             exit 0
           fi
-          git commit -m 'Extract Fables ZIP into Información_code_osquestador'
+          git commit -m 'Deploy ZIP contents directly into Información_code_osquestador'
           git push
