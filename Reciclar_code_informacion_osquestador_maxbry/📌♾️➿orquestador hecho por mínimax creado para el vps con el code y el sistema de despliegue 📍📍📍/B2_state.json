@@ -1,0 +1,30 @@
+{
+  "proyecto": "orquestador-universal",
+  "uoos_version": "2.0.0",
+  "modo": "A",
+  "boot": {"completado": false, "eventos": []},
+  "nodos": {
+    "T-001_orchestrator": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-002_state": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-003_sandbox": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-004_sheriff": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-005_sentinel": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-006_juez": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-007_repair": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-008_consensus": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-009_router": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-010_dsl": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-011_agents": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-012_dockerfiles": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-013_docker_compose": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-014_setup": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-015_tests": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null},
+    "T-016_docs": {"estado": "pending", "checkpoint": null, "intentos": 0, "recoveries": 0, "score_tribunal": null}
+  },
+  "dag_activo": "DAG-001",
+  "loop_activo": null,
+  "presupuesto_global": {"tokens_usados": 0, "tiempo_seg": 0},
+  "evidencias": [],
+  "decisiones_director": [],
+  "historial_eventos": []
+}
