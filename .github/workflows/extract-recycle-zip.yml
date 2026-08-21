@@ -1,0 +1,66 @@
+name: Extract Reciclar ZIP into its own root
+
+on:
+  push:
+    paths:
+      - '.github/workflows/extract-recycle-zip.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  extract-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract ZIP directly into Reciclar_code_informacion_osquestador_maxbry
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='Reciclar_code_informacion_osquestador_maxbry'
+          ZIP="$ROOT/code adicional para el osquestador Maxbry.zip"
+          test -f "$ZIP"
+
+          rm -rf /tmp/recycle_extract
+          mkdir -p /tmp/recycle_extract
+          unzip -q "$ZIP" -d /tmp/recycle_extract
+
+          # The ZIP has a wrapper directory named like the ZIP file.
+          # Deploy its contents directly into the requested root.
+          WRAPPER="/tmp/recycle_extract/code adicional para el osquestador Maxbry"
+          if [ -d "$WRAPPER" ]; then
+            cp -a "$WRAPPER"/. "$ROOT"/
+          else
+            cp -a /tmp/recycle_extract/. "$ROOT"/
+          fi
+
+          # Never create a second nested wrapper root.
+          rm -rf "$ROOT/code adicional para el osquestador Maxbry"
+
+      - name: Verify extracted files
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='Reciclar_code_informacion_osquestador_maxbry'
+          test -d "$ROOT"
+          test "$(find "$ROOT" -type f | wc -l)" -gt 1
+          test ! -d "$ROOT/code adicional para el osquestador Maxbry"
+          echo 'Contenido final:'
+          find "$ROOT" -print | sort
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='Reciclar_code_informacion_osquestador_maxbry'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$ROOT"
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Extract Reciclar code ZIP into its own root'
+          git push
