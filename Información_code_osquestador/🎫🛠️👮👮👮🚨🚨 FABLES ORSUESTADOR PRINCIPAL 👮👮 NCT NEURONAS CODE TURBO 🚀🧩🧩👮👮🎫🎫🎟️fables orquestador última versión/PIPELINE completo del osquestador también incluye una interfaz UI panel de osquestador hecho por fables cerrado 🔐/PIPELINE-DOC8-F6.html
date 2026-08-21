@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PIPELINE NCT · VAGÓN 8 — F6 VERIFICACIÓN 🚂</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.tren{text-align:center;font-size:1.05em;letter-spacing:1px;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎄🚂💨 [V0]═[V1]═[V2]═[V3]═[V4]═[V5]═[V6]═[V7]═<b>[V8★]</b>═[V9]═[V10]═[V11]═[V12]═[V13] 🎁🎄</div>
+<h1>🎅 VAGÓN 8 · F6 — LA ADUANA DEL POLO NORTE (verificación 3 capas + Witness)</h1>
+<div class="tag">pasos 501–620</div><div class="tag">IA: SOLO capa C (Jueces)</div><div class="tag">LOC: ~400 glue + ~1.700 copiadas</div><div class="tag">🎁 despliegue D8</div>
+
+<div class="cap">
+<h2>🚂 Raíz · Proceso · Diagrama</h2>
+<b>Raíz:</b> <span class="oro">nct-backend/verificacion/</span> + <span class="oro">nct-backend/tribunal/</span> + <span class="oro">nct-backend/witness/</span><br>
+<b>Proceso:</b> tres puertas en fila — código puro primero (la mayoría de fallos muere gratis), lógica formal después, juicio con IA al final — y el Witness que exige que el juguete FUNCIONE de verdad.
+<div class="flujo">salida(F4) → CAPA A (0% IA) INTEGRIDAD:
+  VERIFIER N0-N5: gpg→sha256→schema→semver→AST imports→AST llm_ratio≤0.10
+  falla UNO → STOP  ·  Enchufe v2.0 (22 invariantes, autoensamble por datatype,
+  solo "active")  ·  10 checks E-OUT-001..010 (PASS 10/10)
+→ CAPA B (0% IA) FORMAL: GCL lite por fase + GCL v1.0 gate final Z3 SAT/UNSAT +
+  SlotContract SC1-SC6
+→ CAPA C (IA SOLO AQUÍ) JUICIO: Jueces 3 niveles Local(≥0.70)→Capa(≥0.60)→
+  Central(E296) · default=RETRY · votan EN PARALELO SIN VERSE ·
+  Sheriff+Centinela VETO inmediato · rúbrica CSA J1-J10 en tareas critical ·
+  consenso 5 (Creative/Innovation/Critic/Selection/Architecture) para diseño
+→ WITNESS (0% IA): Builder escribe físico → Validator L1(lint/mypy/anti-mock)
+  → Witness L2 build → L3 runtime → L4 tests reales → evidence_hash
+  RT-01 no PASS con nivel fallido · RT-02 nunca simula · RT-04 tampering→abort
+  + EVIDENCIA_VIVA (SIM A): recurso externo → ≥1 test contra el real
+    (caído → fixture + PASS_STALE marcado) · Sheriff SH08 vigila
+→ GOAL_CHECK (RT-31): Tribunal PASA ≠ nodo done — goal real o no se cierra</div>
+</div>
+
+<div class="cap">
+<h2>⚙️ Explicación técnica</h2>
+Casi todo este vagón es código existente que se COPIA: verifier N0-N5 (DOC7/S11 spec + implementación GUIA_B), gcl_lite+z3_verifier (GUIA_B), sistema_jueces (H3), builder/validator/witness (GRUPO_F). El trabajo nuevo es glue: (1) aduana.py que encadena A→B→C con corte inmediato; (2) rubrica_csa.py — los 10 criterios J1-J10 de la serie MAXBRY como checklist del Juez Central (NO como 10 agentes, decisión CAMBIOS-BASE §D); (3) consenso5.py para decisiones de diseño (3+ de 5 → procede, empate → Director); (4) evidencia_viva.py + regla SH08 nuevas (SIM A del parche); (5) goal_check.py implementando RT-31. Los jueces votan en paralelo sin ver los votos ajenos (anti-anclaje, UOOS §6) — implementado como llamadas independientes con contexto idéntico, agregación posterior.
+<div class="simple"><b class="ok">🎄 Simple:</b> la aduana del Polo: primero máquinas revisan el juguete (peso, sello, materiales) — gratis y sin discusión; luego lógica pura confirma que las piezas encajan; recién ahí los jueces opinan — y su respuesta por defecto es "repítelo", nunca "está bien" sin pruebas. Al final, el testigo enciende el juguete de verdad: si no funciona encendido, no viaja en el trineo. Y aunque todos aprueben: ¿era ESTE el regalo pedido? Si no, no se cierra.</div>
+</div>
+
+<div class="cap">
+<h2>🎁 Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Traza</th></tr>
+<tr><td>501-508</td><td><b>COPIAR</b> verifier N0-N5 + enchufe v2.0 (22 invariantes)</td><td>verificacion/ (~600 copiadas)</td><td>GUIA_B · S7/S11 · #GAP-P2-021/P3-026</td></tr>
+<tr><td>509-514</td><td><b>COPIAR</b> gcl_lite + z3_verifier + SC1-SC6</td><td>verificacion/gcl/ (~400 copiadas)</td><td>GUIA_B · #GAP-P3-039</td></tr>
+<tr><td>515-522</td><td>eout_checks.py: E-OUT-001..010 binarios (PASS 10/10)</td><td>verificacion/eout_checks.py (≤200)</td><td>S10 Output Fabric</td></tr>
+<tr><td>523-530</td><td>aduana.py: encadena A→B→C, corte inmediato, evento por puerta</td><td>verificacion/aduana.py (≤200)</td><td>S11 "aduana G2"</td></tr>
+<tr><td>531-538</td><td><b>COPIAR</b> sistema_jueces (3 niveles) + PARCHE voto paralelo ciego</td><td>tribunal/sistema_jueces.py (~350+≤60)</td><td>H3 · UOOS §6 · #GAP-P2-042</td></tr>
+<tr><td>539-546</td><td>rubrica_csa.py: J1-J10 como checklist del Central (tareas critical)</td><td>tribunal/rubrica_csa.py (≤180)</td><td>serie MAXBRY 04-csa · CAMBIOS-BASE §D</td></tr>
+<tr><td>547-554</td><td>consenso5.py: panel 5 roles para decisiones de diseño</td><td>tribunal/consenso5.py (≤200)</td><td>serie MAXBRY 25-skyner · #GAP-CIERRE-001[4]</td></tr>
+<tr><td>555-566</td><td><b>COPIAR</b> builder + validator + witness (Evidence L1-L4 + hash)</td><td>witness/ (~700 copiadas)</td><td>GRUPO_F §4 · #GAP-P3-020</td></tr>
+<tr><td>567-576</td><td>evidencia_viva.py: test contra recurso real + PASS_STALE + regla SH08</td><td>witness/evidencia_viva.py (≤200)</td><td>#GAP-PARCHE-003 · SIM A</td></tr>
+<tr><td>577-584</td><td>goal_check.py: RT-31 — comparar output final vs goal_lock + criterios</td><td>tribunal/goal_check.py (≤150)</td><td>#GAP-P2-038 · UOOS RT-31</td></tr>
+<tr><td>585-604</td><td>Tests por capa: N4 detecta import ilegal · Z3 UNSAT bloquea · juez nunca aprueba sin evidencia · witness detecta mock · tampering→abort · goal_check rechaza "válido pero no era eso"</td><td>test_f6_*.py (6×≤250)</td><td>SIM 2/5 preliminar</td></tr>
+<tr><td>605-618</td><td>Test integración F4→F6 completo (pieza buena pasa 3 capas + witness; pieza con import ilegal muere en A sin gastar 1 token)</td><td>test_f6_e2e.py (≤300)</td><td>IT02-estilo</td></tr>
+<tr><td>619-620</td><td><b class="ok">🎁 DESPLIEGUE D8</b>: verificacion/ + tribunal/ + witness/</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ PROHIBIDO:</b> IA en capas A/B · aprobar por defecto o por cansancio (default=RETRY) · jueces viendo votos ajenos · simular Evidence Report · CSA como 10 agentes · cerrar nodo sin GOAL_CHECK.</div>
+
+<div class="cap"><b class="oro">🎄 Fuentes:</b> GUIA_B_GCL_Z3_SLOTCONTRACT (código) · DOC7/S11 (N0-N5) · S7 (enchufe 22 inv) · S10 (E-OUT) · H3 (jueces) · GRUPO_F §4 (witness) · UOOS §6 (tribunal ciego) · serie MAXBRY 04-csa+25-skyner (rúbrica+consenso5, rescatados) · PARCHE-100X (evidencia viva) · GAPS: P2-021/038/042, P3-020/026/039, PARCHE-003. ✔3 pasadas · V8 ← V5-V7 → V9.</div>
+
+</body></html>

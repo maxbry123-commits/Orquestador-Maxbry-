@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PIPELINE NCT · VAGÓN 7 — F5 MONITOREO 🚂</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.tren{text-align:center;font-size:1.05em;letter-spacing:1px;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎄🚂💨 [V0]═[V1]═[V2]═[V3]═[V4]═[V5]═[V6]═<b>[V7★]</b>═[V8]═[V9]═[V10]═[V11]═[V12]═[V13] 🎁🎄</div>
+<h1>🎅 VAGÓN 7 · F5 — MONITOREO (los vigilantes de la noche buena)</h1>
+<div class="tag">pasos 421–500</div><div class="tag">IA: 0% — corre EN PARALELO a F4</div><div class="tag">LOC: ~1.000 nuevas + ~300 copiadas</div><div class="tag">🎁 despliegue D7</div>
+
+<div class="cap">
+<h2>🚂 Raíz · Proceso · Diagrama</h2>
+<b>Raíz:</b> <span class="oro">nct-backend/monitores/</span> + <span class="oro">nct-backend/sentinela/</span><br>
+<b>Proceso:</b> tres relojes independientes + seis detectores vigilan el taller mientras trabaja; cuando algo se atasca, se ROTA la táctica — nunca se repite la misma.
+<div class="flujo">╔══ corre EN PARALELO a F4 (hilo/proceso propio) ══╗
+GUARDIAN (6 booleanos → RECHAZO)  ·  WATCHDOG 30s (¿responde? ¿hash íntegro?
+¿checkpoint válido? ¿estancado? — 3 fallos → DEGRADED_MODE + notifica Director)
+TRIPLE MONITOR (doc30): PAD arousal>0.8∧pleasure<0.2 → SIGKILL+respawn
+  ANSIEDAD (MiniMax): duda circular → L1 log → L2 pause → L3 SIGKILL
+  ANTI-DRIFT (Kimi): KL(plan‖actual)>0.02 → halt + rollback
+6 DETECTORES UOOS: estancamiento·repetición·deriva·tiempo·tokens·degradación
+  → loop activo ROTA estrategia del pool (delta medido) → escalada fija 5 niveles
+LOOPS-INFRA (separado del loop cognitivo): heartbeat 30s · SYS_HALT/PAUSE/RESUME ·
+  DLQ con jitter · meta-loop vigila loops sin avance
+SENTINEL_SECURITY: código/workflows/tools/agentes/memoria/containers/APIs
+  → INCIDENTE | ALERTA | VULN | MEJORA (evento tipado)</div>
+</div>
+
+<div class="cap">
+<h2>⚙️ Explicación técnica</h2>
+El vagón se construye como proceso supervisor independiente (no coroutine dentro de F4 — si F4 muere, F5 sigue vivo para reportarlo). PAD implementa el modelo pleasure-arousal-dominance como métricas derivadas (ritmo de tokens, tasa de error, varianza de outputs) — 0% IA, solo umbrales. Ansiedad detecta "duda circular": mismo par pregunta-respuesta interna ≥2 veces (hash de intentos). Anti-drift calcula divergencia KL entre distribución de acciones planeadas (sequence.json) y ejecutadas (eventos) en ventana móvil. LOOPS-INFRA se extrae del loop_engine (separación declarada en V5/CAMBIOS-BASE): heartbeat, señales de sistema, dead-letter con jitter exponencial, y el meta-loop que vigila a los propios loops. Sentinel_Security es tabla de reglas + emisor de eventos tipados — la reacción la decide F8, no este vagón (vigilar ≠ reparar).
+<div class="simple"><b class="ok">🎄 Simple:</b> mientras los elfos trabajan, tres vigilantes nocturnos recorren el taller: uno mira las reglas, otro toma el pulso cada 30 segundos, y el tercero nota si un elfo está nervioso, da vueltas en círculo o se desvió del plano. Si ven algo raro, no gritan al jefe de una — primero cambian la táctica; solo escalan con campana si de verdad hace falta.</div>
+</div>
+
+<div class="cap">
+<h2>🎁 Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Traza</th></tr>
+<tr><td>421-424</td><td><b>COPIAR</b> guardian_layer hooks + watchdog base del kernel (V2)</td><td>monitores/base.py (~300 copiadas)</td><td>NCT_KERNEL Capa 0 · #GAP-P3-004</td></tr>
+<tr><td>425-434</td><td>supervisor.py: proceso independiente, vigila F4, sobrevive a su muerte</td><td>monitores/supervisor.py (≤250)</td><td>doc30 F5 · NOTA arquitectura</td></tr>
+<tr><td>435-444</td><td>pad_monitor.py: métricas derivadas + umbral SIGKILL+respawn</td><td>monitores/pad_monitor.py (≤200)</td><td>doc30 · v100 §5</td></tr>
+<tr><td>445-452</td><td>ansiedad.py: duda circular por hash de intentos + L1/L2/L3</td><td>monitores/ansiedad.py (≤180)</td><td>v100 (MiniMax) · doc30</td></tr>
+<tr><td>453-462</td><td>anti_drift.py: KL(plan‖actual) ventana móvil + halt+rollback</td><td>monitores/anti_drift.py (≤200)</td><td>doc30 (Kimi) · #GAP-CIERRE-008</td></tr>
+<tr><td>463-472</td><td>detectores_infra.py: extraer LOOPS-INFRA del loop_engine (heartbeat/señales/DLQ jitter/meta-loop)</td><td>monitores/loops_infra.py (≤300)</td><td>S15 · #GAP-P3-028</td></tr>
+<tr><td>473-480</td><td>sentinel_security.py: 7 dominios vigilados + eventos tipados</td><td>sentinela/security.py (≤250)</td><td>NOTA_07 · GUIA_E</td></tr>
+<tr><td>481-488</td><td>escalada.py: los 5 niveles fijos (mutar→skill→replan→orquestador→Director), sin saltos</td><td>monitores/escalada.py (≤150)</td><td>UOOS §5 escalada</td></tr>
+<tr><td>489-496</td><td>Tests: matar F4 y verificar que F5 reporta · drift inducido → rollback · ansiedad simulada → L3</td><td>test_f5_*.py (3×≤250)</td><td>SIM 3/4 preliminar</td></tr>
+<tr><td>497-499</td><td>Test integración F4∥F5 (tarea real con monitores activos, 0 falsos positivos en tarea sana)</td><td>test_f5_e2e.py (≤250)</td><td>IT-estilo</td></tr>
+<tr><td>500</td><td><b class="ok">🎁 DESPLIEGUE D7</b>: monitores/ + sentinela/</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ PROHIBIDO:</b> monitor que ejecuta reparaciones (vigilar≠reparar, eso es F8) · monitor dentro del proceso de F4 · repetir táctica tras detección · escalar saltando niveles · IA en cualquier decisión de este vagón.</div>
+
+<div class="cap"><b class="oro">🎄 Fuentes:</b> 30___deepseck (PAD/Ansiedad/Drift F5) · v100 §5 (monitor loop) · NCT_KERNEL_v2 Capa 0 (watchdog) · INSTRUCCIONES_SONNET_P2 §S15 (LOOPS-INFRA) · UOOS §5 (detectores+escalada) · GUIA_E + NOTA_07 (sentinel security) · GAPS: P3-004/028, P2-041, CIERRE-008. ✔3 pasadas · V7 ∥ V5-V6 → V8.</div>
+
+</body></html>

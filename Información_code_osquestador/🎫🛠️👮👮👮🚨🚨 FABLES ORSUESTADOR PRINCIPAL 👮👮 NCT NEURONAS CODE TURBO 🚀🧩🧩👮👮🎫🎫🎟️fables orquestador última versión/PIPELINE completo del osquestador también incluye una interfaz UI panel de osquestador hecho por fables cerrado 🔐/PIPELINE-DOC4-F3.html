@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIPELINE NCT · DOC 4 — F3 HANDOFF + SANDBOX</title>
+<style>
+body{background:#2B2926;color:#E4DFD3;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#E4DFD3;font-size:1.4em;margin:0 0 4px}
+h2{color:#5B9BD5;font-size:1.1em;border-bottom:1px solid #4a453d;padding-bottom:5px;margin-top:24px}
+.cap{background:#17150F;border:1px solid #4a453d;border-radius:10px;padding:14px;margin:12px 0}
+.flujo{background:#17150F;border-left:3px solid #5B9BD5;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#5B9BD5;text-align:left;padding:6px;border-bottom:2px solid #4a453d}
+td{padding:5px 6px;border-bottom:1px solid #3a362e;vertical-align:top}
+.ok{color:#6FBF73}.crit{color:#E0554F}.az{color:#5B9BD5}
+.tag{display:inline-block;background:#17150F;border:1px solid #4a453d;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em}
+.regla{background:#17150F;border-left:3px solid #E0554F;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#17150F;border-left:3px solid #6FBF73;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+</style></head><body>
+
+<h1>DOC 4 · FASE F3 — HANDOFF + AISLAMIENTO + SANDBOX POOL · estado: <span class="crit">PARCIAL (Handoff existe en team_core; pool nuevo)</span></h1>
+<div class="tag">pasos globales 141–200</div><div class="tag">IA: 0%</div><div class="tag">LOC: ~900 nuevas + ~250 copiadas</div><div class="tag">despliegue parcial: D4</div>
+
+<div class="cap">
+<h2>Archivo raíz · Proceso · Diagrama</h2>
+<b>Archivo raíz:</b> <span class="az">nct-backend/teams/</span> + <span class="az">nct-backend/sandbox/</span><br>
+<b>Proceso:</b> blinda la entrega de trabajo (firma criptográfica) y prepara entornos desechables que nunca pierden memoria.
+<div class="flujo">sequence.json(F2) → handoff.py: sobre firmado sha256 {goal_lock_hash, contrato, criterios,
+   output_schema, max_intentos:3} — sin firma válida NO se trabaja; Escritor solo recibe del Juez
+→ context_isolator.py: subagente congelado(Kimi) + structured summary(MiniMax) por worker
+   + writer_subagent.py: compacta si contexto>70% + reload-after-compaction (re-inyecta diseño)
+→ sandbox_pool.py: 1-10 sandboxes por proyecto · sandbox=SOLO entorno, nunca cerebro
+   muere → DEAD → guarda estado → nuevo sandbox → monta memoria → resume checkpoint
+   PRIMARY(Docker+bind mount) + BACKUP(región B) + snapshots S3/15min + LB failover
+→ scheduler.py: asigna por recursos (CPU/RAM/tiempo estimado del step)</div>
+</div>
+
+<div class="cap">
+<h2>Explicación técnica</h2>
+Handoff ya existe dentro de team_core.py (H3): dataclass con firma sha256 verificable — se EXTRAE a módulo propio (respeta L02: una responsabilidad) sin cambiar su lógica; test de regresión confirma equivalencia. context_isolator implementa el doble mecanismo de la fusión (subagente congelado = worker recibe snapshot inmutable del contexto; structured summary = resumen tipado, no prosa). sandbox_pool: registro en tabla sandboxes (F7 la creará; aquí interfaz + implementación local Docker), ciclo de vida provisioning→alive→dead→draining, y la secuencia de resurrección exacta de añadir_2. El scheduler es determinista: bin-packing simple por (cpu_req, ram_req, timeout_seg) declarados en el step — sin ML, sin LLM.
+<div class="simple"><b class="ok">Simple:</b> F3 es el sobre lacrado y el taller desechable: cada encargo viaja firmado para que nadie lo altere ni trabaje sin autorización; cada trabajador recibe solo el contexto que necesita, congelado; y los talleres se pueden quemar y reconstruir en segundos porque la memoria vive fuera de ellos.</div>
+</div>
+
+<div class="cap">
+<h2>Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Fuente/traza</th></tr>
+<tr><td>141-144</td><td><b>EXTRAER</b> Handoff de team_core.py a módulo propio + test regresión</td><td>teams/handoff.py (≤150)</td><td>H3 · #GAP-P3-049 · CAMBIOS-BASE</td></tr>
+<tr><td>145-148</td><td>firma.py: firmar/verificar sha256; goal_lock_hash embebido</td><td>teams/firma.py (≤100)</td><td>H3 · NOTA_03</td></tr>
+<tr><td>149-156</td><td>context_isolator.py: snapshot congelado + structured summary tipado</td><td>teams/context_isolator.py (≤250)</td><td>doc30 F3 · v100 §2</td></tr>
+<tr><td>157-162</td><td>writer_subagent.py: medidor de contexto + compactación 70% + re-inyección</td><td>teams/writer_subagent.py (≤200)</td><td>#GAP-P3-017 · #GAP-P3-033</td></tr>
+<tr><td>163-172</td><td>sandbox_pool.py: ciclo de vida + asignación por proyecto + resurrección (DEAD→nuevo→monta→resume)</td><td>sandbox/sandbox_pool.py (≤300)</td><td>#GAP-P2-063 · añadir_2</td></tr>
+<tr><td>173-178</td><td>docker_driver.py: implementación local (create/exec/destroy, bind mount /workspace)</td><td>sandbox/docker_driver.py (≤250)</td><td>#GAP-CIERRE-011 · MAX-100X §10</td></tr>
+<tr><td>179-184</td><td>snapshots.py: snapshot S3-compatible cada 15 min + restore</td><td>sandbox/snapshots.py (≤200)</td><td>MAX-100X · #GAP-P2-069</td></tr>
+<tr><td>185-190</td><td>scheduler.py: bin-packing determinista por recursos declarados</td><td>sandbox/scheduler.py (≤200)</td><td>añadir_2 (Scheduler 9/10)</td></tr>
+<tr><td>191-194</td><td>failover.py: health del primary, promoción del backup (RTO&lt;30s objetivo)</td><td>sandbox/failover.py (≤180)</td><td>MAX-100X §14</td></tr>
+<tr><td>195-198</td><td>Test integración F2→F3 (step → handoff firmado → sandbox asignado → kill → resume)</td><td>test_f3_e2e.py (≤250)</td><td>SIM 3 del preliminar</td></tr>
+<tr><td>199</td><td>Simulación de caída real (docker kill a mitad de tarea) con evidencia</td><td>test_f3_caida.py (≤150)</td><td>Witness-estilo</td></tr>
+<tr><td>200</td><td><b class="ok">DESPLIEGUE PARCIAL D4</b>: teams/ + sandbox/</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">PROHIBIDO en F3:</b> trabajar sin firma válida · sandbox con estado propio no respaldado · agentes creando sus propios procesos libremente (el pool asigna, ellos piden) · Escritor recibiendo órdenes directas del Director.</div>
+
+<div class="cap"><b class="az">Fuentes de este bloque:</b> H3_ROUTER_TEAM_JUECES (Handoff/team_core) · doc30 (aislamiento F3) · v100 §2 (context_isolator) · añadir_2_al_osquestador.md (pool+scheduler+resurrección) · MAX-SYSTEM-100X-FINAL.md (multi-sandbox/failover/snapshots) · orquestador_última_versión_1 (Writer Subagent) · GAPS: P3-049/017/033, P2-063/069, CIERRE-011. Verificado 3 pasadas · pieza_id F3 · alimentado_por F2 · alimenta_a F4.</div>
+
+</body></html>

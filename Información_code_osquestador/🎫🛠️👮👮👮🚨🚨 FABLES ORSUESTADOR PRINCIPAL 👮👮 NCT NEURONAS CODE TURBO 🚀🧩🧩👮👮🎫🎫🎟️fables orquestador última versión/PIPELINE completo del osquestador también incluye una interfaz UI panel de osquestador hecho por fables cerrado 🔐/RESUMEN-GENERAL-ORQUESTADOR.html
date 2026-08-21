@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 RESUMEN GENERAL — cómo funciona el orquestador NCT 🎅</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.6;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.45em;margin:0 0 6px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.12em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:26px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.85em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tren{text-align:center;font-size:1.05em;margin:6px 0;color:#ffd76e}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0}
+</style></head><body>
+
+<div class="tren">🎅🎄 RESUMEN GENERAL DEL ORQUESTADOR NCT — el regalo completo explicado 🚂🎁</div>
+<h1>Cómo funciona · comparación con la fusión Kimi/MiniMax · el 90% determinista · futuro</h1>
+
+<div class="cap">
+<h2>1 · CÓMO FUNCIONA (la historia completa en un párrafo largo)</h2>
+Una orden del Director entra por la <b class="oro">aduana F0</b>: se guarda literal con huella criptográfica (nadie puede actuar sin confirmar que la leyó), se completan 30 campos de contexto preguntando lo mínimo, se clasifica en dos ejes (qué tan difícil × qué tipo de trabajo) y se congela el objetivo con un sello sha256. El <b class="oro">kernel F1</b> — seis leyes inmutables, un portero booleano y una máquina de estados donde ningún LLM decide — le asigna nivel de potencia (de 20 a 1000 loops). El <b class="oro">planner F2</b> escribe la receta completa UNA vez (orden topológico, pasos paralelos, qué hacer si cada paso falla) y la sella; en adelante nadie replanifica. <b class="oro">F3</b> entrega el trabajo en sobres firmados a talleres desechables que pueden morir y resucitar sin perder nada, porque la memoria vive fuera. En <b class="oro">F4</b> — el único lugar donde la IA piensa — Mythos estructura el problema como narrativa, el motor lo razona por etapas (hipótesis → evolución genética → estrés triple), 300 expertos YAML proponen en paralelo sin que ninguno pueda escribir directo, un solo FusionEngine consolida, y hasta 100 workers con mini-equipos de 3 roles ejecutan en lotes — con el staff open-source tirando primero y OpenClaw corriendo como orquestador paralelo completo. Mientras tanto <b class="oro">F5</b> vigila con tres relojes sin IA (leyes, pulso, y el trío PAD/Ansiedad/Drift) y seis detectores que ROTAN la táctica en vez de repetirla. Todo lo producido cruza la <b class="oro">aduana F6</b>: primero código puro (la mayoría de fallos muere gratis), luego lógica formal Z3, recién después jueces cuya respuesta por defecto es "repítelo", y al final el Witness que enciende el juguete de verdad — y el GOAL_CHECK que pregunta si era ESO lo pedido. Lo aprobado se vuelve memoria (<b class="oro">F7</b>: una sola base Postgres+pgvector, 4 niveles, sueños de consolidación, y un grafo que denuncia contradicciones). Si algo falla, <b class="oro">F8</b> sube una escalera fija de 5 peldaños rotando entre 200 trucos antes de molestar al Director, y una Sentinela aprende de los fallos repetidos para proponer mejoras al método — solo con firma. <b class="oro">F9</b> sella todo (3 archivos, ID con hash, 8 gates, atlas auto-dibujado, 18/18 checks o se reabre) y el <b class="oro">despliegue final</b> lo hacen 6 scripts que no piensan: plan aprobable, bloqueo de secrets, push y verificación remota. Encima de todo, la <b class="oro">gobernanza transversal</b> decide qué necesita firma humana, mide si el sistema mejora o empeora cada ciclo, y cuando el orquestador quiere mejorarse a sí mismo, escribe una FICHA que pasa por su propio pipeline — el sistema se construye y se mejora usando sus propias reglas.
+</div>
+
+<div class="cap">
+<h2>2 · COMPARACIÓN: fusión Kimi K + MiniMax (doc 30) vs nuestro orquestador</h2>
+<table>
+<tr><th>Aspecto</th><th>Fusión Kimi/MiniMax (doc30, base)</th><th>Orquestador NCT (lo que le AÑADIMOS)</th></tr>
+<tr><td>Esqueleto</td><td>10 fases, coordinador 0% IA (~960 LOC)</td><td class="ok">MISMO esqueleto conservado — es el chasis del tren</td></tr>
+<tr><td>Entrada</td><td>clasificación dual (intención×tipo)</td><td class="ok">+ InputBlock literal con hook bloqueante, PUSH_PING 30 campos, GOAL_LOCK sha256, Repo RAG anti-inventar</td></tr>
+<tr><td>Control</td><td>FSM simple</td><td class="ok">+ ADN 6 leyes + Guardian booleano + jerarquía 5 niveles + comandos cerrados del Director</td></tr>
+<tr><td>Plan</td><td>todo_write + skills</td><td class="ok">+ planner offline con hash INMUTABLE, on_failure por paso, 325 fichas catalogadas, pipeline Juez P00-P13</td></tr>
+<tr><td>Ejecución</td><td>100 workers Kimi + team 3 roles MiniMax</td><td class="ok">CONSERVADO ÍNTEGRO + motor de razonamiento F0-F11 con Mythos + 300 expertos con fusión ponderada + cadena de control 12 capas + OpenClaw paralelo + batching + multi-pool</td></tr>
+<tr><td>Monitoreo</td><td>PAD + Ansiedad + Anti-Drift</td><td class="ok">CONSERVADO + Guardian + watchdog 30s + 6 detectores con rotación de estrategia (nunca repetir)</td></tr>
+<tr><td>Verificación</td><td>3 capas (adversarial/cruzada/maker-checker)</td><td class="ok">ELEVADO a aduana G2: N0-N5 por AST, Z3 formal, jueces default-RETRY que votan ciegos, Witness con evidencia FÍSICA + evidencia VIVA + GOAL_CHECK</td></tr>
+<tr><td>Memoria</td><td>EROS 3-tier + summaries</td><td class="ok">CONSERVADO + Postgres+pgvector única, event sourcing hash-chain, Knowledge Graph anti-contradicción, Dream/Distill, memoria de fallos por embedding</td></tr>
+<tr><td>Reparación</td><td>repair pipeline 5 pasos</td><td class="ok">+ escalera 5 niveles probada en código, 200 estrategias, Sentinela con ledger, 8 patrones P0 de producción</td></tr>
+<tr><td>Entrega</td><td>output final</td><td class="ok">+ protocolo 3 archivos, 8 gates, atlas automático, 18/18 CERTIFIED, gateway MCP/API, despliegue determinista verificado</td></tr>
+<tr><td>Auto-mejora</td><td>aprendizaje de embeddings</td><td class="ok">+ ciclo completo de 6 pasos con CONSENSO de 5 y FICHA que pasa por el propio pipeline</td></tr>
+</table>
+<div class="simple"><b class="ok">🎄 En una frase:</b> la fusión Kimi/MiniMax es el CHASIS y el motor de arranque; el orquestador NCT le montó encima el blindaje (leyes/aduana/witness), la memoria de elefante, el taller de reparación con 200 herramientas, el consejo de gobierno, y la capacidad de mejorarse a sí mismo con reglas — sin romper ni una pieza del chasis original.</div>
+</div>
+
+<div class="cap">
+<h2>3 · EL 90% DETERMINISTA — dónde queda cada gota de IA</h2>
+<div class="flujo">FASES 100% CÓDIGO (0 tokens): F0 F1 F2 F3 F5 F6-A F6-B F7 F8(escalera) F9 POST
+IA CONTROLADA (≤10% presupuesto, medido en vivo por AST y por gasto):
+  F4  → razonar/escribir (en LOTES de 8-16, jamás 1-a-1)
+  F6-C→ jueces (default RETRY, 3 niveles, veto sin IA por Sheriff/Centinela)
+VIGILANCIA DEL 10%: N5 (AST llm_ratio≤0.10 por artifact) + AX01 en CI
+  (0 llamadas LLM directas en el orquestador) + presupuesto.py corta en vivo
+RESULTADO: mismo input → mismo camino (L15) · un fallo de LLM nunca puede
+  romper el control, solo el contenido — y el contenido siempre cruza la aduana.</div>
+</div>
+
+<div class="cap">
+<h2>4 · MEJORAS FUTURAS (roadmap honesto de Santa)</h2>
+<table>
+<tr><th>Horizonte</th><th>Mejora</th><th>Por qué / cómo</th></tr>
+<tr><td>Ya emitidas (fichas 100x)</td><td>batching total ×4 · Redis Streams ×3 · async ×2 · multi-pool ×2 · time-wheel ×2 · shards ×1.5 · pre-warm ×1.5</td><td>≈216x techo teórico → 100x real; se instalan por el propio ciclo de auto-mejora</td></tr>
+<tr><td>Corto</td><td>UI panel (prototipo listo) · websocket eventos · Hatchet si el volumen lo pide</td><td>FICHA-MEJORA-UI + decisión PN-5 registrada</td></tr>
+<tr><td>Medio</td><td>evidencia viva a TODOS los artifacts con dependencia externa · timeout/recursos adaptativos globales · A/B de estrategias en el pool con ranking automático</td><td>SIM A/B generalizadas: el sistema se calibra con sus propios datos</td></tr>
+<tr><td>Largo</td><td>MAXBRY AGI (nivel A de la jerarquía): un razonador superior que dirija a ESTE orquestador como su ejecutor</td><td>la visión original de CHECKPOINT_DECISIONES — este orquestador ya es compatible: solo es otro cliente MCP del gateway</td></tr>
+</table>
+</div>
+
+<div class="cap">
+<h2>5 · AGENTES OPEN-SOURCE QUE VALE LA PENA ADOPTAR (además de lo ya integrado)</h2>
+<table>
+<tr><th>OSS</th><th>Para qué</th><th>Cómo entra (sin tocar el núcleo)</th></tr>
+<tr><td><b>OpenHands</b></td><td>tareas de código end-to-end en su propio sandbox</td><td>staff pipeline code_gen alternativo — ya está en la failover chain, activarlo = 1 entrada en connections.yaml</td></tr>
+<tr><td><b>Aider</b></td><td>ediciones dirigidas con git integrado</td><td>staff pipeline refactor (ya mapeado V6) — rúbrica 13 criterios antes de activar</td></tr>
+<tr><td><b>Goose</b></td><td>tareas autónomas largas con checkpoints propios</td><td>worker externo vía Handoff firmado + Witness certifica</td></tr>
+<tr><td><b>SWE-agent</b></td><td>resolver issues de GitHub automáticamente</td><td>nueva capability "fix_issue" en el registry → tool MCP</td></tr>
+<tr><td><b>Haystack / LightRAG</b></td><td>mejorar Repo RAG y seed analysis (F0)</td><td>ya aprobados en PATCH-V3 histórico — reemplazo interno de repo_rag.py, mismo contrato</td></tr>
+<tr><td><b>Plandex</b></td><td>planificación de cambios grandes multi-archivo</td><td>consultor de F2 (propone, el planner offline DECIDE) — nunca autoridad</td></tr>
+<tr><td><b>Ollama + GGUF locales</b></td><td>jueces Local/Capa gratis y rápidos (el Central queda en modelo grande)</td><td>connections.yaml: juez_local→ollama — baja el costo del 10% de IA aún más</td></tr>
+</table>
+<div class="simple"><b class="crit">Regla de adopción (siempre):</b> rúbrica de 13 criterios → consenso 5 → FICHA → contrato enchufe v2.0 → Witness. Ningún OSS entra "porque suena bien" — entra porque pasó la aduana como todo lo demás. 🎅</div>
+</div>
+
+<div class="cap">
+<h2>6 · DATOS ÚTILES PARA PROGRAMAR (chuleta final)</h2>
+<div class="flujo">~23.000 LOC total (40% se copia) · ~32 salidas Sonnet · 13 despliegues D1-D13
+Orden real de construcción: V1→V13 en numeración 001-1000 (STATE→VERIF→RUNTIME→
+KERNEL ya respetado dentro del orden de vagones) · KIT-ARRANQUE-SONNET = manifiesto
+de 14 archivos a subir + orden maestra + deps pinned + deploy_config.yaml
+Fuente única de verdad al construir: los 14 vagones (hash congelado) + B1-B8
+que Sonnet genera en SALIDA 0 · Regla de oro eterna:
+DENTRO = aprobado · falta = pendiente · NUNCA se asume — SE AUDITA. 🎄</div>
+</div>
+
+<div class="tren">🎅🎄 ¡Y así funciona el regalo completo, Director! El tren está en la vía, el kit en el trineo, y la navidad… salvada. 🚂✨🎁🎄</div>
+</body></html>

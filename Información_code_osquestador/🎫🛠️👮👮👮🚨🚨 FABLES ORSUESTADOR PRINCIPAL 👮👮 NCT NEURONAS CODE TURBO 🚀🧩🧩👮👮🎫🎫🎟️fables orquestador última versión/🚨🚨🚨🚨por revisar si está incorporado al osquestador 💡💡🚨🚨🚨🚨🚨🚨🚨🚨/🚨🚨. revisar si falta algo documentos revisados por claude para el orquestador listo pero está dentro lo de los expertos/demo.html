@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAXBRY/NCT v3 · Demo Gallery + README</title>
+<style>
+:root{
+  --bg:#000;--bg-elevated:#1c1c1e;--bg-card:#1f1f1f;--bg-hover:#2a2a2a;
+  --line:#2c2c2e;--line-light:#3a3a3c;
+  --text:#fff;--text-secondary:#8e8e93;--text-tertiary:#636366;
+  --accent:#5eead4;--accent-dim:rgba(94,234,212,.4);--accent-glow:rgba(94,234,212,.15);
+  --warn:#fbbf24;--err:#f87171;--ok:#4ade80;--purple:#a78bfa;--pink:#f472b6;--blue:#0a84ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+body{padding:0}
+img{max-width:100%;height:auto;display:block;border-radius:8px}
+
+.container{max-width:1200px;margin:0 auto;padding:24px 20px}
+
+/* Header */
+.hero{text-align:center;padding:60px 20px 32px;border-bottom:1px solid var(--line)}
+.hero-title{font-size:48px;font-weight:900;letter-spacing:-1.5px;background:linear-gradient(90deg,#5eead4,#7dd3fc,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.hero-sub{color:var(--text-secondary);font-size:15px;max-width:600px;margin:0 auto 12px}
+.hero-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:16px}
+.hero-pill{background:var(--bg-card);border:1px solid var(--line);padding:6px 12px;border-radius:20px;font-size:11px;color:var(--text-secondary);font-weight:600}
+.hero-pill.ok{background:rgba(74,222,128,.15);color:var(--ok);border-color:var(--ok)}
+
+/* Section */
+section.section{padding:64px 0;border-top:1px solid var(--line);display:block}
+section.section:first-of-type{border-top:none}
+.section-eyebrow{display:inline-block;background:var(--accent-glow);color:var(--accent);font-size:11px;font-weight:800;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+.section-title{font-size:36px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px}
+.section-desc{color:var(--text-secondary);font-size:14px;max-width:700px;margin-bottom:32px}
+
+/* Image cards */
+.screenshot{background:#0a0a0a;border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:24px;transition:all .25s}
+.screenshot:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.screenshot-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);background:#1c1c1e}
+.screenshot-title{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px}
+.screenshot-title-icon{width:28px;height:28px;border-radius:8px;background:var(--accent-glow);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px}
+.screenshot-tag{font-size:10px;color:var(--text-secondary);background:var(--bg-card);padding:3px 8px;border-radius:10px;font-family:'SF Mono','Monaco',monospace;border:1px solid var(--line)}
+.screenshot img{display:block;width:100%;cursor:zoom-in}
+.screenshot-footer{padding:12px 18px;border-top:1px solid var(--line);background:#1c1c1e;font-size:12px;color:var(--text-secondary)}
+
+/* Lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);backdrop-filter:blur(8px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+.lightbox.active{display:flex;animation:lbIn .2s ease}
+@keyframes lbIn{from{opacity:0}to{opacity:1}}
+.lightbox img{max-width:98vw;max-height:98vh;border-radius:8px;box-shadow:0 30px 80px rgba(0,0,0,.8)}
+.lightbox-close{position:absolute;top:20px;right:20px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.lightbox-close:hover{background:rgba(255,255,255,.1)}
+
+/* README */
+.readme{background:#0a0a0a;border:1px solid var(--line);border-radius:16px;padding:40px;margin-top:32px;scroll-margin-top:80px}
+.readme-title{font-size:32px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#5eead4,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.readme-subtitle{color:var(--text-secondary);font-size:14px;margin-bottom:24px}
+.readme-toc{background:#1c1c1e;border-radius:8px;padding:20px;margin-bottom:32px}
+.readme-toc-title{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-tertiary);font-weight:700;margin-bottom:12px}
+.readme-toc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.readme-toc-item{font-size:12px;color:var(--text-secondary);padding:6px 0;cursor:pointer;transition:color .15s;border-bottom:1px solid transparent}
+.readme-toc-item:hover{color:var(--accent)}
+.readme-toc-item-num{color:var(--accent);font-family:'SF Mono','Monaco',monospace;margin-right:8px;font-weight:700}
+.readme-toc-item-count{color:var(--text-tertiary);font-size:10px;margin-left:6px}
+
+.readme-section{margin-bottom:40px;scroll-margin-top:80px}
+.readme-section-title{font-size:22px;font-weight:800;margin-bottom:14px;color:var(--text);display:flex;align-items:center;gap:12px}
+.readme-section-num{font-size:14px;font-weight:700;color:var(--accent);background:var(--accent-glow);padding:5px 12px;border-radius:8px;font-family:'SF Mono','Monaco',monospace}
+.readme-section-count{font-size:11px;color:var(--text-tertiary);margin-left:auto;font-family:'SF Mono','Monaco',monospace;background:var(--bg-card);padding:3px 10px;border-radius:6px}
+
+.readme-item{padding:14px 0;border-bottom:1px solid var(--line)}
+.readme-item:last-child{border-bottom:none}
+.readme-item-name{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.readme-item-shortcut{font-size:10px;color:var(--text);font-family:'SF Mono','Monaco',monospace;background:#000;padding:3px 8px;border-radius:5px;border:1px solid var(--line);font-weight:600}
+.readme-item-desc{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.readme-item-triggers{font-size:11px;color:var(--text-tertiary);margin-top:8px;font-style:italic}
+.readme-item-triggers strong{color:var(--accent);font-style:normal}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:32px}
+.stat{background:#1c1c1e;border:1px solid var(--line);border-radius:12px;padding:20px;text-align:center}
+.stat-num{font-size:32px;font-weight:800;color:var(--accent);font-family:'SF Mono','Monaco',monospace}
+.stat-label{font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+
+/* Test results */
+.tests{background:#0d0d0d;border:1px solid var(--ok);border-radius:12px;padding:20px;margin-bottom:24px;display:flex;align-items:center;gap:16px}
+.tests-icon{font-size:32px}
+.tests-text{flex:1}
+.tests-title{font-size:14px;font-weight:700;color:var(--ok);margin-bottom:2px}
+.tests-desc{font-size:12px;color:var(--text-secondary)}
+
+/* Footer */
+footer{text-align:center;color:var(--text-tertiary);font-size:12px;padding:40px 20px 80px;border-top:1px solid var(--line);margin-top:48px}
+.footer-logo{color:var(--accent);font-weight:800;margin-bottom:6px}
+
+@media (max-width:768px){
+  .hero-title{font-size:32px}
+  .section-title{font-size:26px}
+  .readme{padding:24px 16px}
+  .container{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-title">MAXBRY/NCT v3</div>
+  <div class="hero-sub">Cognitive Operating System · Multi-agent orchestrator · Control Center demo + functional reference</div>
+  <div class="hero-pills">
+    <span class="hero-pill ok">✅ 36/36 tests pass</span>
+    <span class="hero-pill ok">✅ 0 JS errors</span>
+    <span class="hero-pill">100% functional</span>
+    <span class="hero-pill">8 platforms</span>
+    <span class="hero-pill">4 pricing tiers</span>
+    <span class="hero-pill">MIT core</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ============ STATS ============ -->
+<div class="stats-grid">
+  <div class="stat"><div class="stat-num">100</div><div class="stat-label">JS functions</div></div>
+  <div class="stat"><div class="stat-num">15</div><div class="stat-label">Centers</div></div>
+  <div class="stat"><div class="stat-num">8</div><div class="stat-label">Profiles</div></div>
+  <div class="stat"><div class="stat-num">7</div><div class="stat-label">LLM providers</div></div>
+  <div class="stat"><div class="stat-num">17</div><div class="stat-label">MCP servers</div></div>
+  <div class="stat"><div class="stat-num">13</div><div class="stat-label">Skills</div></div>
+  <div class="stat"><div class="stat-num">9</div><div class="stat-label">Download platforms</div></div>
+  <div class="stat"><div class="stat-num">4</div><div class="stat-label">Pricing tiers</div></div>
+</div>
+
+<div class="tests">
+  <div class="tests-icon">✅</div>
+  <div class="tests-text">
+    <div class="tests-title">Verified con Playwright + Chromium real-browser · 36 tests interactivos</div>
+    <div class="tests-desc">Test suite ejecuta clicks reales, dispatch events, evalúa DOM. EXIT=0. Sin errores JS. Sin handlers rotos.</div>
+  </div>
+</div>
+
+<!-- ============ SCREENSHOTS ============ -->
+<section class="section">
+  <span class="section-eyebrow">Pantallas</span>
+  <h2 class="section-title">Demo Gallery</h2>
+  <p class="section-desc">Las 8 pantallas principales de la interfaz. Click en cualquier imagen para ampliar. Capturadas después de la ejecución del test suite.</p>
+
+  <div class="screenshot">
+    <div class="screenshot-header">
+      <div class="screenshot-title"><span class="screenshot-title-icon">🏠</span>Home · modo Simple</div>
+      <span class="screenshot-tag">3-panel + 8 profile chips</span>
+    </div>
+    <img src="demo/final-home.png" alt="Home view" onclick="openLightbox(this.src)" loading="lazy">
+    <div class="screenshot-footer">Sessions lateral · Chat real con audit + research responses · Context panel con ring SVG + skills activos + workspace tabs. Toasts apilados a la derecha (All skills enabled, Exported, Subscribed, etc).</div>
+  </div>
+
+  <div class="screenshot">
+    <div class="screenshot-header">
+      <div class="screenshot-title"><span class="screenshot-title-icon">💬</span>Multi-Session Chat · 7 columnas</div>
+      <span class="screenshot-tag">WebSocket-style streams</span>
+    </div>
+    <img src="demo/final-chat.png" alt="Chat view" onclick="openLightbox(this.src)" loading="lazy">
+    <div class="screenshot-footer">Coder · Tester · Docs · Security · Research · Data · Designer. Cada columna es sesión independiente.</div>
+  </div>
+
+  <div class="screenshot">
+    <div class="screenshot-header">
+      <div class="screenshot-title"><span class="screenshot-title-icon">🏢</span>Office View · agents live</div>
+      <span class="screenshot-tag">demo ejecutándose</span>
+    </div>
+    <img src="demo/final-office.png" alt="Office view" onclick="openLightbox(this.src)" loading="lazy">
+    <div class="screenshot-footer">11 agentes en oficina 2D isométrica. Status indicators (idle/working/error) rotando cada 800ms. Click Start demo / Stop / Random fail / Reset.</div>
+  </div>
+
+  <div class="screenshot">
+    <div class="screenshot-header">
+      <div class="screenshot-title"><span class="screenshot-title-icon">⚡</span>Skill Center · 13 SKILL.md cards</div>
+      <span class="screenshot-tag">toggles ON/OFF reales</span>
+    </div>
+    <img src="demo/final-skills.png" alt="Skills view" onclick="openLightbox(this.src)" loading="lazy">
+    <div class="screenshot-footer">Cada skill tiene toggle individual. Enable all / Disable all / Install new. Estado persistido en state. Active count visible en right panel.</div>
+  </div>
+
+  <div class="screenshot">
+    <div class="screenshot-header">
+      <div class="screenshot-title"><span class="screenshot-title-icon">🧬</span>Wizard Step 5 · Review YAML</div>
+      <span class="screenshot-tag">hot-reload · no restart</span>
+    </div>
+    <img src="demo/final-wizard.png" alt="Wizard review" onclick="openLightbox(this.src)" loading="lazy">
+    <div class="screenshot-footer">Profile builder 5-step (Identity → Model → Skills → MCP → Review). Deploy sin restart. Export/Clone/Delete buttons funcionales.</div>
+  </div>
+
+  <div class="screenshot">
+    <div class="screenshot-header">
+      <div class="screenshot-title"><span class="screenshot-title-icon">📱</span>Mobile + 8 Download platforms</div>
+      <span class="screenshot-tag">QR · download cards</span>
+    </div>
+    <img src="demo/final-mobile.png" alt="Mobile view" onclick="openLightbox(this.src)" loading="lazy">
+    <div class="screenshot-footer">Android · iOS · macOS · Linux (deb/rpm/AppImage/Flatpak/Snap) · Windows (exe/MSIX/Portable) · CLI · Docker · Web PWA · Repository. Phone UIs con effort Bajo/Medio/Alto/Extra/Máx + Skills ON/OFF.</div>
+  </div>
+
+  <div class="screenshot">
+    <div class="screenshot-header">
+      <div class="screenshot-title"><span class="screenshot-title-icon">💰</span>Plans & Pricing · 4 tiers</div>
+      <span class="screenshot-tag">Stripe · 14-day money-back</span>
+    </div>
+    <img src="demo/final-pricing.png" alt="Pricing view" onclick="openLightbox(this.src)" loading="lazy">
+    <div class="screenshot-footer">Free $0 · Pro $9/mo · Team $29/mo/user (featured, marcado Active tras subscribe) · Enterprise $299/mo. Click subscribe marca el plan como Active (verde). FAQ expandible debajo.</div>
+  </div>
+
+  <div class="screenshot">
+    <div class="screenshot-header">
+      <div class="screenshot-title"><span class="screenshot-title-icon">📖</span>Interface README · TOC + 9 secciones</div>
+      <span class="screenshot-tag">scroll-to-section</span>
+    </div>
+    <img src="demo/final-readme.png" alt="README view" onclick="openLightbox(this.src)" loading="lazy">
+    <div class="screenshot-footer">Tabla de contenidos clickeable con scroll suave. 9 secciones documentadas con nombres + descripciones + atajos. Cobertura completa: navegación, modos, paneles, wizard, mobile, pricing, atajos.</div>
+  </div>
+</section>
+
+<!-- ============ README ============ -->
+<section class="section">
+  <span class="section-eyebrow">Documentación</span>
+  <h2 class="section-title">📋 Lista completa de funciones de la interfaz</h2>
+  <p class="section-desc">Las 9 secciones siguientes describen TODO lo que la interfaz hace, qué atajos disparan qué, y dónde encontrar cada botón.</p>
+
+  <div class="readme">
+
+    <div class="readme-toc">
+      <div class="readme-toc-title">Tabla de contenidos · click para ir</div>
+      <div class="readme-toc-list">
+        <div class="readme-toc-item" onclick="document.getElementById('rm-global').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">01</span>Global Nav & Mode<span class="readme-toc-item-count">8 funciones</span></div>
+        <div class="readme-toc-item" onclick="document.getElementById('rm-home').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">02</span>Home · Simple Mode<span class="readme-toc-item-count">6</span></div>
+        <div class="readme-toc-item" onclick="document.getElementById('rm-arch').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">03</span>Home · Architect Mode<span class="readme-toc-item-count">2</span></div>
+        <div class="readme-toc-item" onclick="document.getElementById('rm-chat').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">04</span>Multi-Session Chat<span class="readme-toc-item-count">2</span></div>
+        <div class="readme-toc-item" onclick="document.getElementById('rm-office').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">05</span>Office View<span class="readme-toc-item-count">4</span></div>
+        <div class="readme-toc-item" onclick="document.getElementById('rm-profiles').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">06</span>Profile Builder + Subs<span class="readme-toc-item-count">8</span></div>
+        <div class="readme-toc-item" onclick="document.getElementById('rm-mobile').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">07</span>Mobile + Downloads<span class="readme-toc-item-count">3</span></div>
+        <div class="readme-toc-item" onclick="document.getElementById('rm-pricing').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">08</span>Plans & Pricing<span class="readme-toc-item-count">5</span></div>
+        <div class="readme-toc-item" onclick="document.getElementById('rm-shortcuts').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">09</span>Atajos de teclado<span class="readme-toc-item-count">7</span></div>
+      </div>
+    </div>
+
+    <div id="readmeBody">
+
+      <div class="readme-section" id="rm-global">
+        <div class="readme-section-title"><span class="readme-section-num">01</span>Global Navigation & Mode</div>
+        <div class="readme-section-count">8 funciones</div>
+
+        <div class="readme-item">
+          <div class="readme-item-name">Logo click <span class="readme-item-shortcut">click</span></div>
+          <div class="readme-item-desc">Volver al Home view.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click sobre "⬢ MAXBRY"</strong> en la barra superior izquierda.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Global search ⌘K</div>
+          <div class="readme-item-desc">Abre el command palette con fuzzy-search sobre 27+ comandos agrupados en 6 categorías (Navigation · Sessions · Profile · Skills · Marketplace · Mode).</div>
+          <div class="readme-item-triggers">Trigger: <strong>⌘K / Ctrl+K</strong>, o click en la barra de búsqueda, o <strong>Esc</strong> para cerrar.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Tabs principales (Home / Chat / Office / Profiles / Mobile / Pricing / README)</div>
+          <div class="readme-item-desc">Navegación entre las 7 secciones principales de la interfaz. Active state highlighted en color accent.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en cualquier tab</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Reasoning chip</div>
+          <div class="readme-item-desc">Cycle through reasoning levels: <code>none → minimal → low → medium → high → xhigh</code>. Cambia el reasoning_effort de la sesión activa.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en el chip "🧠 reasoning:high"</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Profile chip</div>
+          <div class="readme-item-desc">Cycle through 8 profiles preconfigured (quick → custom). Cuando llega a "custom" abre modal de Create Custom Profile.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en el chip "⚡ balanced"</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Model chip</div>
+          <div class="readme-item-desc">Cycle through 7 LLM providers (Sonnet 5 · Gemini 3 Pro · GPT-5 · DeepSeek V4 · Kimi 2 · MiniMax M3 · Qwen 3 Max). Switching without restart.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en el chip "🎯 Sonnet 5"</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Avatar (account)</div>
+          <div class="readme-item-desc">Muestra el avatar del usuario actual. Click muestra toast (account menu en construcción).</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en el avatar "M"</strong> circular arriba a la derecha.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Mode switch (Simple / Arquitecto)</div>
+          <div class="readme-item-desc">Toggle entre Simple (3-panel chat) y Arquitecto (15 centers + live status table).</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en "⚡ Simple" o "🏗️ Arquitecto"</strong> en la parte superior del Home.</div>
+        </div>
+      </div>
+
+      <div class="readme-section" id="rm-home">
+        <div class="readme-section-title"><span class="readme-section-num">02</span>Home · Simple Mode</div>
+        <div class="readme-section-count">6 funciones</div>
+
+        <div class="readme-item">
+          <div class="readme-item-name">8 Profile chips</div>
+          <div class="readme-item-desc">Quick · Balanced · Professional · Research · Architect · Enterprise · Autonomous · + Custom. Cada uno con contador de expertos (1, 12, 24, 56, 84, 150, 300, custom). Status indicators: dot verde (idle) / amarillo (warn) / rojo (err).</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en cualquier chip</strong>. Profile active cambia inmediato en headers.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Sessions panel (left)</div>
+          <div class="readme-item-desc">Lista de 10 sesiones agrupadas por 📌 Pinned · 📅 Today · 📅 Yesterday · 📅 This week. Hover muestra acciones (📌 pin · 📦 archive · 🗑 delete). Botón "+ New" arriba a la derecha.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click selecciona sesión</strong>, hover muestra acciones, <strong>click "+ New"</strong> crea session.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Chat panel (center)</div>
+          <div class="readme-item-desc">Mensajes con thinking cards colapsables (click para expandir), tool call cards con resultados inline, dangerous command approval cards. Empty state con 4 sugerencias clickeables. Cada mensaje assistant tiene acciones Copy · Regenerate · Edit.</div>
+          <div class="readme-item-triggers">Trigger: <strong>type + Enter envía</strong>, click en thinking card colapsa, click en chat-suggestion autocompleta.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Composer</div>
+          <div class="readme-item-desc">Textarea + Attach (file picker nativo) + Voice (3s STT timeout) + Profile chip + Model chip. Token ring en vivo (96k/128k format). Send (turquoise) ↔ Stop (warning) toggle según estado.</div>
+          <div class="readme-item-triggers">Trigger: <strong>Enter</strong> envía, <strong>Shift+Enter</strong> salto de línea, click Attach abre file picker, click Voice activa 3s listening.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Empty state</div>
+          <div class="readme-item-desc">Aparece solo si la sesión no tiene mensajes. 4 sugerencias clickeables: Audit API REST · Research MoE · Design microservices · FastAPI tests.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en cualquier sugerencia</strong> llena el composer con el prompt y envía.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Context panel (right)</div>
+          <div class="readme-item-desc">Context ring SVG donut con % animado. Token stats (Input · Output · Cache · Cost). Active skills list. Workspace tabs OpenClaw-Deck style (max 4).</div>
+          <div class="readme-item-triggers">Trigger: <strong>"Reset"</strong> arriba a la derecha borra context, click en workspace tab "+ Add" añade tab (max 4).</div>
+        </div>
+      </div>
+
+      <div class="readme-section" id="rm-arch">
+        <div class="readme-section-title"><span class="readme-section-num">03</span>Home · Architect Mode</div>
+        <div class="readme-section-count">2 funciones</div>
+
+        <div class="readme-item">
+          <div class="readme-item-name">16 Center cards</div>
+          <div class="readme-item-desc">Grid con todos los centros: Workspace · Execution Profiles · Expert Manager · Agent Registry · Pipeline Studio · LLM Registry · MCP Registry · Knowledge Center · Skill Center · Memory Center · Output Studio · Monitoring Center · Security Center · Integration Center · Developer Studio · Marketplace.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en cualquier card</strong> → toast "Center opened" (full UI loads aquí en producción).</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Live Status table</div>
+          <div class="readme-item-desc">Status en tiempo real de 10 sistemas: Kernel · Router · Control Plane · LLM Gateway · MCP Registry · Memory Center · RAG Engine · Output Engine · Pipeline Studio · Marketplace. Muestra status, latency, throughput, errors.</div>
+          <div class="readme-item-triggers">Trigger: visibilidad automática — tabla renderiza en DOM al cargar.</div>
+        </div>
+      </div>
+
+      <div class="readme-section" id="rm-chat">
+        <div class="readme-section-title"><span class="readme-section-num">04</span>Multi-Session Chat · 7 columnas</div>
+        <div class="readme-section-count">2 funciones</div>
+
+        <div class="readme-item">
+          <div class="readme-item-name">7 columnas simultáneas</div>
+          <div class="readme-item-desc">Coder · Tester · Docs · Security · Research · Data · Designer. WebSocket-style streaming. Markdown rendering. Cada una independiente con su composer.</div>
+          <div class="readme-item-triggers">Trigger: escribir + Enter en cualquier columna envía a esa sesión.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Comparación cross-session</div>
+          <div class="readme-item-desc">Permite ver resultados de 7 sesiones lado a lado en una sola vista para debugging.</div>
+          <div class="readme-item-triggers">Trigger: <strong>scroll horizontal</strong> para ver columnas adicionales fuera del viewport.</div>
+        </div>
+      </div>
+
+      <div class="readme-section" id="rm-office">
+        <div class="readme-section-title"><span class="readme-section-num">05</span>Office View</div>
+        <div class="readme-section-count">4 funciones</div>
+
+        <div class="readme-item">
+          <div class="readme-item-name">▶ Start demo</div>
+          <div class="readme-item-desc">Activa el ciclo de trabajo: agentes rotan entre idle/working/error cada 800ms. Status colors: idle=gris · working=amarillo · error=rojo pulsante. Conexiones visuales entre desks. Métricas live actualizan.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "▶ Start demo"</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">⏹ Stop</div>
+          <div class="readme-item-desc">Detiene el ciclo. Los agentes mantienen su último estado (working/error visibles).</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "⏹ Stop"</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">💥 Random fail</div>
+          <div class="readme-item-desc">Fuerza error aleatorio en 1 agente. Auto-recovery en 3s (transición error → idle). Útil para testing de fault tolerance.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "💥 Random fail"</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">🔄 Reset</div>
+          <div class="readme-item-desc">Vuelve todos los agentes a idle. Limpia estados de error y working.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "🔄 Reset"</strong>.</div>
+        </div>
+      </div>
+
+      <div class="readme-section" id="rm-profiles">
+        <div class="readme-section-title"><span class="readme-section-num">06</span>Profile Builder + Subsecciones</div>
+        <div class="readme-section-count">8 funciones</div>
+
+        <div class="readme-item">
+          <div class="readme-item-name">📦 Export .tar.gz</div>
+          <div class="readme-item-desc">Descarga el profile completo (name + model + reasoning + skills) como JSON formateado, listo para backup o sharing.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "📦 Export .tar.gz"</strong> en Profile Builder header.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">📋 Clone</div>
+          <div class="readme-item-desc">Crea "{profile}-copy" basado en el actual, y lo activa.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "📋 Clone"</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">🗑 Delete</div>
+          <div class="readme-item-desc">Elimina el profile actual. Bloqueado si es "balanced" (default).</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "🗑 Delete"</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Wizard 5-step (🧬 Wizard tab)</div>
+          <div class="readme-item-desc">① Identity (name, avatar, prompt) → ② Model/Provider (dropdown selecciona modelos según provider) → ③ Skills (checkboxes 13) → ④ MCP (catálogo + custom URL) → ⑤ Review con YAML preview → Deploy sin restart.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en wizard steps 1-5</strong> o <strong>"Next →"</strong> avanza, <strong>"← Back"</strong> retrocede, <strong>"✓ Deploy profile"</strong> deploya.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">⚡ Skills tab</div>
+          <div class="readme-item-desc">13 skills con toggle ON/OFF individual. Counter en tab cuenta activos. Enable all / Disable all / Install new (abre modal).</div>
+          <div class="readme-item-triggers">Trigger: <strong>click toggle</strong> o <strong>"Enable all" / "Disable all" / "📥 Install new"</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">🧠 LLM Registry tab</div>
+          <div class="readme-item-desc">8 LLM providers pre-configurados (OpenAI GPT-5 · Anthropic Sonnet 5 · Google Gemini 3 Pro · DeepSeek V4 · Kimi 2 · MiniMax M3 · Qwen 3 Max · Ollama local). Test · Configure · Remove (excepto OpenAI que es default).</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "🧪 Test"</strong> simula request, "⚙️" abre config, "🗑" elimina provider.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">🔌 MCP Servers tab</div>
+          <div class="readme-item-desc">17 MCP servers: Obsidian · Graphiti · Baidu OCR · GitHub · GitLab · Drive · Gmail · Outlook · Filesystem · Telegram · Discord · Slack · Notion · PostgreSQL/MySQL/Redis · Qdrant/Milvus/Chroma/Neo4j · REST/GraphQL · Calendar. Toggle connect/disconnect, configure individual.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click toggle ⏸/▶</strong> cambia status conectado/desconectado, "⚙️" abre config.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">🎛️ Parameters tab</div>
+          <div class="readme-item-desc">8 sliders live: Temperature · Top-P · Top-K · Max output tokens · Reasoning effort · Consensus strength · Reranker K · Cache TTL. Cambios sin reset, afectan nuevas requests.</div>
+          <div class="readme-item-triggers">Trigger: <strong>drag cualquier slider</strong> → valor se actualiza en label.</div>
+        </div>
+      </div>
+
+      <div class="readme-section" id="rm-mobile">
+        <div class="readme-section-title"><span class="readme-section-num">07</span>Mobile + 8-Platform Downloads</div>
+        <div class="readme-section-count">3 funciones</div>
+
+        <div class="readme-item">
+          <div class="readme-item-name">9 downloads disponibles</div>
+          <div class="readme-item-desc">Android (Play Store + APK · 38MB) · iOS (App Store + TestFlight · 42MB) · macOS (.dmg · 84MB) · Linux (.deb/.rpm/AppImage/Flatpak/Snap · 72MB) · Windows (.exe/MSIX/Portable · 86MB) · CLI (npm/pip/brew/cargo · 14MB) · Docker (245MB) · Web PWA (CDN) · Repository (GitHub source). Click descarga o muestra instrucción.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en cualquier download card</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">📱 Effort phone (Bajo/Medio/Alto/Extra/Máx)</div>
+          <div class="readme-item-desc">Replica exacta de tu mockup original. Click selecciona effort. Switch "Pensamiento" on/off. Status badge "Predeterminado" + check ✓ en el activo.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en Bajo/Medio/Alto/Extra/Máx</strong> o <strong>Switch Pensamiento</strong>.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">📱 Skills mobile (ON/OFF toggles)</div>
+          <div class="readme-item-desc">Skill Center mobile: 3 skills ON, 3 OFF, link "+ 7 más" → Skills Hub. Click toggles ON/OFF con badge que cambia color (turquoise ↔ gris).</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en cualquier skill</strong> → ON ↔ OFF con toast.</div>
+        </div>
+      </div>
+
+      <div class="readme-section" id="rm-pricing">
+        <div class="readme-section-title"><span class="readme-section-num">08</span>Plans & Pricing</div>
+        <div class="readme-section-count">5 funciones</div>
+
+        <div class="readme-item">
+          <div class="readme-item-name">Free / OSS — $0</div>
+          <div class="readme-item-desc">Open source · self-hosted · Core profile · 4 OSS LLM providers · CLI+Docker+Web PWA · Community support. Limita a 1 custom profile, no marketplace, no autonomous mode.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "Get started"</strong> → Free activated.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Pro — $9/mo</div>
+          <div class="readme-item-desc">All 8 profiles · 10 custom profiles · Marketplace 5 installs/mo · Multi-LLM routing · iOS+Android mobile sync · Email support 24h · Cloud sync.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "Subscribe Pro"</strong> → Stripe checkout $9/mo.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Team — $29/mo/user (⭐ POPULAR)</div>
+          <div class="readme-item-desc">Shared profiles per team · Marketplace unlimited · 5 seats min · Discord+Slack integration · Team audit log · API 5k req/h · Dedicated CSM.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "Subscribe Team"</strong> → marca como ✓ Active + Stripe checkout $29/mo/user.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Enterprise — $299/mo</div>
+          <div class="readme-item-desc">150 expertos activados · Autonomous 24/7 · SOC2+GDPR+HIPAA · On-premise + air-gapped · Custom experts · Immutable audit trail · Unlimited API · 24/7 priority support (1h SLA) · Dedicated success engineer · Quarterly business reviews.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click "Contact sales"</strong> → team@maxbry.ai se contacta.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">FAQ expandible</div>
+          <div class="readme-item-desc">4 preguntas con respuestas nativas HTML <code>&lt;details&gt;</code>: cancelar anytime · OSS completeness · Enterprise tier · Educational discount.</div>
+          <div class="readme-item-triggers">Trigger: <strong>click en cualquier pregunta</strong> expande/colapsa la respuesta.</div>
+        </div>
+      </div>
+
+      <div class="readme-section" id="rm-shortcuts">
+        <div class="readme-section-title"><span class="readme-section-num">09</span>Atajos de teclado</div>
+        <div class="readme-section-count">7 atajos</div>
+
+        <div class="readme-item">
+          <div class="readme-item-name">⌘K / Ctrl+K <span class="readme-item-shortcut">Global</span></div>
+          <div class="readme-item-desc">Abre/cierra el command palette con fuzzy-search.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Esc <span class="readme-item-shortcut">Global</span></div>
+          <div class="readme-item-desc">Cierra command palette y modales abiertos.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Enter <span class="readme-item-shortcut">Chat composer</span></div>
+          <div class="readme-item-desc">Envía el mensaje actual en cualquier composer de chat.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Shift+Enter <span class="readme-item-shortcut">Chat composer</span></div>
+          <div class="readme-item-desc">Salto de línea sin enviar el mensaje.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Click en thinking card <span class="readme-item-shortcut">Chat message</span></div>
+          <div class="readme-item-desc">Colapsa/expande el reasoning interno del agente (Claude extended thinking / o3 reasoning).</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Tab + Next → / Back ← <span class="readme-item-shortcut">Wizard</span></div>
+          <div class="readme-item-desc">Avanzar/retroceder paso en el Profile Builder wizard.</div>
+        </div>
+        <div class="readme-item">
+          <div class="readme-item-name">Click TOC items <span class="readme-item-shortcut">README</span></div>
+          <div class="readme-item-desc">Scroll suave a la sección correspondiente.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">⬢ MAXBRY/NCT</div>
+  <strong style="color:var(--accent)">Cognitive Operating System v3 · Functional Control Center</strong><br>
+  100 functions · 8 platforms · 4 pricing tiers · 36/36 tests pass · 0 JS errors · MIT core
+</footer>
+
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" alt="">
+</div>
+
+<script>
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+</script>
+
+</body>
+</html>

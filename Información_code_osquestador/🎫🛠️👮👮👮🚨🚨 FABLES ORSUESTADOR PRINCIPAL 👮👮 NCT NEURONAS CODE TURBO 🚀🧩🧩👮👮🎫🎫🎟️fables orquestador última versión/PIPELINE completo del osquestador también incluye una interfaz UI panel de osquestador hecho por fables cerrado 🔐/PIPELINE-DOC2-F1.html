@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIPELINE NCT · DOC 2 — F1 KERNEL</title>
+<style>
+body{background:#2B2926;color:#E4DFD3;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#E4DFD3;font-size:1.4em;margin:0 0 4px}
+h2{color:#5B9BD5;font-size:1.1em;border-bottom:1px solid #4a453d;padding-bottom:5px;margin-top:24px}
+.cap{background:#17150F;border:1px solid #4a453d;border-radius:10px;padding:14px;margin:12px 0}
+.flujo{background:#17150F;border-left:3px solid #5B9BD5;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#5B9BD5;text-align:left;padding:6px;border-bottom:2px solid #4a453d}
+td{padding:5px 6px;border-bottom:1px solid #3a362e;vertical-align:top}
+.ok{color:#6FBF73}.crit{color:#E0554F}.az{color:#5B9BD5}
+.tag{display:inline-block;background:#17150F;border:1px solid #4a453d;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em}
+.regla{background:#17150F;border-left:3px solid #E0554F;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#17150F;border-left:3px solid #6FBF73;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+</style></head><body>
+
+<h1>DOC 2 · FASE F1 — KERNEL (ADN + GUARDIAN + FSM + ROUTER) · estado: <span class="ok">CÓDIGO REAL EXISTE — SE COPIA</span></h1>
+<div class="tag">pasos globales 061–100</div><div class="tag">IA: 0%</div><div class="tag">LOC: ~200 nuevas (glue) + ~710 copiadas</div><div class="tag">despliegue parcial: D2</div>
+
+<div class="cap">
+<h2>Archivo raíz · Proceso · Diagrama</h2>
+<b>Archivo raíz:</b> <span class="az">nct-backend/kernel/</span> + <span class="az">nct-backend/router/</span> + archivos raíz del repo<br>
+<b>Proceso:</b> el control puro del sistema — leyes inmutables, rechazo booleano, máquina de estados donde ningún LLM decide, y el router determinista que asigna nivel y ruta.
+<div class="flujo">contrato_F0 → adn_system.py(6 leyes INMUTABLES, solo Director) → guardian_layer.py(6 bool → RECHAZO)
+→ kernel_core.py FSM: IDLE→PARSE→ROUTE→EXECUTE→VERIFY→COMMIT→IDLE (transiciones SOLO por evento)
+→ router_core.py: clasificación dual heredada de F0 + keywords ponderados + granularidad adaptativa
+→ NIVEL: RAPIDO 20-50 | BASICO 100-300 | AVANZADO 300-800 | TURBO 800-1000
+→ JERARQUÍA: N0 Director → N1 Orquestador → N2 Consejo(5) → N3 Auditores(3) → N4 Ejecutores
+ARCHIVOS RAÍZ leídos ANTES de todo: system_manifest.json · project_manifest.json ·
+project_index.json · connections.yaml (providers AQUÍ, nunca en código) · state.json</div>
+</div>
+
+<div class="cap">
+<h2>Explicación técnica</h2>
+El kernel es la pieza más antigua y probada del proyecto (~710 LOC de Fable, SALIDA_01). MODIFICACIÓN declarada (CAMBIOS-CODIGO-BASE-01 §B): router_core.py recibe 2 parches — (1) consume la clasificación dual de F0 en vez de clasificar solo por keywords, (2) añade granularidad adaptativa (1 worker grande vs N chicos). Todo lo demás se copia byte a byte. El FSM emite eventos a state.json (L10: estado solo vía eventos); el Guardian corre ANTES de cada transición; connections.yaml permite cambiar provider editando config, jamás código (NOTA_10).
+<div class="simple"><b class="ok">Simple:</b> F1 es el cerebro de control sin imaginación: seis leyes que nadie toca, un portero que rechaza en automático, una máquina de estados con caminos fijos, y un despachador que decide cuánta potencia darle a la tarea. La IA aquí no opina — este piso ya está construido y solo se copia.</div>
+</div>
+
+<div class="cap">
+<h2>Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Fuente/traza</th></tr>
+<tr><td>061</td><td><b>COPIAR</b> adn_system.py íntegro</td><td>kernel/adn_system.py (existente)</td><td>SALIDA_01 · #GAP-P3-003</td></tr>
+<tr><td>062</td><td><b>COPIAR</b> guardian_layer.py íntegro</td><td>kernel/guardian_layer.py</td><td>SALIDA_01</td></tr>
+<tr><td>063</td><td><b>COPIAR</b> kernel_core.py íntegro</td><td>kernel/kernel_core.py</td><td>SALIDA_01 · #GAP-P2-004</td></tr>
+<tr><td>064-067</td><td>Tests de humo del kernel copiado (FSM completo, rechazo Guardian, ADN inmutable)</td><td>test_kernel.py (≤250)</td><td>evidencia obligatoria L11</td></tr>
+<tr><td>068</td><td><b>COPIAR</b> router_core.py</td><td>router/router_core.py</td><td>H3 · #GAP-P2-048</td></tr>
+<tr><td>069-074</td><td>PARCHE router: consumir clasificación dual F0 + granularidad adaptativa (cambio declarado, diff mostrado)</td><td>router/router_core.py (+≤80)</td><td>CAMBIOS-BASE §B · doc30</td></tr>
+<tr><td>075-078</td><td>niveles.py: mapa RAPIDO..TURBO + autodetección nivel 0</td><td>router/niveles.py (≤120)</td><td>#GAP-P3-011 · #GAP-P2-055</td></tr>
+<tr><td>079-084</td><td>jerarquia.py: N0-N4 + quién aprueba qué</td><td>kernel/jerarquia.py (≤150)</td><td>NOTA_09</td></tr>
+<tr><td>085-092</td><td>Archivos raíz: system_manifest + project_manifest + project_index + connections.yaml + state.json inicial (plantillas llenas)</td><td>raíz del repo (5 archivos)</td><td>#GAP-P2-001 · #GAP-P3-044 · NOTA_10 · PARCHE_G06</td></tr>
+<tr><td>093-096</td><td>loader_raiz.py: lee y valida los 5 archivos raíz al boot; falla = no arranca</td><td>kernel/loader_raiz.py (≤150)</td><td>DOC1-Bloque0</td></tr>
+<tr><td>097-099</td><td>Test integración F0→F1 (contrato entra, FSM rutea, nivel asignado)</td><td>test_f1_e2e.py (≤200)</td><td>IT-estilo</td></tr>
+<tr><td>100</td><td><b class="ok">DESPLIEGUE PARCIAL D2</b>: kernel/ + router/ + raíces</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">PROHIBIDO en F1:</b> re-generar el kernel (se copia — orden explícita de GAP_02: "solo falta copiarlo, NO reprogramarlo") · LLM en transiciones FSM · providers hardcodeados fuera de connections.yaml · modificar ADN por proceso automático.</div>
+
+<div class="cap"><b class="az">Fuentes de este bloque:</b> _SALIDA_01_KERNEL_NUCLEO.md (código) · NCT_KERNEL_ORQUESTADOR_v2.md · GAP_02_ORQUESTADOR_PRINCIPAL.md · H3 (router) · doc30 (dual) · PARCHE_G06_ARCHIVOS_RAIZ.md · CHECKPOINT_DECISIONES (niveles) · GAPS: P3-003/004/011, P2-001/004/005/048/055. Verificado 3 pasadas · pieza_id F1 · alimentado_por F0 · alimenta_a F2.</div>
+
+</body></html>

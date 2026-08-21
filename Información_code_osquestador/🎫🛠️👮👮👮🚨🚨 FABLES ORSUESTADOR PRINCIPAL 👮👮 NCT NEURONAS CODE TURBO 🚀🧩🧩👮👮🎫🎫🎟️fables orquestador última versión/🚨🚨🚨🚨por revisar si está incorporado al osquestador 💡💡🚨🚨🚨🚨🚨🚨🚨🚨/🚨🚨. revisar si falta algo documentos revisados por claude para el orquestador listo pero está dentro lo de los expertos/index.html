@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAXBRY/NCT v3 · Interface Reference</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+body{padding:0}
+img{max-width:100%;height:auto;display:block;border-radius:12px}
+.container{max-width:1200px;margin:0 auto;padding:24px 20px}
+h1,h2,h3{font-weight:800;letter-spacing:-.5px}
+.accent{color:#5eead4}
+.hero{text-align:center;padding:64px 20px 32px;border-bottom:1px solid #2c2c2e}
+.hero h1{font-size:48px;background:linear-gradient(90deg,#5eead4,#7dd3fc,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.hero p{color:#8e8e93;font-size:15px;max-width:600px;margin:0 auto}
+.section{padding:64px 0;border-top:1px solid #2c2c2e}
+.section h2{font-size:36px;margin-bottom:32px}
+.screen{background:#0a0a0a;border:1px solid #2c2c2e;border-radius:16px;overflow:hidden;margin-bottom:32px}
+.screen-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#1c1c1e;border-bottom:1px solid #2c2c2e}
+.screen-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px}
+.screen-tag{font-size:11px;color:#8e8e93;background:#000;padding:4px 10px;border-radius:10px;font-family:'SF Mono','Monaco',monospace;border:1px solid #2c2c2e}
+.screen-footer{padding:14px 18px;border-top:1px solid #2c2c2e;background:#1c1c1e;font-size:13px;color:#8e8e93}
+.readme{background:#0a0a0a;border:1px solid #2c2c2e;border-radius:16px;padding:40px;margin-top:40px}
+.readme h2{font-size:32px;margin-bottom:8px;background:linear-gradient(90deg,#5eead4,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.toc{background:#1c1c1e;border-radius:8px;padding:20px;margin:20px 0 32px}
+.toc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.toc-item{font-size:13px;color:#8e8e93;padding:6px 0;cursor:pointer;border-bottom:1px solid transparent}
+.toc-item:hover{color:#5eead4}
+.toc-num{color:#5eead4;font-family:'SF Mono','Monaco',monospace;margin-right:8px;font-weight:700}
+.fun{margin-bottom:32px;scroll-margin-top:80px}
+.fun h3{font-size:22px;display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.fun-num{font-size:14px;color:#5eead4;background:rgba(94,234,212,.15);padding:5px 12px;border-radius:8px;font-family:'SF Mono','Monaco',monospace}
+.item{padding:14px 0;border-bottom:1px solid #2c2c2e}
+.item-name{font-size:14px;font-weight:700;color:#5eead4;margin-bottom:6px}
+.item-desc{font-size:13px;color:#8e8e93}
+.item-trigger{font-size:11px;color:#636366;margin-top:6px;font-style:italic}
+.shortcut{display:inline-block;background:#000;border:1px solid #2c2c2e;border-radius:5px;padding:2px 6px;font-size:10px;font-family:'SF Mono','Monaco',monospace;color:#fff;font-weight:600;margin-left:6px}
+footer{text-align:center;color:#636366;font-size:12px;padding:40px 20px;border-top:1px solid #2c2c2e;margin-top:48px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>MAXBRY/NCT v3</h1>
+  <p>Cognitive Operating System · Multi-agent orchestrator · Interface reference</p>
+</div>
+
+<div class="container">
+
+<!-- ============ IMÁGENES ============ -->
+<section class="section">
+  <h2>Pantallas</h2>
+
+  <div class="screen">
+    <div class="screen-header"><div class="screen-title">🏠 Home · modo Simple</div><div class="screen-tag">3-panel + 8 profile chips</div></div>
+    <img src="demo/final-home.png" alt="Home">
+    <div class="screen-footer">Sessions lateral · Chat real con respuestas de auditoría + research · Context panel con ring SVG + skills + workspace · Toasts apilados</div>
+  </div>
+
+  <div class="screen">
+    <div class="screen-header"><div class="screen-title">💬 Multi-Session Chat · 7 columnas</div><div class="screen-tag">Coder · Tester · Docs · Security · Research · Data · Designer</div></div>
+    <img src="demo/final-chat.png" alt="Chat">
+    <div class="screen-footer">7 columnas simultáneas. Cada una sesión independiente con su composer y context.</div>
+  </div>
+
+  <div class="screen">
+    <div class="screen-header"><div class="screen-title">🏢 Office View · agentes live</div><div class="screen-tag">demo ejecutándose</div></div>
+    <img src="demo/final-office.png" alt="Office">
+    <div class="screen-footer">11 agentes en oficina 2D. Status idle/working/error rotando cada 800ms. Botones Start demo / Stop / Random fail / Reset.</div>
+  </div>
+
+  <div class="screen">
+    <div class="screen-header"><div class="screen-title">⚡ Skill Center · 13 SKILL.md cards</div><div class="screen-tag">toggles ON/OFF reales</div></div>
+    <img src="demo/final-skills.png" alt="Skills">
+    <div class="screen-footer">Toggle individual. Enable all / Disable all / Install new. Estado persistido en state.</div>
+  </div>
+
+  <div class="screen">
+    <div class="screen-header"><div class="screen-title">🧬 Wizard Step 5 · Review YAML</div><div class="screen-tag">hot-reload sin restart</div></div>
+    <img src="demo/final-wizard.png" alt="Wizard">
+    <div class="screen-footer">Profile builder 5-step (Identity → Model → Skills → MCP → Review). Deploy sin restart. Export/Clone/Delete.</div>
+  </div>
+
+  <div class="screen">
+    <div class="screen-header"><div class="screen-title">📱 Mobile + 8 Download platforms</div><div class="screen-tag">QR · download cards</div></div>
+    <img src="demo/final-mobile.png" alt="Mobile">
+    <div class="screen-footer">Android · iOS · macOS · Linux (deb/rpm/AppImage/Flatpak/Snap) · Windows (exe/MSIX/Portable) · CLI · Docker · Web PWA · Repository. Phone UIs con effort + Skills ON/OFF.</div>
+  </div>
+
+  <div class="screen">
+    <div class="screen-header"><div class="screen-title">💰 Plans & Pricing · 4 tiers</div><div class="screen-tag">Stripe · 14-day money-back</div></div>
+    <img src="demo/final-pricing.png" alt="Pricing">
+    <div class="screen-footer">Free $0 · Pro $9/mo · Team $29/mo/user · Enterprise $299/mo. Subscribe marca el plan como Active. FAQ expandible.</div>
+  </div>
+
+  <div class="screen">
+    <div class="screen-header"><div class="screen-title">📖 Interface README · TOC + 9 secciones</div><div class="screen-tag">scroll-to-section</div></div>
+    <img src="demo/final-readme.png" alt="README">
+    <div class="screen-footer">Tabla de contenidos clickeable con scroll suave. 9 secciones documentadas con nombres + descripciones + atajos.</div>
+  </div>
+</section>
+
+<!-- ============ LISTA COMPLETA AL PIE ============ -->
+<div class="readme">
+  <h2>📋 Lista completa de funciones de la interfaz</h2>
+  <p style="color:#8e8e93;margin-bottom:20px">Las 9 secciones siguientes describen TODO lo que la interfaz hace, qué atajos disparan qué, y dónde encontrar cada botón.</p>
+
+  <div class="toc">
+    <div style="font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:#636366;font-weight:700;margin-bottom:12px">Tabla de contenidos · click para ir</div>
+    <div class="toc-list">
+      <div class="toc-item" onclick="document.getElementById('f1').scrollIntoView({behavior:'smooth'})"><span class="toc-num">01</span>Global Nav & Mode · 8 funciones</div>
+      <div class="toc-item" onclick="document.getElementById('f2').scrollIntoView({behavior:'smooth'})"><span class="toc-num">02</span>Home · Simple Mode · 6 funciones</div>
+      <div class="toc-item" onclick="document.getElementById('f3').scrollIntoView({behavior:'smooth'})"><span class="toc-num">03</span>Home · Architect Mode · 2 funciones</div>
+      <div class="toc-item" onclick="document.getElementById('f4').scrollIntoView({behavior:'smooth'})"><span class="toc-num">04</span>Multi-Session Chat · 2 funciones</div>
+      <div class="toc-item" onclick="document.getElementById('f5').scrollIntoView({behavior:'smooth'})"><span class="toc-num">05</span>Office View · 4 funciones</div>
+      <div class="toc-item" onclick="document.getElementById('f6').scrollIntoView({behavior:'smooth'})"><span class="toc-num">06</span>Profile Builder + Subs · 8 funciones</div>
+      <div class="toc-item" onclick="document.getElementById('f7').scrollIntoView({behavior:'smooth'})"><span class="toc-num">07</span>Mobile + Downloads · 3 funciones</div>
+      <div class="toc-item" onclick="document.getElementById('f8').scrollIntoView({behavior:'smooth'})"><span class="toc-num">08</span>Plans & Pricing · 5 funciones</div>
+      <div class="toc-item" onclick="document.getElementById('f9').scrollIntoView({behavior:'smooth'})"><span class="toc-num">09</span>Atajos de teclado · 7 atajos</div>
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <div class="fun" id="f1">
+    <h3><span class="fun-num">01</span>Global Navigation & Mode · 8 funciones</h3>
+
+    <div class="item">
+      <div class="item-name">Logo click <span class="shortcut">click</span></div>
+      <div class="item-desc">Volver al Home view.</div>
+      <div class="item-trigger">Trigger: click sobre "⬢ MAXBRY" en la barra superior izquierda.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Global search ⌘K</div>
+      <div class="item-desc">Abre el command palette con fuzzy-search sobre 27+ comandos agrupados en 6 categorías (Navigation · Sessions · Profile · Skills · Marketplace · Mode).</div>
+      <div class="item-trigger">Trigger: ⌘K / Ctrl+K, o click en la barra de búsqueda. Esc para cerrar.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Tabs principales (Home / Chat / Office / Profiles / Mobile / Pricing / README)</div>
+      <div class="item-desc">Navegación entre las 7 secciones principales. Active state highlighted en color accent.</div>
+      <div class="item-trigger">Trigger: click en cualquier tab.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Reasoning chip</div>
+      <div class="item-desc">Cycle through reasoning levels: none → minimal → low → medium → high → xhigh. Cambia el reasoning_effort de la sesión activa.</div>
+      <div class="item-trigger">Trigger: click en el chip "🧠 reasoning:high".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Profile chip</div>
+      <div class="item-desc">Cycle through 8 profiles preconfigured (quick → custom). Cuando llega a "custom" abre modal de Create Custom Profile.</div>
+      <div class="item-trigger">Trigger: click en el chip "⚡ balanced".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Model chip</div>
+      <div class="item-desc">Cycle through 7 LLM providers (Sonnet 5 · Gemini 3 Pro · GPT-5 · DeepSeek V4 · Kimi 2 · MiniMax M3 · Qwen 3 Max). Switching sin restart.</div>
+      <div class="item-trigger">Trigger: click en el chip "🎯 Sonnet 5".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Avatar (account)</div>
+      <div class="item-desc">Muestra el avatar del usuario. Click muestra toast (account menu en construcción).</div>
+      <div class="item-trigger">Trigger: click en el avatar "M" circular arriba a la derecha.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Mode switch (Simple / Arquitecto)</div>
+      <div class="item-desc">Toggle entre Simple (3-panel chat) y Arquitecto (15 centers + live status table).</div>
+      <div class="item-trigger">Trigger: click en "⚡ Simple" o "🏗️ Arquitecto" en la parte superior del Home.</div>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="fun" id="f2">
+    <h3><span class="fun-num">02</span>Home · Simple Mode · 6 funciones</h3>
+
+    <div class="item">
+      <div class="item-name">8 Profile chips</div>
+      <div class="item-desc">Quick · Balanced · Professional · Research · Architect · Enterprise · Autonomous · + Custom. Cada uno con contador de expertos (1, 12, 24, 56, 84, 150, 300, custom). Status indicators: dot verde (idle) / amarillo (warn) / rojo (err).</div>
+      <div class="item-trigger">Trigger: click en cualquier chip. Profile active cambia inmediato en headers.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Sessions panel (left)</div>
+      <div class="item-desc">Lista de 10 sesiones agrupadas por 📌 Pinned · 📅 Today · 📅 Yesterday · 📅 This week. Hover muestra acciones (📌 pin · 📦 archive · 🗑 delete). Botón "+ New" arriba a la derecha.</div>
+      <div class="item-trigger">Trigger: click selecciona sesión, hover muestra acciones, click "+ New" crea session.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Chat panel (center)</div>
+      <div class="item-desc">Mensajes con thinking cards colapsables (click para expandir), tool call cards con resultados inline, dangerous command approval cards. Empty state con 4 sugerencias clickeables. Cada mensaje assistant tiene acciones Copy · Regenerate · Edit.</div>
+      <div class="item-trigger">Trigger: type + Enter envía, click en thinking card colapsa.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Composer</div>
+      <div class="item-desc">Textarea + Attach (file picker nativo) + Voice (3s STT timeout) + Profile chip + Model chip. Token ring en vivo. Send (turquoise) ↔ Stop (warning) según estado.</div>
+      <div class="item-trigger">Trigger: Enter envía, Shift+Enter salto de línea, click Attach abre file picker, click Voice activa 3s listening.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Empty state</div>
+      <div class="item-desc">Aparece solo si la sesión no tiene mensajes. 4 sugerencias: Audit API REST · Research MoE · Design microservices · FastAPI tests.</div>
+      <div class="item-trigger">Trigger: click en cualquier sugerencia → autocompleta y envía.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Context panel (right)</div>
+      <div class="item-desc">Context ring SVG donut con % animado. Stats (Input · Output · Cache · Cost). Active skills list. Workspace tabs OpenClaw-Deck style (max 4).</div>
+      <div class="item-trigger">Trigger: "Reset" arriba borra context, click en workspace tab "+ Add" añade tab (max 4).</div>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="fun" id="f3">
+    <h3><span class="fun-num">03</span>Home · Architect Mode · 2 funciones</h3>
+
+    <div class="item">
+      <div class="item-name">16 Center cards</div>
+      <div class="item-desc">Workspace · Execution Profiles · Expert Manager · Agent Registry · Pipeline Studio · LLM Registry · MCP Registry · Knowledge Center · Skill Center · Memory Center · Output Studio · Monitoring Center · Security Center · Integration Center · Developer Studio · Marketplace.</div>
+      <div class="item-trigger">Trigger: click en cualquier card → toast "Center opened".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Live Status table</div>
+      <div class="item-desc">Status en tiempo real de 10 sistemas: Kernel · Router · Control Plane · LLM Gateway · MCP · Memory · RAG · Output · Pipeline · Marketplace. Muestra status, latency, throughput, errors.</div>
+      <div class="item-trigger">Trigger: visibilidad automática — tabla renderiza en DOM al cargar.</div>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="fun" id="f4">
+    <h3><span class="fun-num">04</span>Multi-Session Chat · 7 columnas · 2 funciones</h3>
+
+    <div class="item">
+      <div class="item-name">7 columnas simultáneas</div>
+      <div class="item-desc">Coder · Tester · Docs · Security · Research · Data · Designer. WebSocket-style streaming. Markdown rendering. Cada una independiente con su composer.</div>
+      <div class="item-trigger">Trigger: escribir + Enter en cualquier columna envía a esa sesión.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Comparación cross-session</div>
+      <div class="item-desc">Permite ver resultados de 7 sesiones lado a lado en una sola vista para debugging.</div>
+      <div class="item-trigger">Trigger: scroll horizontal para ver columnas adicionales fuera del viewport.</div>
+    </div>
+  </div>
+
+  <!-- 05 -->
+  <div class="fun" id="f5">
+    <h3><span class="fun-num">05</span>Office View · 4 funciones</h3>
+
+    <div class="item">
+      <div class="item-name">▶ Start demo</div>
+      <div class="item-desc">Activa el ciclo de trabajo: agentes rotan entre idle/working/error cada 800ms. Status colors: idle=gris, working=amarillo, error=rojo pulsante. Conexiones visuales entre desks. Métricas live actualizan.</div>
+      <div class="item-trigger">Trigger: click "▶ Start demo".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">⏹ Stop</div>
+      <div class="item-desc">Detiene el ciclo. Los agentes mantienen su último estado.</div>
+      <div class="item-trigger">Trigger: click "⏹ Stop".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">💥 Random fail</div>
+      <div class="item-desc">Fuerza error aleatorio en 1 agente. Auto-recovery en 3s. Útil para testing de fault tolerance.</div>
+      <div class="item-trigger">Trigger: click "💥 Random fail".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">🔄 Reset</div>
+      <div class="item-desc">Vuelve todos los agentes a idle. Limpia estados de error y working.</div>
+      <div class="item-trigger">Trigger: click "🔄 Reset".</div>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div class="fun" id="f6">
+    <h3><span class="fun-num">06</span>Profile Builder + Subsecciones · 8 funciones</h3>
+
+    <div class="item">
+      <div class="item-name">📦 Export .tar.gz</div>
+      <div class="item-desc">Descarga el profile completo (name + model + reasoning + skills) como JSON formateado, listo para backup o sharing.</div>
+      <div class="item-trigger">Trigger: click "📦 Export .tar.gz" en Profile Builder header.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">📋 Clone</div>
+      <div class="item-desc">Crea "{profile}-copy" basado en el actual, y lo activa.</div>
+      <div class="item-trigger">Trigger: click "📋 Clone".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">🗑 Delete</div>
+      <div class="item-desc">Elimina el profile actual. Bloqueado si es "balanced" (default).</div>
+      <div class="item-trigger">Trigger: click "🗑 Delete".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Wizard 5-step (🧬 Wizard tab)</div>
+      <div class="item-desc">① Identity (name, avatar, prompt) → ② Model/Provider (dropdown selecciona modelos según provider) → ③ Skills (checkboxes 13) → ④ MCP (catálogo + custom URL) → ⑤ Review con YAML preview → Deploy sin restart.</div>
+      <div class="item-trigger">Trigger: click en wizard steps 1-5 o "Next →" avanza, "← Back" retrocede, "✓ Deploy profile" deploya.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">⚡ Skills tab</div>
+      <div class="item-desc">13 skills con toggle ON/OFF individual. Counter en tab cuenta activos. Enable all / Disable all / Install new.</div>
+      <div class="item-trigger">Trigger: click toggle o "Enable all" / "Disable all" / "📥 Install new".</div>
+    </div>
+    <div class="item">
+      <div class="item-name">🧠 LLM Registry tab</div>
+      <div class="item-desc">8 LLM providers: OpenAI GPT-5 · Anthropic Sonnet 5 · Google Gemini 3 Pro · DeepSeek V4 · Kimi 2 · MiniMax M3 · Qwen 3 Max · Ollama local. Test · Configure · Remove.</div>
+      <div class="item-trigger">Trigger: click "🧪 Test" simula request, "⚙️" abre config, "🗑" elimina.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">🔌 MCP Servers tab</div>
+      <div class="item-desc">17 MCP servers: Obsidian · Graphiti · Baidu OCR · GitHub · GitLab · Drive · Gmail · Outlook · Filesystem · Telegram · Discord · Slack · Notion · PostgreSQL/MySQL/Redis · Qdrant/Milvus/Chroma/Neo4j · REST/GraphQL · Calendar.</div>
+      <div class="item-trigger">Trigger: click toggle ⏸/▶ cambia conectado/desconectado, "⚙️" abre config.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">🎛️ Parameters tab</div>
+      <div class="item-desc">8 sliders live: Temperature · Top-P · Top-K · Max output tokens · Reasoning effort · Consensus strength · Reranker K · Cache TTL. Cambios sin reset, afectan nuevas requests.</div>
+      <div class="item-trigger">Trigger: drag cualquier slider → valor se actualiza en label.</div>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <div class="fun" id="f7">
+    <h3><span class="fun-num">07</span>Mobile + 8-Platform Downloads · 3 funciones</h3>
+
+    <div class="item">
+      <div class="item-name">9 downloads disponibles</div>
+      <div class="item-desc">Android (Play Store + APK · 38MB) · iOS (App Store + TestFlight · 42MB) · macOS (.dmg · 84MB) · Linux (.deb/.rpm/AppImage/Flatpak/Snap · 72MB) · Windows (.exe/MSIX/Portable · 86MB) · CLI (npm/pip/brew/cargo · 14MB) · Docker (245MB) · Web PWA (CDN) · Repository (GitHub source).</div>
+      <div class="item-trigger">Trigger: click en cualquier download card.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">📱 Effort phone (Bajo/Medio/Alto/Extra/Máx)</div>
+      <div class="item-desc">Replica exacta del mockup. Click selecciona effort. Switch "Pensamiento" on/off. Status badge "Predeterminado" + check ✓ en el activo.</div>
+      <div class="item-trigger">Trigger: click en Bajo/Medio/Alto/Extra/Máx o Switch Pensamiento.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">📱 Skills mobile (ON/OFF toggles)</div>
+      <div class="item-desc">Skill Center mobile: 3 skills ON, 3 OFF, link "+ 7 más" → Skills Hub. Click toggles ON/OFF con badge que cambia color (turquoise ↔ gris).</div>
+      <div class="item-trigger">Trigger: click en cualquier skill → ON ↔ OFF con toast.</div>
+    </div>
+  </div>
+
+  <!-- 08 -->
+  <div class="fun" id="f8">
+    <h3><span class="fun-num">08</span>Plans & Pricing · 5 funciones</h3>
+
+    <div class="item">
+      <div class="item-name">Free / OSS — $0</div>
+      <div class="item-desc">Open source · self-hosted · Core profile · 4 OSS LLM providers · CLI+Docker+Web PWA · Community support. Limita a 1 custom profile, no marketplace, no autonomous.</div>
+      <div class="item-trigger">Trigger: click "Get started" → Free activated.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Pro — $9/mo</div>
+      <div class="item-desc">All 8 profiles · 10 custom profiles · Marketplace 5 installs/mo · Multi-LLM routing · iOS+Android mobile sync · Email support 24h · Cloud sync.</div>
+      <div class="item-trigger">Trigger: click "Subscribe Pro" → Stripe checkout $9/mo.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Team — $29/mo/user <span class="shortcut">⭐ POPULAR</span></div>
+      <div class="item-desc">Shared profiles per team · Marketplace unlimited · 5 seats min · Discord+Slack integration · Team audit log · API 5k req/h · Dedicated CSM.</div>
+      <div class="item-trigger">Trigger: click "Subscribe Team" → marca como ✓ Active + Stripe checkout $29/mo/user.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Enterprise — $299/mo</div>
+      <div class="item-desc">150 expertos activados · Autonomous 24/7 · SOC2+GDPR+HIPAA · On-premise + air-gapped · Custom experts · Immutable audit trail · Unlimited API · 24/7 priority support (1h SLA) · Dedicated success engineer.</div>
+      <div class="item-trigger">Trigger: click "Contact sales" → team@maxbry.ai.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">FAQ expandible</div>
+      <div class="item-desc">4 preguntas con respuestas nativas HTML details: cancelar anytime · OSS completeness · Enterprise tier · Educational discount.</div>
+      <div class="item-trigger">Trigger: click en cualquier pregunta expande/colapsa la respuesta.</div>
+    </div>
+  </div>
+
+  <!-- 09 -->
+  <div class="fun" id="f9">
+    <h3><span class="fun-num">09</span>Atajos de teclado · 7 atajos</h3>
+
+    <div class="item">
+      <div class="item-name">⌘K / Ctrl+K <span class="shortcut">Global</span></div>
+      <div class="item-desc">Abre/cierra el command palette con fuzzy-search.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Esc <span class="shortcut">Global</span></div>
+      <div class="item-desc">Cierra command palette y modales abiertos.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Enter <span class="shortcut">Chat composer</span></div>
+      <div class="item-desc">Envía el mensaje actual en cualquier composer de chat.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Shift+Enter <span class="shortcut">Chat composer</span></div>
+      <div class="item-desc">Salto de línea sin enviar el mensaje.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Click en thinking card <span class="shortcut">Chat message</span></div>
+      <div class="item-desc">Colapsa/expande el reasoning interno del agente (Claude extended thinking / o3 reasoning).</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Tab + Next → / Back ← <span class="shortcut">Wizard</span></div>
+      <div class="item-desc">Avanzar/retroceder paso en el Profile Builder wizard.</div>
+    </div>
+    <div class="item">
+      <div class="item-name">Click TOC items <span class="shortcut">README</span></div>
+      <div class="item-desc">Scroll suave a la sección correspondiente.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong style="color:#5eead4">⬢ MAXBRY/NCT</strong> · Cognitive Operating System v3<br>
+  8 screens · 9 sections · 45 functions documented
+</footer>
+
+</div>
+
+</body>
+</html>

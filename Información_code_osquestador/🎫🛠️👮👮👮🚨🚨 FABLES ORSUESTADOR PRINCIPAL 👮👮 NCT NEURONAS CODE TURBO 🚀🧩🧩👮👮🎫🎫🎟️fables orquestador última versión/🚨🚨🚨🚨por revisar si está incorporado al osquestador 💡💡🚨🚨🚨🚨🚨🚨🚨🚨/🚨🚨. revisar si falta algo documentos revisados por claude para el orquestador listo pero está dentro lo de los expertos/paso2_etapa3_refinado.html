@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAXBRY/NCT · Paso 2 Etapa 3 (Refinado) — Output Cognitive Fabric</title>
+<style>
+:root{
+  --bg:#0a0e1a;
+  --panel:#111827;
+  --panel2:#1a2235;
+  --line:#2a3550;
+  --text:#e6ecff;
+  --muted:#9aa6c7;
+  --accent:#5eead4;
+  --accent2:#7dd3fc;
+  --warn:#fbbf24;
+  --err:#f87171;
+  --ok:#4ade80;
+  --purple:#a78bfa;
+  --pink:#f472b6;
+  --code-bg:#060912;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter','SF Pro Text',-apple-system,sans-serif;line-height:1.7;padding:32px 16px}
+.container{max-width:1280px;margin:0 auto}
+header{background:linear-gradient(135deg,#0d1424,#1a2640);border:1px solid var(--line);border-radius:16px;padding:36px;margin-bottom:32px}
+.kicker{color:var(--accent);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;font-weight:700}
+h1{font-size:30px;line-height:1.2;margin-bottom:14px;font-weight:800;background:linear-gradient(90deg,#5eead4,#7dd3fc,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{color:var(--muted);font-size:15px;max-width:900px;margin-bottom:20px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:20px}
+.meta-item{background:rgba(255,255,255,.03);border:1px solid var(--line);padding:12px 14px;border-radius:8px}
+.meta-label{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.meta-value{color:var(--accent);font-size:13px;font-weight:700}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px;margin-bottom:24px}
+h2{color:var(--accent2);font-size:22px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+h2 .icon{font-size:26px}
+h3{color:var(--accent);font-size:18px;margin:24px 0 12px;padding-left:14px;border-left:3px solid var(--accent)}
+h4{color:var(--purple);font-size:14px;margin:16px 0 8px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+p{margin-bottom:14px}
+p strong{color:var(--accent2);font-weight:700}
+code,pre{font-family:'SF Mono','Monaco','Cascadia Code','Fira Code',monospace}
+code{background:var(--panel2);padding:2px 8px;border-radius:4px;color:var(--accent);font-size:13px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:18px;overflow-x:auto;margin:14px 0;font-size:12.5px;line-height:1.6;border-left:3px solid var(--accent)}
+pre .comment{color:#6b7280;font-style:italic}
+pre .key{color:var(--accent2);font-weight:600}
+pre .str{color:#fde68a}
+pre .num{color:#f9a8d4}
+pre .bool{color:var(--purple)}
+pre .cls{color:#fbbf24}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--panel2);color:var(--accent2);text-align:left;padding:12px 14px;border-bottom:2px solid var(--line);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px}
+td{padding:12px 14px;border-bottom:1px solid var(--line);color:var(--text);vertical-align:top}
+tr:hover td{background:rgba(94,234,212,.04)}
+.expert-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:18px;margin:14px 0;border-left:4px solid var(--pink)}
+.expert-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;flex-wrap:wrap;gap:10px}
+.expert-name{font-size:16px;font-weight:700;color:var(--text)}
+.expert-id{background:rgba(244,114,182,.15);color:var(--pink);padding:3px 10px;border-radius:6px;font-weight:800;font-size:11px;border:1px solid var(--pink);font-family:'SF Mono',monospace}
+.expert-task{color:var(--muted);font-size:13px;font-style:italic}
+.improvement-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:22px;margin:18px 0;border-left:4px solid var(--purple)}
+.improvement-num{background:rgba(167,139,250,.15);color:var(--purple);padding:4px 12px;border-radius:6px;font-weight:800;font-size:13px;border:1px solid var(--purple);display:inline-block;margin-bottom:8px;font-family:'SF Mono',monospace}
+.improvement-title{font-size:17px;font-weight:700;color:var(--text);margin:8px 0}
+ul.checklist{list-style:none;padding-left:0}
+ul.checklist li{padding:6px 0 6px 28px;position:relative;color:var(--text);font-size:14px}
+ul.checklist li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+.callout{background:rgba(94,234,212,.05);border-left:3px solid var(--accent);padding:16px 20px;border-radius:6px;margin:18px 0}
+.callout-title{color:var(--accent);font-weight:700;margin-bottom:8px;font-size:13px;text-transform:uppercase;letter-spacing:1.5px}
+.diagram{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:20px;margin:14px 0;font-size:12px;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--accent2)}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:24px;margin-top:32px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="kicker">MAXBRY/NCT · Paso 2 Etapa 3 (Refinado) · Versión Final</div>
+  <h1>Output Cognitive Fabric — Diseño Completo</h1>
+  <p class="subtitle">
+    Versión refinada y aprobada del Output Cognitive Fabric: 10 expertos especializados, tareas concretas 
+    con contratos I/O, 6 mejoras 100x sobre el input original. Cada experto tiene un rol definido y 
+    un veredicto binario (PASS/FAIL) que el Final Judge usa para aprobar o escalar al humano.
+  </p>
+  <div class="meta">
+    <div class="meta-item"><div class="meta-label">Etapa</div><div class="meta-value">3 / Output</div></div>
+    <div class="meta-item"><div class="meta-label">Expertos</div><div class="meta-value">10 detallados</div></div>
+    <div class="meta-item"><div class="meta-label">Checks binarios</div><div class="meta-value">10 objetivos</div></div>
+    <div class="meta-item"><div class="meta-label">Mejoras 100x</div><div class="meta-value">6 implementadas</div></div>
+    <div class="meta-item"><div class="meta-label">Estado</div><div class="meta-value">Aprobado</div></div>
+  </div>
+</header>
+
+<section>
+<h2><span class="icon">🎯</span>Resumen Ejecutivo</h2>
+<p>
+  El Output Cognitive Fabric es el <strong>último filtro</strong> antes de entregar la respuesta al usuario. 
+  Tú propusiste 10 expertos. Esta versión refinada los implementa con:
+</p>
+<ul class="checklist">
+  <li>Contratos I/O tipados (Pydantic) para cada experto</li>
+  <li>10 checks binarios objetivos (cada uno PASS o FAIL con issues específicos)</li>
+  <li>Pipeline secuencial con reparación automática (1 retry antes de escalar)</li>
+  <li>Hallucination detection con sampling (借鉴 SelfCheckGPT)</li>
+  <li>Audit log hash-chained inmutable (借鉴 kbot-finance)</li>
+  <li>Final Judge con regla dura: TODOS los checks deben pasar</li>
+</ul>
+
+<div class="callout">
+  <div class="callout-title">Regla dura del Output Fabric</div>
+  <p>
+    <strong>El Orquestador solo entrega la respuesta si los 10 checks pasan.</strong> 
+    Si alguno falla irreparable, se escala al humano (no se entrega respuesta defectuosa).
+  </p>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">🧠</span>Los 10 Expertos del Output Fabric — Diseño Completo</h2>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">Format Controller</div>
+      <div class="expert-task">Garantiza que el formato del output coincide con el OutputContract.</div>
+    </div>
+    <span class="expert-id">E-OUT-001</span>
+  </div>
+  <p><strong>Input:</strong> <code>(output: str, expected_format: Literal)</code></p>
+  <p><strong>Output:</strong> <code>CheckResult(status: PASS|FAIL, issues: list[str])</code></p>
+  <p><strong>Tarea:</strong> Verifica que el formato (markdown, json, code, multi_file) coincide con el declarado en el OutputContract. Si es JSON, valida que sea parseable. Si es Markdown, valida sintaxis básica.</p>
+</div>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">Completeness Checker</div>
+      <div class="expert-task">Verifica que TODOS los artefactos esperados están presentes.</div>
+    </div>
+    <span class="expert-id">E-OUT-002</span>
+  </div>
+  <p><strong>Input:</strong> <code>(delivered: list[Artifact], expected: list[str])</code></p>
+  <p><strong>Output:</strong> <code>CheckResult(status: PASS|FAIL, missing: list[str])</code></p>
+  <p><strong>Tarea:</strong> Compara la lista de artefactos entregados contra los declarados en el OutputContract. Ningún artefacto puede estar vacío o faltar.</p>
+</div>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">Evidence Checker</div>
+      <div class="expert-task">Verifica que cada claim tiene evidencia verificable.</div>
+    </div>
+    <span class="expert-id">E-OUT-003</span>
+  </div>
+  <p><strong>Input:</strong> <code>(output: str, sources: list[Source])</code></p>
+  <p><strong>Output:</strong> <code>CheckResult(status: PASS|FAIL, ungrounded_claims: list[str])</code></p>
+  <p><strong>Tarea:</strong> Cada claim factual debe tener una source reference. Usa HHEM-style: NLI entre el claim y su fuente. Si un claim no tiene respaldo, se marca como ungrounded.</p>
+</div>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">Goal Checker</div>
+      <div class="expert-task">Verifica que el output cumple el goal original del usuario.</div>
+    </div>
+    <span class="expert-id">E-OUT-004</span>
+  </div>
+  <p><strong>Input:</strong> <code>(output: str, original_goal: Goal)</code></p>
+  <p><strong>Output:</strong> <code>CheckResult(status: PASS|FAIL, coverage_score: float, missing_criteria: list[str])</code></p>
+  <p><strong>Tarea:</strong> Compara los success_criteria del goal original contra el output. Calcula coverage_score (0-1). PASS si &gt;= 0.85.</p>
+</div>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">JSON Validator</div>
+      <div class="expert-task">Valida estructura JSON contra schema.</div>
+    </div>
+    <span class="expert-id">E-OUT-005</span>
+  </div>
+  <p><strong>Input:</strong> <code>(json_str: str, schema: JSONSchema)</code></p>
+  <p><strong>Output:</strong> <code>CheckResult(status: PASS|FAIL, schema_errors: list[str])</code></p>
+  <p><strong>Tarea:</strong> Si el output es JSON, valida contra el JSON Schema del OutputContract usando jsonschema library. Cada campo debe estar presente y tener el tipo correcto.</p>
+</div>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">Markdown Builder</div>
+      <div class="expert-task">Renderiza y valida Markdown.</div>
+    </div>
+    <span class="expert-id">E-OUT-006</span>
+  </div>
+  <p><strong>Input:</strong> <code>(md_str: str, audience: Literal)</code></p>
+  <p><strong>Output:</strong> <code>CheckResult(status: PASS|FAIL, syntax_errors: list[str], rendered: str)</code></p>
+  <p><strong>Tarea:</strong> Verifica sintaxis Markdown válida. Adapta el nivel de detalle al audience (technical/executive/general). Renderiza a HTML si es necesario.</p>
+</div>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">Report Builder</div>
+      <div class="expert-task">Estructura el reporte final con secciones canónicas.</div>
+    </div>
+    <span class="expert-id">E-OUT-007</span>
+  </div>
+  <p><strong>Input:</strong> <code>(raw_artifacts: list[Artifact], template: ReportTemplate)</code></p>
+  <p><strong>Output:</strong> <code>CheckResult(status: PASS|FAIL, report: StructuredReport)</code></p>
+  <p><strong>Tarea:</strong> Organiza los artefactos en un reporte estructurado: Resumen Ejecutivo, Análisis, Conclusiones, Fuentes, Apéndices. Verifica que cada sección canónica esté presente.</p>
+</div>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">Consistency Checker</div>
+      <div class="expert-task">Detecta contradicciones internas en el output.</div>
+    </div>
+    <span class="expert-id">E-OUT-008</span>
+  </div>
+  <p><strong>Input:</strong> <code>(output: str)</code></p>
+  <p><strong>Output:</strong> <code>CheckResult(status: PASS|FAIL, contradictions: list[tuple[str, str]])</code></p>
+  <p><strong>Tarea:</strong> Usa DeBERTa-NLI para comparar cada par de párrafos/secciones. Detecta contradicciones (label=CONTRADICTION). PASS si 0 contradicciones o solo contradicciones triviales.</p>
+</div>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">Hallucination Checker</div>
+      <div class="expert-task">Detecta fabricaciones del modelo.</div>
+    </div>
+    <span class="expert-id">E-OUT-009</span>
+  </div>
+  <p><strong>Input:</strong> <code>(output: str, original_query: str, sources: list[Source])</code></p>
+  <p><strong>Output:</strong> <code>CheckResult(status: PASS|FAIL, inconsistency_score: float, suspected_spans: list[str])</code></p>
+  <p><strong>Tarea:</strong>借鉴 SelfCheckGPT: muestrea N=5 variantes de la misma respuesta. Mide inconsistencia entre variantes. Si &gt;30% se contradicen → FAIL. Marca los spans sospechosos.</p>
+</div>
+
+<div class="expert-card">
+  <div class="expert-header">
+    <div>
+      <div class="expert-name">Final Judge</div>
+      <div class="expert-task">Decide aprobación final o escalación.</div>
+    </div>
+    <span class="expert-id">E-OUT-010</span>
+  </div>
+  <p><strong>Input:</strong> <code>(all_check_results: dict[str, CheckResult])</code></p>
+  <p><strong>Output:</strong> <code>FinalVerdict(approved: bool, reason: str, escalate_to: str | None)</code></p>
+  <p><strong>Tarea:</strong> Revisa TODOS los resultados de los 9 checks anteriores. <strong>Regla dura: si CUALQUIER check dio FAIL y no es reparable → NO aprueba, escala al humano con razón documentada.</strong></p>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">🔄</span>Flujo del Output Fabric</h2>
+
+<div class="diagram">
+                    ┌──────────────────────────────────┐
+                    │   RAW OUTPUT (de Execution)      │
+                    └────────────────┬─────────────────┘
+                                     │
+                                     ▼
+        ┌────────────────────────────────────────────────────┐
+        │            PARALLEL CHECKS (todos a la vez)         │
+        │                                                     │
+        │  ┌──────────────┐  ┌──────────────┐  ┌──────────┐  │
+        │  │Format Ctrl   │  │Completeness  │  │Evidence  │  │
+        │  │              │  │Checker       │  │Checker   │  │
+        │  └──────┬───────┘  └──────┬───────┘  └────┬─────┘  │
+        │         │                 │               │        │
+        │  ┌──────┴───────┐  ┌──────┴───────┐  ┌────┴─────┐  │
+        │  │Goal Checker  │  │JSON Validator│  │Markdown  │  │
+        │  │              │  │              │  │Builder   │  │
+        │  └──────┬───────┘  └──────┬───────┘  └────┬─────┘  │
+        │         │                 │               │        │
+        │  ┌──────┴───────┐  ┌──────┴───────┐  ┌────┴─────┐  │
+        │  │Report Builder│  │Consistency   │  │Halluci-  │  │
+        │  │              │  │Checker       │  │nation    │  │
+        │  └──────┬───────┘  └──────┬───────┘  └────┬─────┘  │
+        │         │                 │               │        │
+        └─────────┼─────────────────┼───────────────┼────────┘
+                  │                 │               │
+                  └─────────────────┼───────────────┘
+                                    │
+                                    ▼
+                    ┌──────────────────────────────────┐
+                    │   ¿TODOS los checks pasaron?     │
+                    └────────────────┬─────────────────┘
+                                     │
+                          ┌──────────┴──────────┐
+                          │                     │
+                         SÍ                    NO
+                          │                     │
+                          ▼                     ▼
+                ┌──────────────────┐    ┌──────────────────┐
+                │ Report Builder   │    │ Output Repair    │
+                │ (estructura)     │    │ (1 retry)        │
+                └────────┬─────────┘    └────────┬─────────┘
+                         │                       │
+                         │              ┌────────┴─────────┐
+                         │              │ ¿Se reparó?      │
+                         │              └────────┬─────────┘
+                         │                       │
+                         │              ┌────────┴────────┐
+                         │              │                 │
+                         │             SÍ                NO
+                         │              │                 │
+                         ▼              ▼                 ▼
+                ┌──────────────────────────────────────┐
+                │           FINAL JUDGE                │
+                │   approved = TODOS pasaron            │
+                └────────────────┬─────────────────────┘
+                                 │
+                      ┌──────────┴──────────┐
+                      │                     │
+                    APROBADO            NO APROBADO
+                      │                     │
+                      ▼                     ▼
+            ┌──────────────────┐    ┌──────────────────┐
+            │ Audit Log entry  │    │ Escalar a HUMAN  │
+            │ (hash-chained)   │    │ con razón        │
+            └────────┬─────────┘    └──────────────────┘
+                     │
+                     ▼
+            ┌──────────────────┐
+            │ RESPONSE TO USER │
+            └──────────────────┘
+</div>
+</section>
+
+<section>
+<h2><span class="icon">🚀</span>Las 6 Mejoras 100x — Resumen Ejecutivo</h2>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #1</span>
+  <div class="improvement-title">Output Contract Tipado</div>
+<p>Antes: el output era "lo que saliera". Ahora: el OutputContract define EXACTAMENTE qué artefactos, qué formato, qué audience, qué requirements. Validado con Pydantic en runtime. Si el contrato dice <code>artifacts: ["report.md", "tests.xml"]</code>, el sistema NO entrega si falta alguno.</p>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #2</span>
+  <div class="improvement-title">10 Checks Binarios Objetivos</div>
+<p>Antes: el LLM decidía si "estaba bien". Ahora: 10 checks específicos, cada uno PASS o FAIL con issues listados. Si placeholders, FAIL. Si contradicciones, FAIL. Si formato mal, FAIL. Sin subjetividad.</p>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #3</span>
+  <div class="improvement-title">Hallucination Detection</div>
+<p>借鉴 SelfCheckGPT: muestrea N=5 variantes de la misma respuesta, mide inconsistencia. Si &gt;30% se contradicen, marca como sospechoso. Esto detecta cuando el modelo "inventa" contenido.</p>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #4</span>
+  <div class="improvement-title">Repair Automático (1 retry)</div>
+<p>Si un check falla, el sistema intenta reparar 1 vez con el LLM antes de escalar. Solo si la reparación falla → escala al humano. Esto evita que errores triviales lleguen al usuario.</p>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #5</span>
+  <div class="improvement-title">Output Diff</div>
+<p>Compara el goal inicial vs el output final. Calcula coverage_score (0-1) y lista gaps específicos. El usuario sabe EXACTAMENTE qué del goal original quedó cubierto y qué no.</p>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #6</span>
+  <div class="improvement-title">Audit Log Hash-Chained</div>
+<p>借鉴 kbot-finance: cada output aprobado genera una entry inmutable con hash del anterior. <code>verify_integrity()</code> recorre toda la cadena y verifica que ningún hash fue alterado. Perfecto para auditoría.</p>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">✅</span>Checklist Final — Etapa 3</h2>
+<ul class="checklist">
+  <li>10 expertos diseñados con contratos I/O tipados</li>
+  <li>10 checks binarios objetivos implementados</li>
+  <li>Pipeline con ejecución paralela + repair + escalation</li>
+  <li>Hallucination detection con SelfCheckGPT pattern</li>
+  <li>Repair automático con 1 retry antes de escalar</li>
+  <li>Output Contract tipado con Pydantic</li>
+  <li>Audit log hash-chained inmutable</li>
+  <li>Final Judge con regla dura: TODOS deben pasar</li>
+  <li>Escalación al humano solo si irreparable</li>
+  <li>Diagrama de flujo completo documentado</li>
+</ul>
+</section>
+
+<footer>
+  MAXBRY/NCT · Paso 2 Etapa 3 · Output Cognitive Fabric · Versión Refinada Aprobada<br>
+  Próximo: <strong>Paso 5 — Interface Configurable</strong>
+</footer>
+
+</div>
+</body>
+</html>

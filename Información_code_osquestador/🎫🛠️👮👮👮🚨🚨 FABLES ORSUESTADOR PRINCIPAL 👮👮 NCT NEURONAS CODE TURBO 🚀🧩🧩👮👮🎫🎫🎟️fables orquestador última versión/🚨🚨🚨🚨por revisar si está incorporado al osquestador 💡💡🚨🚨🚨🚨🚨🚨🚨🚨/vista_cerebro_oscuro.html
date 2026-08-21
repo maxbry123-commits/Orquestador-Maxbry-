@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>MAXBRY · Vista del Cerebro · FASE 0 Raíz</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06070a;
+    --surface: #0d0f15;
+    --surface2: #15171f;
+    --border: #1e2130;
+    --accent: #00e5a0;
+    --accent2: #7b5cf5;
+    --accent3: #ff6b35;
+    --warn: #ffcc00;
+    --red: #ff4d6d;
+    --blue: #4da6ff;
+    --cyan: #00d4ff;
+    --text: #c8cfe0;
+    --text-dim: #5a637a;
+    --text-bright: #edf0f8;
+    --code-bg: #090b12;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    line-height: 1.6;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #050810 0%, #0a0d18 50%, #06090f 100%);
+    border-bottom: 1px solid var(--accent);
+    padding: 56px 0 36px;
+  }
+  .header-inner { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+  .badge-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 2px; border: 1px solid;
+  }
+  .b-green  { color: var(--accent);  border-color: rgba(0,229,160,0.3);  background: rgba(0,229,160,0.06); }
+  .b-purple { color: var(--accent2); border-color: rgba(123,92,245,0.3); background: rgba(123,92,245,0.06); }
+  .b-orange { color: var(--accent3); border-color: rgba(255,107,53,0.3); background: rgba(255,107,53,0.06); }
+  .b-yellow { color: var(--warn);    border-color: rgba(255,204,0,0.3);  background: rgba(255,204,0,0.06); }
+  .b-blue   { color: var(--cyan);    border-color: rgba(0,212,255,0.3);  background: rgba(0,212,255,0.06); }
+  .b-red    { color: var(--red);     border-color: rgba(255,77,109,0.3); background: rgba(255,77,109,0.06); }
+  h1 {
+    font-size: clamp(28px, 4.5vw, 48px);
+    font-weight: 800;
+    color: var(--text-bright);
+    line-height: 1.1;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+  h1 span { color: var(--accent); }
+  .sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .nav-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-inner {
+    max-width: 1180px; margin: 0 auto; padding: 0 32px;
+    display: flex; overflow-x: auto;
+  }
+  .nav-tab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+    color: var(--text-dim);
+    padding: 14px 18px;
+    text-decoration: none; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-tab:hover { color: var(--text); border-bottom-color: var(--border); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .main { max-width: 1180px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  /* SECTION */
+  .section { margin-bottom: 56px; }
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon { font-size: 22px; }
+  .section-title {
+    font-size: 24px; font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -0.01em;
+  }
+  .section-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 3px 8px; border-radius: 2px;
+    margin-left: auto;
+  }
+  .t-green  { background: rgba(0,229,160,0.1); color: var(--accent); }
+  .t-purple { background: rgba(123,92,245,0.1); color: var(--accent2); }
+  .t-orange { background: rgba(255,107,53,0.1); color: var(--accent3); }
+  .t-yellow { background: rgba(255,204,0,0.1); color: var(--warn); }
+  .t-red    { background: rgba(255,77,109,0.1); color: var(--red); }
+  .t-blue   { background: rgba(0,212,255,0.1); color: var(--cyan); }
+
+  /* INFO BOXES */
+  .info-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+  .info-box.accent { border-left: 3px solid var(--accent); }
+  .info-box.purple { border-left: 3px solid var(--accent2); }
+  .info-box.orange { border-left: 3px solid var(--accent3); }
+  .info-box.warn   { border-left: 3px solid var(--warn); background: rgba(255,204,0,0.04); }
+  .info-box.red    { border-left: 3px solid var(--red); background: rgba(255,77,109,0.04); }
+  .info-box.blue   { border-left: 3px solid var(--cyan); }
+  .info-box h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .info-box.accent h4 { color: var(--accent); }
+  .info-box.purple h4 { color: var(--accent2); }
+  .info-box.orange h4 { color: var(--accent3); }
+  .info-box.warn h4   { color: var(--warn); }
+  .info-box.red h4    { color: var(--red); }
+  .info-box.blue h4   { color: var(--cyan); }
+
+  /* DATA TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 16px 0;
+    border-radius: 6px; overflow: hidden;
+  }
+  .data-table thead { background: var(--surface2); }
+  .data-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 10px 14px; text-align: left;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .data-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid rgba(30,33,48,0.5);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:nth-child(even) td { background: rgba(15,17,23,0.5); }
+  .data-table code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,229,160,0.06);
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+
+  /* VERDICT */
+  .verdict {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 3px;
+    letter-spacing: 0.08em;
+  }
+  .v-pass     { background: rgba(0,229,160,0.1); color: var(--accent); border: 1px solid rgba(0,229,160,0.3); }
+  .v-fail     { background: rgba(255,77,109,0.1); color: var(--red); border: 1px solid rgba(255,77,109,0.3); }
+  .v-approved { background: rgba(0,229,160,0.1); color: var(--accent); border: 1px solid rgba(0,229,160,0.3); }
+  .v-rejected { background: rgba(255,77,109,0.1); color: var(--red); border: 1px solid rgba(255,77,109,0.3); }
+  .v-pending  { background: rgba(255,204,0,0.1); color: var(--warn); border: 1px solid rgba(255,204,0,0.3); }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin: 16px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; line-height: 1.7;
+    color: #a8b5cc;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ARBOL BOX */
+  .tree {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 26px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: #b8c5d8;
+    overflow-x: auto;
+    white-space: pre;
+    margin-bottom: 18px;
+  }
+  .tree .c1 { color: var(--accent); font-weight: 700; }
+  .tree .c2 { color: var(--accent2); font-weight: 700; }
+  .tree .c3 { color: var(--accent3); font-weight: 700; }
+  .tree .c4 { color: var(--warn); font-weight: 700; }
+  .tree .c5 { color: var(--red); font-weight: 700; }
+  .tree .c6 { color: var(--cyan); font-weight: 700; }
+
+  /* CAPSULES */
+  .capsule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .capsule {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 5px;
+    padding: 14px 16px;
+  }
+  .capsule.c-purple { border-left-color: var(--accent2); }
+  .capsule.c-orange { border-left-color: var(--accent3); }
+  .capsule.c-warn   { border-left-color: var(--warn); }
+  .capsule.c-cyan   { border-left-color: var(--cyan); }
+  .capsule-id {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .capsule.c-purple .capsule-id { color: var(--accent2); }
+  .capsule.c-orange .capsule-id { color: var(--accent3); }
+  .capsule.c-warn   .capsule-id { color: var(--warn); }
+  .capsule.c-cyan   .capsule-id { color: var(--cyan); }
+  .capsule-name { font-size: 12.5px; font-weight: 600; color: var(--text-bright); margin-bottom: 6px; }
+  .capsule-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+  /* HASH */
+  .hash-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    padding: 6px 14px;
+    background: rgba(0,229,160,0.05);
+    border: 1px solid rgba(0,229,160,0.3);
+    border-radius: 3px;
+    display: inline-block;
+    margin: 10px 0 0;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .main { padding: 24px 16px 60px; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  h3 {
+    font-size: 17px; font-weight: 700;
+    color: var(--accent);
+    margin: 28px 0 14px;
+    padding-left: 12px;
+    border-left: 3px solid var(--accent);
+  }
+  p { margin-bottom: 10px; font-size: 14px; }
+  ul { margin-left: 20px; margin-bottom: 10px; }
+  li { font-size: 13.5px; line-height: 1.7; }
+  strong { color: var(--text-bright); font-weight: 700; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="badge-row">
+      <span class="badge b-green">🧠 FASE 0</span>
+      <span class="badge b-purple">🌳 Raíz + Árbol</span>
+      <span class="badge b-orange">🎯 Truth Source: G2 v2.5</span>
+      <span class="badge b-yellow">246 ítems auditados</span>
+      <span class="badge b-blue">28 docs cerrados</span>
+      <span class="badge b-red">15 ítems rechazados</span>
+    </div>
+    <h1>MAXBRY · <span>Vista del Cerebro</span> 🧬</h1>
+    <div class="sub">RAÍZ MAESTRA · ÁRBOL HORIZONTAL TRANSVERSAL · DIAGRAMA AUDITABLE · 2026-07-07</div>
+    <div class="hash-pill">HASH_RAIZ: MAXBRY_ROOT_v0.1_FASE_0</div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <a href="#jerarquia" class="nav-tab active">⚖️ Jerarquía</a>
+    <a href="#arbol" class="nav-tab">🌳 Árbol</a>
+    <a href="#inventario" class="nav-tab">📋 Inventario</a>
+    <a href="#cerebro" class="nav-tab">🧠 Las 5 Piezas</a>
+    <a href="#ficha" class="nav-tab">🃏 La Ficha</a>
+    <a href="#estado" class="nav-tab">💾 Estado/Memoria</a>
+    <a href="#cerrado" class="nav-tab">✅ Cerrado</a>
+    <a href="#abierto" class="nav-tab">⏳ Abierto</a>
+    <a href="#rechazado" class="nav-tab">❌ Rechazado</a>
+    <a href="#siguiente" class="nav-tab">➡️ FASE 1</a>
+  </div>
+</nav>
+
+<main class="main">
+
+  <!-- JERARQUIA -->
+  <section class="section" id="jerarquia">
+    <div class="section-header">
+      <span class="section-icon">⚖️</span>
+      <h2 class="section-title">Jerarquía Inamovible · 5 Niveles</h2>
+      <span class="section-tag t-purple">CONSTITUCIÓN</span>
+    </div>
+
+    <div class="info-box accent">
+      <h4>⚠️ Contrato de esta raíz</h4>
+      <p>Esta raíz <strong>enumera, clasifica, jerarquiza y enlaza</strong> documentos existentes. NO modifica, NO inventa, NO crea reglas nuevas. Si dos documentos se contradicen, se documenta aquí y la decisión la toma el Director.</p>
+    </div>
+
+    <div class="three-col">
+      <div class="info-box accent">
+        <h4>Nivel 0 — Constitución</h4>
+        <ul>
+          <li><strong>PERFIL</strong> v1 — Ley</li>
+          <li><strong>G2 v2.5 AUDITADO</strong> — 246 ítems</li>
+        </ul>
+      </div>
+      <div class="info-box purple">
+        <h4>Nivel 1 — Reglas de Hierro</h4>
+        <ul>
+          <li><strong>PATCH-001</strong> agentes B</li>
+          <li><strong>PROT-FICHAS</strong> 3 archivos</li>
+          <li><strong>ENCHUFE</strong> JSON ↔ código</li>
+        </ul>
+      </div>
+      <div class="info-box orange">
+        <h4>Nivel 2 — Motor / Cerebro</h4>
+        <ul>
+          <li>MOTOR-COG v1.0</li>
+          <li>ARQ-300 v1.0</li>
+          <li>CONSOL-v7.1</li>
+          <li>TODO-v3.1</li>
+        </ul>
+      </div>
+      <div class="info-box warn">
+        <h4>Nivel 3 — Método</h4>
+        <ul>
+          <li>INST-KIMI-K v4.1</li>
+          <li>150 instrucciones</li>
+          <li>KIMI Parte 1..8</li>
+        </ul>
+      </div>
+      <div class="info-box blue">
+        <h4>Nivel 4 — Vistas</h4>
+        <ul>
+          <li>Protocolo Fichas HTML</li>
+          <li>G2 v2.5 HTML oscuro</li>
+          <li>Diagrama v3</li>
+          <li>DOC_EXTRACCION 1-3</li>
+        </ul>
+      </div>
+      <div class="info-box red">
+        <h4>Nivel 6 — Pendientes</h4>
+        <ul>
+          <li>D01 orquestación Spaces</li>
+          <li>D02 spaces por rol</li>
+          <li>D03 API entre Spaces</li>
+          <li>D04 costo infra</li>
+          <li>D05 failover HF</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block"><span style="color:var(--accent)">PRINCIPIO DE JERARQUÍA:</span>
+  Nivel 0 manda sobre los demás.
+  Un documento de Nivel 2 contradice a Nivel 0 → gana Nivel 0.
+  Un PATCH-001 contradice a G2 v2.5 → gana PATCH-001 si es regla nueva
+  (las reglas se suman, no se reemplazan).</div>
+  </section>
+
+  <!-- ARBOL -->
+  <section class="section" id="arbol">
+    <div class="section-header">
+      <span class="section-icon">🌳</span>
+      <h2 class="section-title">Árbol Horizontal Transversal</h2>
+      <span class="section-tag t-green">MAPA</span>
+    </div>
+
+    <div class="info-box accent">
+      <h4>📖 Cómo leer este árbol</h4>
+      <p>Es un árbol de navidad <strong>acostado</strong>. La raíz es la constitución. Las ramas son los componentes del G2 v2.5. Los frutos son los documentos. Las raíces secundarias son los pendientes.</p>
+    </div>
+
+    <h3>🌲 Raíz — Constitución</h3>
+    <div class="tree">
+<span class="c1">PERFIL_maxbry_v1</span>      <span class="c1">G2_v2.5_FINAL_AUDITADO</span> (246 ítems)
+   │                                       │
+   │ LEY INMUTABLE                         │ HASH: G2_PECP_v2.5_FINAL_AUDITADO
+   │                                       │</div>
+
+    <h3>🌲 Tronco 1 — Reglas de Hierro</h3>
+    <div class="tree">
+<span class="c2">PATCH-001 agentes B</span>       <span class="c2">PATCH-001 locales</span>       <span class="c2">PROTOCOLO_FICHAS</span>
+   │                                       │                                    │
+   │ runtime_type=agent                    │ Agents locales en disp.           │ 3 archivos (.py + .meta.md
+   │ max_steps + allowed_actions + env     │ del usuario                       │  + artifact_location_plan.json)
+   │ + requires_approval                   │                                    │
+   └───────────────────────────────────────┴────────────────────────────────────┘
+                                                                                    │
+                                                                                    ▼
+                                                                         <span class="c6">ENCHUFE/CONEXIÓN</span>
+                                                                          (cerebro ↔ ficha)</div>
+
+    <h3>🌲 Tronco 2 — Motor / Cerebro G2 v2.5 (las 5 piezas)</h3>
+    <div class="tree">
+                        <span class="c1">┌─────────────────────────────────────┐</span>
+                        <span class="c1">│   G2 CEREBRO (5 piezas)              │</span>
+                        <span class="c1">│   1. Router dispatcher               │</span>
+                        <span class="c1">│   2. Índice Maestro                  │</span>
+                        <span class="c1">│   3. Motor DAG                       │</span>
+                        <span class="c1">│   4. Recovery Core (5 tiers)         │</span>
+                        <span class="c1">│   5. Loader+Verifier+Executor        │</span>
+                        <span class="c1">│   + 4 capas internas:                │</span>
+                        <span class="c1">│   - KERNEL / RUNTIME / VERIF / STATE │</span>
+                        <span class="c1">└─────────────┬───────────────────────┘</span>
+                                      │
+        <span class="c1">┌───────────────┼─────────────────┬─────────────────┐</span>
+        ▼               ▼                 ▼                 ▼
+   secuencia DAG   Crazy Wall        FAISS BRAIN    Execution Layer
+   (sequence.json (state.json)       (task_memory)  (LOCAL+HF+REMOTE)
+    + fallback.json)                                     │
+                                                          ▼
+                                                    Verifier N0→N5
+                                                    + Slot Contract
+                                                      SC1-SC6</div>
+
+    <h3>🌲 Tronco 3 — Unidad de Trabajo (la ficha)</h3>
+    <div class="tree">
+                              <span class="c3">┌──────────────────────┐</span>
+                              <span class="c3">│      FICHA           │</span>
+                              <span class="c3">│  1 función ejecutar()│</span>
+                              <span class="c3">│  1 .meta.md          │</span>
+                              <span class="c3">│  1 .location_plan    │</span>
+                              <span class="c3">└─────────┬────────────┘</span>
+                                        │
+            <span class="c3">┌───────────────────────────┼───────────────────────────┐</span>
+            ▼                           ▼                           ▼
+   <span class="c1">compute (80%)</span>              <span class="c3">hybrid (15%)</span>                <span class="c4">llm (5%)</span>
+   runtime_type=compute         runtime_type=hybrid            runtime_type=llm
+   Sin LLM                      código 90% + LLM 10%           LLM como herramienta
+            │                           │                           │
+            └───────────────────────────┴───────────────────────────┘
+                                        │
+                            <span class="c5">runtime_type=agent</span> (PATCH-001)
+                            Categoría B (lista cerrada, ADR necesario)</div>
+
+    <h3>🌲 Tronco 4 — Estado y Memoria</h3>
+    <div class="tree">
+                  <span class="c2">┌──────────────────────────────────────────┐</span>
+                  <span class="c2">│     ESTADO PERSISTIDO                    │</span>
+                  <span class="c2">│  CrazyWall[task_id][ficha_id]            │</span>
+                  <span class="c2">│    ↓ atomic write (mkstemp+fsync+replace)│</span>
+                  <span class="c2">│    WAL (append-only)                     │</span>
+                  <span class="c2">│    ↓ checkpoint cada 1000 OR 60s        │</span>
+                  <span class="c2">│    + shared_knowledge (COMMITTED only)   │</span>
+                  <span class="c2">│    + task_memory (privada)               │</span>
+                  <span class="c2">│    + FAISS en BRAIN                      │</span>
+                  <span class="c2">│    + KG SQLite (knowledge graph)         │</span>
+                  <span class="c2">└──────────────────────────────────────────┘</span></div>
+
+    <h3>🌲 Raíces Secundarias — Método de Trabajo</h3>
+    <div class="tree">
+<span class="c4">INSTRUCCIONES_KIMI_K_v4.1</span>     <span class="c4">CONSOLIDADO_150_INST</span>          <span class="c4">KIMI_PARTE_1..8</span>
+   │                                       │                                    │
+   │ Método constructor                    │ Compilado 150 inst.               │ Parches específicos
+   │ (24 secciones)                        │                                    │
+   └───────────────────────────────────────┴────────────────────────────────────┘</div>
+
+    <h3>🌲 Frutos — Extracciones y Guías</h3>
+    <div class="tree">
+              <span class="c6">DOC_EXTRACCION_1</span>          <span class="c6">DOC_EXTRACCION_2</span>          <span class="c6">DOC_EXTRACCION_3</span>
+                       │                          │                            │
+                       └──────────────────────────┴────────────────────────────┘
+                                              │
+                                              ▼
+                                 Citas con fuente o [NO_ENCONTRADO]
+
+   <span class="c3">IMPLEMENTAR_SISTEMA</span>    <span class="c3">GUÍAS (Claude Code, recordar, IQ)</span>
+            │                          │
+            └──────────────────────────┘
+                          │
+                          ▼
+                  Cómo construir.</div>
+
+    <h3>🌲 Ramas Pendientes (Nivel 6)</h3>
+    <div class="tree"><span class="c5">⚠ VACÍAS hasta decisión del Director</span>
+
+D01 Orquestación >50 Spaces  ┐
+D02 Cuántos Spaces por rol   │  Estas 5 ramas
+D03 Conexión API entre Spaces│  esperan que se
+D04 Costo infraestructura    │  cierren los 10 roles
+D05 Failover regiones HF     ┘  antes de definirse.</div>
+  </section>
+
+  <!-- INVENTARIO -->
+  <section class="section" id="inventario">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2 class="section-title">Inventario Enumerado · 50 documentos</h2>
+      <span class="section-tag t-blue">CATÁLOGO</span>
+    </div>
+
+    <h3>🟢 Constitución (Nivel 0)</h3>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>ID</th><th>Nombre</th><th>Ver</th><th>Estado</th><th>Archivo</th></tr></thead>
+      <tbody>
+        <tr><td>0.1</td><td><code>PERFIL</code></td><td>PERFIL MAXBRY COE</td><td>v1.0</td><td><span class="verdict v-pass">INMUTABLE</span></td><td><code>PERFIL-1.md</code></td></tr>
+        <tr><td>0.2</td><td><code>G2v2.5</code></td><td>G2 v2.5 FINAL AUDITADO</td><td>v2.5</td><td><span class="verdict v-pass">AUDITADO</span></td><td><code>G2_v2.5_FINAL_AUDITADO.html</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>🟣 Reglas de Hierro (Nivel 1)</h3>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>ID</th><th>Nombre</th><th>Ver</th><th>Estado</th><th>Archivo</th></tr></thead>
+      <tbody>
+        <tr><td>1.1</td><td><code>PATCH-001</code></td><td>Parche Agentes Categoría B</td><td>PATCH-001</td><td><span class="verdict v-pass">INAMOVIBLE</span></td><td><code>parche_g2_agentes_codigo_locales.md</code></td></tr>
+        <tr><td>1.2</td><td><code>PROT-FICHAS</code></td><td>Protocolo Fichas Calling Tools</td><td>v1.0</td><td><span class="verdict v-pass">FINAL</span></td><td><code>protocolo_fichas_calling_tools.html</code></td></tr>
+        <tr><td>1.3</td><td><code>ENCHUFE</code></td><td>Conexión / Enchufe JSON</td><td>v1</td><td><span class="verdict v-pass">INMUTIBLE</span></td><td><code>enchufe_conexion_fichas_maxbry.md</code></td></tr>
+        <tr><td>1.4</td><td><code>PARCHEs-LOC</code></td><td>Parche G2 locales + entrega</td><td>PATCH-001</td><td><span class="verdict v-pass">INAMOVIBLE</span></td><td><code>parche_g2_locales_entrega_codigo.md</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>🟠 Motor / Cerebro (Nivel 2)</h3>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>ID</th><th>Nombre</th><th>Ver</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>2.1</td><td><code>MOTOR-COG</code></td><td>MAXBRY G2 Motor Cognitivo</td><td>v1.0</td><td><span class="verdict v-approved">PROPUESTA</span></td></tr>
+        <tr><td>2.2</td><td><code>ARQ-300</code></td><td>MAXBRY AGI G2 Arquitectura 300</td><td>v1.0</td><td><span class="verdict v-approved">PROPUESTA</span></td></tr>
+        <tr><td>2.3</td><td><code>CONSOL-v7.1</code></td><td>MAXBRY COE v7.1 Consolidado</td><td>v7.1</td><td><span class="verdict v-pass">APROBADO</span></td></tr>
+        <tr><td>2.4</td><td><code>TODO-v3.1</code></td><td>MAXBRY COE v3.1 Todo Aprobado</td><td>v3.1</td><td><span class="verdict v-pass">APROBADO</span></td></tr>
+        <tr><td>2.5</td><td><code>RECONST</code></td><td>Reconstrucción del Proyecto</td><td>v3.1</td><td><span class="verdict v-pass">AUDITADO</span></td></tr>
+        <tr><td>2.6</td><td><code>COG-SIST</code></td><td>Sistema Cognitivo AGI</td><td>v1</td><td><span class="verdict v-approved">PROPUESTA</span></td></tr>
+        <tr><td>2.7</td><td><code>ARQ-3F</code></td><td>Arquitectura 3 Fases</td><td>v1</td><td><span class="verdict v-approved">REFERENCIA</span></td></tr>
+        <tr><td>2.8</td><td><code>MOT-6D</code></td><td>Motores 6 Dominios</td><td>v1</td><td><span class="verdict v-approved">REFERENCIA</span></td></tr>
+        <tr><td>2.9</td><td><code>MEM-5C</code></td><td>Memoria 5 Capas</td><td>v1</td><td><span class="verdict v-approved">REFERENCIA</span></td></tr>
+        <tr><td>2.10</td><td><code>PRIN-AX</code></td><td>Principios y Axiomas</td><td>v1</td><td><span class="verdict v-approved">REFERENCIA</span></td></tr>
+        <tr><td>2.11</td><td><code>RES-TEC</code></td><td>Resumen Técnico</td><td>v1</td><td><span class="verdict v-approved">REFERENCIA</span></td></tr>
+        <tr><td>2.12</td><td><code>COE-BETA4</code></td><td>COE beta 4 Consolidado</td><td>v7.1</td><td><span class="verdict v-pass">AUDITADO</span></td></tr>
+        <tr><td>2.13-2.15</td><td><code>MD-02/03/04</code></td><td>MDs en construcción</td><td>v7.2</td><td><span class="verdict v-pending">CONSTRUCCIÓN</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>🟡 Método de Trabajo (Nivel 3)</h3>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>ID</th><th>Nombre</th><th>Ver</th></tr></thead>
+      <tbody>
+        <tr><td>3.1</td><td><code>INST-FINAL</code></td><td>Instrucciones Finales Kimi K</td><td>v4.1</td></tr>
+        <tr><td>3.2</td><td><code>CONS-150</code></td><td>Consolidado 150 Instrucciones</td><td>v1</td></tr>
+        <tr><td>3.3-3.11</td><td><code>K-PARTE-1..8</code></td><td>Kimi Parte 1 a 8 (8 docs)</td><td>varios</td></tr>
+      </tbody>
+    </table>
+
+    <h3>🔵 Vistas / Extracciones / Pendientes (Nivel 4 y 6)</h3>
+    <p>Total: ~27 documentos adicionales entre extracciones, guías, dashboards, ZIPs, evaluaciones, propuestas, pendientes D01-D05.</p>
+  </section>
+
+  <!-- CEREBRO -->
+  <section class="section" id="cerebro">
+    <div class="section-header">
+      <span class="section-icon">🧠</span>
+      <h2 class="section-title">Las 5 Piezas del Cerebro (cerrado en G2 v2.5)</h2>
+      <span class="section-tag t-green">CERRADO</span>
+    </div>
+
+    <div class="capsule-grid">
+      <div class="capsule">
+        <div class="capsule-id">PIEZA 1 · ROUTER</div>
+        <div class="capsule-name">Router Dispatcher</div>
+        <div class="capsule-desc">Match de tags sin IA. Despacha fichas a su pool según runtime_type (compute / hybrid / llm / agent).</div>
+      </div>
+      <div class="capsule c-purple">
+        <div class="capsule-id">PIEZA 2 · ÍNDICE</div>
+        <div class="capsule-name">Índice Maestro</div>
+        <div class="capsule-desc">master_index + semantic_index caché local. FAISS en BRAIN. Spaces reciben embeddings como input, no acceden a FAISS.</div>
+      </div>
+      <div class="capsule c-orange">
+        <div class="capsule-id">PIEZA 3 · MOTOR DAG</div>
+        <div class="capsule-name">Motor DAG + Topological Sort</div>
+        <div class="capsule-desc">Calcula orden de ejecución de fichas. Validación de ciclos. depends_on entre fichas (no entre pasos).</div>
+      </div>
+      <div class="capsule c-warn">
+        <div class="capsule-id">PIEZA 4 · RECOVERY CORE</div>
+        <div class="capsule-name">Recovery Core (250KB · 5 tiers)</div>
+        <div class="capsule-desc">Tiers: constitution / blueprints / artifacts / states / metadata. WAL append-only. Checkpoint cada 1000 entries o 60s.</div>
+      </div>
+      <div class="capsule c-cyan">
+        <div class="capsule-id">PIEZA 5 · LOADER+VERIFIER+EXECUTOR</div>
+        <div class="capsule-name">Triple: Cargar · Validar · Ejecutar</div>
+        <div class="capsule-desc">Loader carga ficha validada. Verifier N0→N5 valida. Executor la corre. Reporta a CrazyWall atómicamente.</div>
+      </div>
+    </div>
+
+    <div class="three-col">
+      <div class="info-box accent">
+        <h4>4 capas internas</h4>
+        <ul>
+          <li><strong>KERNEL</strong> — constitution + router + triage</li>
+          <li><strong>RUNTIME</strong> — agents + daf + reasoning + spaces + execution</li>
+          <li><strong>VERIFICATION</strong> — gcl_v1 + gcl_lite + audit + tests</li>
+          <li><strong>STATE</strong> — recovery_core + FAISS + registry + WAL</li>
+        </ul>
+      </div>
+      <div class="info-box purple">
+        <h4>Execution Layer</h4>
+        <ul>
+          <li><strong>LOCAL</strong>: importlib + asyncio.wait_for</li>
+          <li><strong>HF</strong>: httpx + Bearer HF_API_TOKEN</li>
+          <li><strong>REMOTE</strong>: mismo contrato (futuro)</li>
+        </ul>
+      </div>
+      <div class="info-box orange">
+        <h4>Verifier N0→N5</h4>
+        <ul>
+          <li><strong>N0</strong>: GPG firma</li>
+          <li><strong>N1</strong>: hash + revocation</li>
+          <li><strong>N2</strong>: schema + imports whitelist</li>
+          <li><strong>N3</strong>: version</li>
+          <li><strong>N4</strong>: compat con kernel</li>
+          <li><strong>N5</strong>: AST ratio + diff</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FICHA -->
+  <section class="section" id="ficha">
+    <div class="section-header">
+      <span class="section-icon">🃏</span>
+      <h2 class="section-title">La Ficha · Unidad Mínima</h2>
+      <span class="section-tag t-orange">REGLA ÚNICA</span>
+    </div>
+
+    <div class="info-box warn">
+      <h4>⚡ Regla Única Inamovible</h4>
+      <p><strong>1 ficha = 1 función <code>ejecutar(input)</code></strong>. Sin clases, sin fases, sin subpipelines, sin estado global.</p>
+    </div>
+
+    <div class="two-col">
+      <div class="info-box accent">
+        <h4>📄 [nombre].py</h4>
+        <ul>
+          <li>Solo código Python puro</li>
+          <li>1 función pública: <code>ejecutar(input)</code></li>
+          <li>Sin rutas, IDs, metadata, instrucciones</li>
+          <li>Determinista, imports solo de whitelist</li>
+        </ul>
+      </div>
+      <div class="info-box purple">
+        <h4>📑 [nombre].meta.md</h4>
+        <ul>
+          <li>GPS + pasaporte + contrato</li>
+          <li>JSON embebido para el agente</li>
+          <li>9 secciones: Identidad, Propósito, IO, Deps, Contrato, Runtime, Rel, Ver</li>
+        </ul>
+      </div>
+      <div class="info-box orange">
+        <h4>📋 artifact_location_plan.json</h4>
+        <ul>
+          <li>folder_structure: root, code_path, meta_path, storage_path</li>
+          <li>files: code_file, meta_file</li>
+          <li>zip_package: <code>[FICHA_ID]_bundle.zip</code></li>
+        </ul>
+      </div>
+      <div class="info-box blue">
+        <h4>🔑 ID único global</h4>
+        <p><code>[MODELO]-[FICHA_ID]-[YYYYMMDD]-[HHMMSS]-[HASH_6ch]</code></p>
+        <p style="font-size:11.5px;color:var(--text-dim);margin-top:6px;">Imposible de repetir. Trazabilidad absoluta.</p>
+      </div>
+    </div>
+
+    <h3>🎯 Runtime Types</h3>
+    <table class="data-table">
+      <thead><tr><th>Tipo</th><th>% Pool</th><th>Definición</th><th>Restricción</th></tr></thead>
+      <tbody>
+        <tr><td><code style="color:var(--accent)">compute</code></td><td>80%</td><td>Código determinista puro</td><td>0 LLM</td></tr>
+        <tr><td><code style="color:var(--accent3)">hybrid</code></td><td>15%</td><td>Código 90% + LLM 10% dentro</td><td>llm_ratio ≤ 0.10</td></tr>
+        <tr><td><code style="color:var(--warn)">llm</code></td><td>5%</td><td>LLM como herramienta</td><td>Cápsula aislada</td></tr>
+        <tr><td><code style="color:var(--red)">agent</code></td><td>NUEVO</td><td>Categoría B con acción externa</td><td>max_steps + allowed_actions + env + approval + source</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ESTADO -->
+  <section class="section" id="estado">
+    <div class="section-header">
+      <span class="section-icon">💾</span>
+      <h2 class="section-title">Estado y Memoria · Persistencia</h2>
+      <span class="section-tag t-cyan">PERSISTENCIA</span>
+    </div>
+
+    <div class="capsule-grid">
+      <div class="capsule">
+        <div class="capsule-id">CRAZY WALL</div>
+        <div class="capsule-name">Estado Global</div>
+        <div class="capsule-desc"><code>CrazyWall[task_id][ficha_id]</code>. Atomic write: mkstemp → fsync → replace. Solo MAXBRY escribe.</div>
+      </div>
+      <div class="capsule c-purple">
+        <div class="capsule-id">WAL</div>
+        <div class="capsule-name">Write-Ahead Log</div>
+        <div class="capsule-desc">Append-only JSONL. Checkpoint: 1000 entries OR 60s. <code>wal_replay()</code> reconstruye state al reiniciar.</div>
+      </div>
+      <div class="capsule c-orange">
+        <div class="capsule-id">FAISS</div>
+        <div class="capsule-name">Búsqueda Semántica</div>
+        <div class="capsule-desc">En BRAIN. <code>faiss_brain[task_id] = IndexFlatL2(dims)</code>. Spaces reciben embeddings, no acceden directo.</div>
+      </div>
+      <div class="capsule c-warn">
+        <div class="capsule-id">shared_knowledge</div>
+        <div class="capsule-name">Conocimiento Compartido</div>
+        <div class="capsule-desc">BINARIO: COMMITTED entra o no existe. Sin estado parcial. TTL por tier: {0:None, 1:30d, 2:7d, 3:24h, 4:1h}.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERRADO -->
+  <section class="section" id="cerrado">
+    <div class="section-header">
+      <span class="section-icon">✅</span>
+      <h2 class="section-title">Cerrado en G2 v2.5 AUDITADO</h2>
+      <span class="section-tag t-green">NO SE REABRE</span>
+    </div>
+
+    <div class="info-box accent">
+      <h4>18 puntos cerrados — no se reformulan</h4>
+      <ol style="margin-left:20px;">
+        <li>Cerebro = 5 piezas (Router+Índice+DAG+Recovery+Execution).</li>
+        <li>DAG = ejecución fichas / FSM = gobernanza.</li>
+        <li>Reliquias eliminadas: HFSM, BehaviorTree, GOAP-MAXBRY, CCL 20 capas, 14 motores F-1, 7 motores críticos, 5 técnicas ML, NeuronCore, Pattern Scanner.</li>
+        <li><strong>1 ficha = 1 función <code>ejecutar(input)</code></strong>.</li>
+        <li>Verifier N0→N5 (GPG → hash → schema → version → compat → AST).</li>
+        <li>Slot Contract SC1-SC6 antes de cualquier artifact.</li>
+        <li>FAISS en BRAIN, Spaces NO lo acceden.</li>
+        <li>shared_knowledge BINARIO (COMMITTED o no existe).</li>
+        <li>Crazy Wall escritura atómica: mkstemp + fsync + replace.</li>
+        <li>13 reglas absolutas.</li>
+        <li>WAL + checkpoint dual (1000 entries OR 60s).</li>
+        <li>GCL-lite O(1) por fase / GCL v1.0 gate final de F4.</li>
+        <li>Stack: Python 3.11+, faiss-cpu==1.7.4, z3-solver==4.12.4, typer[all], httpx[asyncio], gnupg.</li>
+        <li>MVP: 5 pasos (Runner local + sequence.json → DAG → state.json → 1 ficha real + 1 ficha fallo → orquestador → trace_id+JSONL).</li>
+        <li>runtime_type ∈ {compute, hybrid, llm, agent}. Agent requiere max_steps, allowed_actions, environment, requires_approval, agent_source.</li>
+        <li>3 archivos por ficha: <code>[nombre].py</code> + <code>[nombre].meta.md</code> + <code>artifact_location_plan.json</code>.</li>
+        <li>El índice NUNCA escanea código. Solo lee <code>artifact_manifest.json</code>.</li>
+        <li>Lista cerrada de agentes Categoría B. ADR obligatorio para añadir.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ABIERTO -->
+  <section class="section" id="abierto">
+    <div class="section-header">
+      <span class="section-icon">⏳</span>
+      <h2 class="section-title">Abierto · 8 contradicciones + 5 pendientes</h2>
+      <span class="section-tag t-yellow">DECISIÓN DEL DIRECTOR</span>
+    </div>
+
+    <h3>🔁 8 Contradicciones Detectadas</h3>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Tema</th><th>Doc A</th><th>Doc B</th></tr></thead>
+      <tbody>
+        <tr><td>C1</td><td>Ratio código/LLM</td><td>PERFIL: <strong>95/5</strong></td><td>PATCH-001/G2 v2.5: <strong>90/10</strong></td></tr>
+        <tr><td>C2</td><td>Cerebro</td><td>PERFIL: 20 capas + 35 líneas</td><td>G2 v2.5: 5 piezas</td></tr>
+        <tr><td>C3</td><td>Especialistas</td><td>G2 v1.0: 500 specialists + Domain Broker</td><td>G2 v2.5: solo fichas</td></tr>
+        <tr><td>C4</td><td>Memoria</td><td>v3.1/v7.1: Xata + 5 capas</td><td>G2 v2.5: FAISS en BRAIN + Crazy Wall</td></tr>
+        <tr><td>C5</td><td>Agentes</td><td>PERFIL/PATCH-001: NO agentes (salvo B)</td><td>v3.1/v7.1: 3 agentes A/B/C</td></tr>
+        <tr><td>C6</td><td>Fases/F-1/F0/F4</td><td>v3.1: F-1=Preparación Cognitiva, F4=Entrega</td><td>G2 v2.5: lifecycle markers</td></tr>
+        <tr><td>C7</td><td>Pipeline</td><td>v3.1: P-DISCOVER→P00→...→P13</td><td>v2.5: sequence.json + fallback.json</td></tr>
+        <tr><td>C8</td><td>ID Ficha</td><td>PATCH-001: <code>[MODELO]-[FICHA]-[FECHA]-[HORA]-[HASH_6]</code></td><td>v2.5: ficha_id en APPROVED</td></tr>
+      </tbody>
+    </table>
+
+    <h3>📌 5 Preguntas Abiertas</h3>
+    <ul>
+      <li>¿Los 8 axiomas del v3.1 (AX01-AX08) migran a SC1-SC6 + PATCH-001?</li>
+      <li>¿El 90/10 del G2 v2.5 sustituye al 95/5 del PERFIL?</li>
+      <li>¿Los pendientes D01-D05 se mantienen o se reformulan bajo el esquema de fichas?</li>
+      <li>¿Cómo se codifica runtime_type=agent vs compute vs hybrid vs llm en el Slot Contract?</li>
+      <li>¿Qué pasa con v3.1/v7.1 (a "referencia histórica" o se migran)?</li>
+    </ul>
+  </section>
+
+  <!-- RECHAZADO -->
+  <section class="section" id="rechazado">
+    <div class="section-header">
+      <span class="section-icon">❌</span>
+      <h2 class="section-title">15 Ítems Rechazados · Inamovibles</h2>
+      <span class="section-tag t-red">PROHIBIDO</span>
+    </div>
+
+    <div class="info-box red">
+      <h4>🚫 Si aparece en cualquier ficha → REJECTED automático</h4>
+      <ol style="margin-left:20px;columns:2;column-gap:24px;">
+        <li>LoRA</li>
+        <li>Thinking traces</li>
+        <li>gRPC / ZeroMQ</li>
+        <li>Comandos imperativos</li>
+        <li>Autonomía de objetivos</li>
+        <li>Multi-agente votación</li>
+        <li>Optimización no-crítica</li>
+        <li>Sleep (AX07 lo prohíbe)</li>
+        <li>Traducción NL↔Tensor</li>
+        <li>Autonomía Nivel 2</li>
+        <li>Optimización velocidad</li>
+        <li>Autooptimización</li>
+        <li>Optimizador multiagente</li>
+        <li>Optimizar método</li>
+        <li>Optimización extrema</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SIGUIENTE -->
+  <section class="section" id="siguiente">
+    <div class="section-header">
+      <span class="section-icon">➡️</span>
+      <h2 class="section-title">FASE 1 · Inventario de Fichas</h2>
+      <span class="section-tag t-purple">SIGUIENTE</span>
+    </div>
+
+    <div class="info-box accent">
+      <h4>📦 Lo que entrego cuando aprueben FASE 0</h4>
+      <ul>
+        <li>Catálogo enumerado de <strong>todas las fichas ya definidas</strong> en G2 v2.5 (id, capa, contrato, deps, runtime_type, test mínimo).</li>
+        <li>246 ítems del G2 mapeados a la unidad "ficha".</li>
+        <li>Detección de fichas faltantes o duplicadas entre docs.</li>
+        <li>Lista priorizada para construir.</li>
+        <li>Cada ficha en formato mini-sistema-operativo: encabezado + texto libre resumen + DSL DAG + código.</li>
+      </ul>
+    </div>
+
+    <div class="hash-pill">PRÓXIMO_HASH: MAXBRY_ROOT_v0.1_FASE_1</div>
+  </section>
+
+</main>
+
+<footer style="border-top:1px solid var(--border);background:var(--surface);padding:32px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);">
+  <div style="color:var(--accent);margin-bottom:8px;letter-spacing:1px;">MAXBRY · FASE 0 · RAÍZ + ÁRBOL + VISTA</div>
+  <div>HASH: MAXBRY_ROOT_v0.1_FASE_0 · 2026-07-07 · Truth Source: G2_v2.5_FINAL_AUDITADO</div>
+</footer>
+
+</body>
+</html>

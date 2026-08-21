@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PIPELINE NCT · VAGÓN 11 — F9 ENTREGA + GATEWAY 🚂</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.tren{text-align:center;font-size:1.05em;letter-spacing:1px;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎄🚂💨 [V0]═[V1]═[V2]═[V3]═[V4]═[V5]═[V6]═[V7]═[V8]═[V9]═[V10]═<b>[V11★]</b>═[V12]═[V13] 🎁🎄</div>
+<h1>🎅 VAGÓN 11 · F9 — ENTREGA + OUTPUT GATEWAY (la noche del reparto)</h1>
+<div class="tag">pasos 791–880</div><div class="tag">IA: 0%</div><div class="tag">LOC: ~1.500 nuevas + ~700 copiadas</div><div class="tag">🎁 despliegue D11</div>
+
+<div class="cap">
+<h2>🚂 Raíz · Proceso · Diagrama</h2>
+<b>Raíz:</b> <span class="oro">nct-backend/entrega/</span> + <span class="oro">nct-backend/gateway/</span> + <span class="oro">despliegue/</span><br>
+<div class="flujo">done(F7) → PROTOCOLO 3 ARCHIVOS: [x].py + [x].meta.md(JSON 10 pasos) +
+  location_plan.json → bundle.zip → ID [MODEL]-[FICHA]-[FECHA]-[HORA]-[HASH]
+  → B01_artifact_code(Storage) + registry(brain) · GitHub=cerebro/Storage=músculos
+→ QUALITY GATES QG-01..08 (falla uno = NO avanza)
+→ SHERIFF SH01-SH08 valida grafo (SH08=evidencia viva) → EXPORTERS: ATLAS
+  automático (texto+Mermaid+HTML+MD) desde grafo con hash
+→ CIERRE 18 CHECKS: FAIL|WARNING|BLOCKED|... → reabre · 18/18 → CERTIFIED
+  P12 sello+ADR · P13 session_close (NUNCA se omite) · RT-90 BACKLOG+reporte
+→ OUTPUT GATEWAY (nuevo, GAP-PARCHE-002):
+  MCP server (cada capability = tool registrado) · API REST + webhook ·
+  23 destinos multi-target (Telegram/GitHub/HF/S3/...) · selección adaptativa
+→ DESPLIEGUE v2.0 (0% LLM): deploy_config.yaml → dry-run(plan.json, SIN_REGLA→
+  EXIT1, secrets→EXIT2) → OK Director → organizar+git → semver+CHANGELOG →
+  push → verificar.py(evidence.json: sin evidencia NO está desplegado)</div>
+</div>
+
+<div class="cap">
+<h2>⚙️ Explicación + 🎄 Simple</h2>
+sheriff.py+exporters.py se COPIAN (SALIDA_04) y se les añade SH08 (evidencia viva, V8). Los 4 scripts de despliegue de Sonnet se copian y se extienden con las 5 piezas v2.0 (~260 LOC: config yaml, dry-run, secrets scan, changelog, verificar). El Gateway es 100% nuevo: servidor MCP que registra cada capability del registry como tool invocable (el "frontend abierto" — humanos y agentes usan la misma puerta), más API REST con los mismos contratos.
+<div class="simple"><b class="ok">🎄 Simple:</b> la noche del reparto: cada regalo va en caja triple con etiqueta única, pasa ocho controles, el mapa de rutas se dibuja solo, y no se declara "entregado" hasta marcar 18 casillas de 18. El trineo reparte por chimenea MCP, ventana API o el destino que prefieras — y al final, un duende verifica casa por casa que lo entregado sea exactamente lo planeado.</div>
+</div>
+
+<div class="cap">
+<h2>🎁 Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Traza</th></tr>
+<tr><td>791-798</td><td>protocolo3.py: 3 archivos + bundle.zip + ID global + ruteo brain/storage</td><td>entrega/protocolo3.py (≤250)</td><td>DOC8 · #GAP-P2-025</td></tr>
+<tr><td>799-806</td><td>quality_gates.py: QG-01..08 encadenados</td><td>entrega/quality_gates.py (≤200)</td><td>DOC4 · #GAP-P2-011</td></tr>
+<tr><td>807-812</td><td><b>COPIAR</b> sheriff+exporters + PARCHE SH08</td><td>entrega/ (~700+≤60)</td><td>SALIDA_04 · #GAP-PARCHE-003</td></tr>
+<tr><td>813-820</td><td>cierre.py: 18 checks + P12 sello/ADR + P13 + RT-90 BACKLOG</td><td>entrega/cierre.py (≤250)</td><td>SHERIFF_V7 · #GAP-P2-030 · P3-012</td></tr>
+<tr><td>821-836</td><td>gateway_mcp.py: server MCP, capability→tool, contratos del registry</td><td>gateway/gateway_mcp.py (≤300)</td><td>#GAP-PARCHE-002 · P3-036</td></tr>
+<tr><td>837-848</td><td>gateway_api.py: REST+webhook, mismos contratos · multi_target.py: 23 destinos + selección adaptativa</td><td>gateway/ (2×≤300)</td><td>S-058 multi-target · última_versión_1</td></tr>
+<tr><td>849-858</td><td><b>COPIAR</b> 4 scripts despliegue + EXTENDER v2.0 (config/dry-run/secrets/changelog/verificar)</td><td>despliegue/ (~350+≤260)</td><td>DESPLIEGUE-v2 · scripts Sonnet</td></tr>
+<tr><td>859-874</td><td>Tests: gate corta · 17/18 reabre · MCP tool responde contrato · secret bloquea push · evidence.json detecta remoto≠local</td><td>test_f9_*.py (5×≤250)</td><td>evidencia L11</td></tr>
+<tr><td>875-878</td><td>Test integración F7→F9→push real (repo de prueba)</td><td>test_f9_e2e.py (≤300)</td><td>IT05-estilo</td></tr>
+<tr><td>879-880</td><td><b class="ok">🎁 DESPLIEGUE D11</b>: entrega/ + gateway/ + despliegue/</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ PROHIBIDO:</b> "casi terminado" (18/18 o reabre) · omitir P13 · mezclar brain/storage · push sin verificar.py · secret en repo · atlas dibujado a mano.</div>
+<div class="cap"><b class="oro">🎄 Fuentes:</b> DOC8 (3 archivos/DoD) · DOC4 (QG) · SALIDA_04 (sheriff/atlas) · SHERIFF_V7 (18 checks) · PARCHE_CIERRE_H_F (P12/P13) · UOOS RT-90 · scripts Sonnet + DESPLIEGUE-UNIVERSAL-v2 · S-058+NCT_INTERFACE (gateway/multi-target) · GAPS: P2-011/025/030, P3-012/036, PARCHE-002/003. ✔3 pasadas · V11 ← V9/V10 → V12.</div>
+</body></html>

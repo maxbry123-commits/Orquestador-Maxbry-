@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>NCT · DSL Replicar v2 · M3 + A1/A2/A3</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; color: #00ff88; font-family: 'Courier New', monospace; padding: 20px; line-height: 1.6; }
+  h1 { color: #00d4ff; border-bottom: 2px solid #00ff88; padding-bottom: 10px; margin-bottom: 20px; }
+  h2 { color: #00d4ff; margin-top: 30px; margin-bottom: 10px; border-left: 4px solid #00ff88; padding-left: 10px; }
+  h3 { color: #ffaa00; margin-top: 20px; margin-bottom: 8px; }
+  pre { background: #0a0a0a; border: 1px solid #00ff88; border-radius: 4px; padding: 12px; overflow-x: auto; margin: 8px 0; color: #88ffaa; font-size: 13px; }
+  code { background: #0a0a0a; color: #ffaa00; padding: 2px 6px; border-radius: 3px; }
+  ul, ol { margin-left: 30px; margin-top: 5px; }
+  li { margin: 4px 0; }
+  .ok { color: #00ff88; }
+  .fail { color: #ff5555; }
+  .warn { color: #ffaa00; }
+  .info { color: #00d4ff; }
+  .box { background: #001a0d; border: 1px solid #00ff88; border-radius: 6px; padding: 15px; margin: 15px 0; }
+  .box-blue { background: #001a26; border-color: #00d4ff; }
+  .box-orange { background: #1a1000; border-color: #ffaa00; }
+  hr { border: 0; border-top: 1px solid #003322; margin: 20px 0; }
+  .paso { color: #00d4ff; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>🔁 DSL REPLICAR · NCT Multi-Mavis Setup v2</h1>
+<p class="info">Copia este archivo. Replicar el setup completo: 1 M3-manager + 3 workers (A1/A2/A3) con tareas en paralelo.</p>
+
+<hr>
+
+<h2>📋 PASO 0 · Lo que necesitás tener antes de empezar</h2>
+<ul>
+  <li class="ok">✓ Cuenta GitHub: <code>maxbry123-commits</code> (id <code>266544157</code>)</li>
+  <li class="ok">✓ Personal Access Token con scope <code>repo</code> + <code>admin:public_key</code></li>
+  <li class="ok">✓ 3 repos creados:
+    <ul>
+      <li><code>maxbry123-commits/nct-hub</code> (frontend)</li>
+      <li><code>maxbry123-commits/orchestrator-auditor</code> (research/integration)</li>
+      <li><code>maxbry123-commits/ws-relay</code> (deploy/relay)</li>
+    </ul>
+  </li>
+  <li class="ok">✓ Repo pizarra: <code>maxbry123-commits/TAREAS-PENDIENTES</code></li>
+  <li class="ok">✓ Repo bitácora: <code>maxbry123-commits/MEMORIA</code></li>
+  <li class="ok">✓ 3 sandboxes / máquinas distintas (una por Mavis A1, A2, A3)</li>
+</ul>
+
+<hr>
+
+<h2>🔑 PASO 1 · Generar 3 SSH deploy keys (una por Mavis)</h2>
+<p>Cada Mavis usa SSH key aislada, limitada a su repo. <span class="warn">NUNCA compartir tokens PAT</span>.</p>
+
+<pre>mkdir -p /workspace/keys-backup
+for n in 1 2 3; do
+  ssh-keygen -t ed25519 -f /workspace/keys-backup/A${n}-id_ed25519 -N "" -C "Mavis-Asistente-${n} deploy key"
+  cat /workspace/keys-backup/A${n}-id_ed25519.pub
+done</pre>
+
+<p class="info">Anotar los fingerprints. Copiar las 3 llaves privadas a un archivo seguro — cada Mavis la necesita en su sandbox.</p>
+
+<h3>Registrar cada key en su repo (via API GitHub)</h3>
+<pre>TOKEN="ghp_TU_TOKEN"
+REPOS=("nct-hub" "orchestrator-auditor" "ws-relay")
+
+for n in 1 2 3; do
+  pubkey=$(cat /workspace/keys-backup/A${n}-id_ed25519.pub)
+  curl -X POST "https://api.github.com/repos/maxbry123-commits/${REPOS[$((n-1))]}/keys" \
+    -H "Authorization: token $TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "{\"title\": \"Mavis-Asistente-${n} deploy key\", \"key\": \"${pubkey}\", \"read_only\": false}"
+done</pre>
+
+<p class="warn">⚠️ GitHub NO permite la misma key pública en 2 repos distintos. Las 3 keys son ÚNICAS.</p>
+
+<hr>
+
+<h2>📜 PASO 2 · Crear el DSL único para los 3 Mavis</h2>
+<p>Un solo archivo MD, con placeholders <code>{N}</code>. Cada Mavis lee el mismo y reemplaza <code>{N}</code> por su número.</p>
+
+<pre># /tmp/MD-UNICO-3-ASISTENTES.md
+# ↓↓↓ Acá va el DSL completo que está en MEMORIA ↓↓↓</pre>
+
+<p>URL para distribuir: <code>https://raw.githubusercontent.com/maxbry123-commits/MEMORIA/main/logs/MD-UNICO-3-ASISTENTES.md</code></p>
+
+<hr>
+
+<h2>🔁 PASO 3 · Loop persistente por Mavis (m3-loops-mode skill)</h2>
+<p>El skill ya está registrado en mi memoria. El Mavis corre esto en su sandbox:</p>
+
+<pre># /tmp/sandbox-tarea-{N}/loop.sh
+#!/bin/bash
+ID="A{N}"
+SANDBOX="/tmp/sandbox-tarea-{N}"
+REPO="{REPO_TARGET}"  # nct-hub | orch-auditor | ws-relay
+DURATION_HOURS=18
+POLL_SECONDS=20
+BACKOFF_MAX=60
+END_TS=$(($(date +%s) + DURATION_HOURS*3600))
+
+BITACORA="$SANDBOX/bitacora.md"
+HEARTBEAT="$SANDBOX/heartbeat.log"
+touch $BITACORA $HEARTBEAT
+
+log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [$ID] [$1] $2" >> $BITACORA; }
+
+log "INIT" "modo loops · ${DURATION_HOURS}h · poll ${POLL_SECONDS}s"
+
+SLEEP=$POLL_SECONDS
+LAST_HEAD=""
+
+while [ $(date +%s) -lt $END_TS ]; do
+  RESULT=$(git ls-remote git@github.com:maxbry123-commits/${REPO}.git 2>&1)
+  HEAD=$(echo "$RESULT" | head -1 | awk '{print $1}')
+  
+  if [ -n "$HEAD" ] && [ "$HEAD" != "$LAST_HEAD" ]; then
+    log "CHANGE" "$LAST_HEAD -> $HEAD"
+    LAST_HEAD="$HEAD"
+    # ↓↓↓ Acá el Mavis ejecuta su tarea ↓↓↓
+  fi
+  
+  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [$ID] [ALIVE]" >> $HEARTBEAT
+  sleep $SLEEP
+done
+
+log "STOP" "completado"</pre>
+
+<p class="info">Lanzar con <code>nohup</code> + <code>disown</code> para que sobreviva al cierre del turn:</p>
+<pre>nohup bash /tmp/sandbox-tarea-{N}/loop.sh > /dev/null 2>&1 &
+disown</pre>
+
+<hr>
+
+<h2>📤 PASO 4 · Distribuir las SSH keys a cada Mavis</h2>
+<p>Cada Mavis necesita su key privada en <code>~/.ssh/id_ed25519</code>. <span class="fail">NO subir a GitHub</span>, <span class="fail">NO compartir en chat público</span>.</p>
+
+<ol>
+  <li>Vos generás las 3 keys (PASO 1)</li>
+  <li>Le pasás la key de A1 al Mavis A1 por chat privado</li>
+  <li>Le pasás la key de A2 al Mavis A2 por chat privado</li>
+  <li>Le pasás la key de A3 al Mavis A3 por chat privado</li>
+  <li>Cada Mavis corre:
+    <pre>mkdir -p ~/.ssh && chmod 700 ~/.ssh
+# pegar key privada en ~/.ssh/id_ed25519
+chmod 600 ~/.ssh/id_ed25519
+eval $(ssh-agent -s) && ssh-add ~/.ssh/id_ed25519
+ssh -T git@github.com  # debe decir "Hi maxbry123-commits/&lt;repo&gt;!"</pre>
+  </li>
+</ol>
+
+<hr>
+
+<h2>📋 PASO 5 · Asignar tareas (3 formas)</h2>
+
+<h3>Forma A · Por chat (la que usamos)</h3>
+<p>Vos me decís "asignale X a A1" → yo te paso el DSL literal → vos se lo pasás a A1 → A1 ejecuta y pushea.</p>
+
+<h3>Forma B · Via state.json (con espejado)</h3>
+<ol>
+  <li>Yo escribo en <code>TAREAS-PENDIENTES/state.json</code></li>
+  <li>Espejo el state.json en cada repo de Mavis (porque las deploy keys no dan acceso a TAREAS-PENDIENTES)</li>
+  <li>El Mavis hace pull de SU repo y lee la tarea</li>
+  <li>El Mavis ejecuta y pushea a su branch</li>
+  <li>Yo veo el push y te confirmo</li>
+</ol>
+
+<h3>Forma C · Via MEMORIA bitácora</h3>
+<ol>
+  <li>Escribo en <code>MEMORIA/logs/CHAT-V22-AUTOLOG.md</code></li>
+  <li>El Mavis hace pull de MEMORIA cada 20s</li>
+  <li>Lee la tarea, ejecuta, pushea a su repo</li>
+</ol>
+
+<hr>
+
+<h2>🛠️ PASO 6 · Comandos útiles (chequeo)</h2>
+
+<pre># Estado de las 3 SSH keys
+for n in 1 2 3; do
+  repo=""; [ $n -eq 1 ] && repo="nct-hub"
+  [ $n -eq 2 ] && repo="orchestrator-auditor"
+  [ $n -eq 3 ] && repo="ws-relay"
+  ssh-keygen -lf /workspace/keys-backup/A${n}-id_ed25519
+done
+
+# Ver branches nuevas (commits de los Mavis)
+for r in nct-hub orchestrator-auditor ws-relay; do
+  echo "=== $r ==="
+  curl -s "https://api.github.com/repos/maxbry123-commits/${r}/branches" \
+    -H "Authorization: token $TOKEN" | python3 -c "
+import json,sys
+for b in json.load(sys.stdin):
+    print(f'  {b[\"name\"]}')"
+done
+
+# Ver último commit de cada branch feature
+for r in nct-hub orchestrator-auditor ws-relay; do
+  echo "=== $r ==="
+  curl -s "https://api.github.com/repos/maxbry123-commits/${r}/commits?per_page=3" \
+    -H "Authorization: token $TOKEN" | python3 -c "
+import json,sys
+for c in json.load(sys.stdin)[:3]:
+    print(f'  {c[\"sha\"][:7]} · {c[\"commit\"][\"message\"][:60]}')"
+done
+
+# Heartbeat del Mavis (si está vivo)
+ssh -i /workspace/keys-backup/A${n}-id_ed25519 root@Mavis-host 'tail -3 /tmp/sandbox-tarea-*/heartbeat.log'</pre>
+
+<hr>
+
+<h2>📊 PASO 7 · Vigilancia del M3-manager (yo)</h2>
+<p>Yo vigilo las 3 ramas y la bitácora. Te aviso en cuanto un Mavis termina.</p>
+
+<pre># manager-loop.sh
+LAST_SHA=""
+while true; do
+  SHA=$(curl -s "https://api.github.com/repos/maxbry123-commits/TAREAS-PENDIENTES/contents/state.json" \
+    -H "Authorization: token $TOKEN" | python3 -c "import json,sys; print(json.load(sys.stdin)['sha'][:7])")
+  
+  if [ "$SHA" != "$LAST_SHA" ]; then
+    echo "[$(date -Iseconds)] CAMBIO state.json: $LAST_SHA -> $SHA"
+    # ↓↓↓ reportar a vos ↓↓↓
+    LAST_SHA=$SHA
+  fi
+  sleep 30
+done</pre>
+
+<hr>
+
+<h2>🔁 PASO 8 · Escalar a 4, 5, 6 Mavis (replicar)</h2>
+<p>Para agregar A4, A5, A6:</p>
+<ol>
+  <li>Generar 3 SSH keys nuevas (con nombres distintos: A4, A5, A6)</li>
+  <li>Crear 3 repos nuevos (o reusar existentes)</li>
+  <li>Registrar cada key en su repo</li>
+  <li>Distribuir keys a cada Mavis</li>
+  <li>Asignar tareas via chat (Forma A) o via state.json (Forma B)</li>
+</ol>
+
+<hr>
+
+<h2>⚠️ ERRORES COMUNES (anti-alucinación)</h2>
+
+<div class="box-orange">
+<ol>
+  <li><b>❌ Misma key pública en 2 repos</b> → GitHub rechaza. Cada key es ÚNICA por repo.</li>
+  <li><b>❌ Mavis usa HTTPS con PAT</b> → No tiene token, falla 401. Usar SIEMPRE SSH.</li>
+  <li><b>❌ Mavis no tiene acceso a TAREAS-PENDIENTES</b> → Las deploy keys son POR REPO. Espejar o usar Forma A (chat).</li>
+  <li><b>❌ Loop muere al cerrar turn</b> → Usar <code>nohup</code> + <code>&</code> + <code>disown</code>.</li>
+  <li><b>❌ Mavis se duerme</b> → El <code>sleep 20</code> sin más no es idle. SIEMPRE hacer <code>git pull</code> antes de chequear.</li>
+  <li><b>❌ Mavis pisa trabajo de otro</b> → Cada uno su sandbox <code>/tmp/sandbox-tarea-{N}/</code>, su branch <code>feature/tarea-{N}</code>.</li>
+  <li><b>❌ Subir SSH keys a GitHub</b> → NUNCA. Son privadas, irian en <code>~/.ssh/</code> solamente.</li>
+</ol>
+</div>
+
+<hr>
+
+<h2>📚 RECURSOS</h2>
+<ul>
+  <li>DSL único: <code>https://raw.githubusercontent.com/maxbry123-commits/MEMORIA/main/logs/MD-UNICO-3-ASISTENTES.md</code></li>
+  <li>Skill m3-loops-mode: <code>/workspace/.skills/m3-loops-mode/SKILL.md</code></li>
+  <li>Bitácora: <code>https://github.com/maxbry123-commits/MEMORIA/blob/main/logs/CHAT-V22-AUTOLOG.md</code></li>
+  <li>Pizarra: <code>https://github.com/maxbry123-commits/TAREAS-PENDIENTES</code></li>
+  <li>Protocolo: <code>https://raw.githubusercontent.com/maxbry123-commits/MEMORIA/main/logs/PROTOCOLO-M3-MANAGER-PASO-A-PASO.md</code></li>
+</ul>
+
+<hr>
+
+<p class="info">Versión: 2.0 · 2026-07-10 · M3-Manager (Mavis-417847400026327)</p>
+<p class="ok">Estado: ✅ Validado · 3 Mavis reportaron · 3/3 done</p>
+
+</body>
+</html>

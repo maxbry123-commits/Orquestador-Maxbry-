@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PIPELINE NCT · VAGÓN 12 — GOBERNANZA + AUTO-MEJORA + 100X 🚂</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.tren{text-align:center;font-size:1.05em;letter-spacing:1px;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎄🚂💨 [V0]═[V1]═[V2]═[V3]═[V4]═[V5]═[V6]═[V7]═[V8]═[V9]═[V10]═[V11]═<b>[V12★]</b>═[V13] 🎁🎄</div>
+<h1>🎅 VAGÓN 12 · TRANSVERSAL — GOBERNANZA + AUTO-MEJORA + PARCHE 100X</h1>
+<div class="tag">pasos 881–960</div><div class="tag">activo en TODAS las fases</div><div class="tag">LOC: ~1.400 nuevas + ~300 copiadas</div><div class="tag">🎁 despliegue D12</div>
+
+<div class="cap">
+<h2>🚂 Raíz · Proceso · Diagrama</h2>
+<b>Raíz:</b> <span class="oro">nct-backend/gobernanza/</span> + <span class="oro">nct-backend/mejoras/</span><br>
+<div class="flujo">╔═ CAPA 9 GOBERNANZA (debate Claude↔Fables) ═╗
+matriz: requiere_humano | auto_aprobada | bloqueada_siempre + audit trail
++ categoría DESTRUCTIVA_IRREVERSIBLE (SIM C): drop/borrado chain/rm repos →
+  doble confirmación (comando + UNLOCK) + snapshot previo automático
++ document_authority_map (conflicto→gana nivel superior) · decision_registry ·
+  CHANGELOG fijo · release DRAFT→RC→STABLE→DEPRECATED
+╠═ MÉTRICAS ═╣ QUALITY/EFFICIENCY/RELIABILITY por ciclo → Model Selector auto ·
+8 KPIs op · rúbrica 13 criterios para evaluar OSS antes de integrar
+╠═ CICLO AUTO-MEJORA (GAP-PARCHE-001, cada 10 artifacts) ═╣
+[1 APRENDE] registry+scores+embeddings fallos → [2 AUTO-EVALÚA] self_audit
+N vs N-1 (mejora→conserva·regresión→rollback·estanca→muta) → [3 BUSCA FALLAS]
+Sentinela ≥3 repeticiones EN PROCESOS PROPIOS → [4 CONSENSO] panel 5, 3+→procede,
+empate→Director → [5 FICHA-MEJORA.yaml] entra al pipeline NORMAL F2→F9 →
+[6 APLICA] firma ledger + patch_engine
+╠═ PARCHE 100X (cada multiplicador = FICHA-MEJORA que se instala sola) ═╣
+×4 batching total · ×3 Redis Streams pizarra · ×2 async · ×2 multi-pool ·
+×2 time-wheel 1ms · ×1.5 sharded roots · ×1.5 pre-warming ≈ 216x techo
++ timeout ADAPTATIVO por ficha (p95×1.5, piso 5s techo 30s — SIM B)
+╠═ EVENT BUS ═╣ SYSTEM/TASK/COGNITIVE, canal+retry propios · hash chain EN TODO
+(DSL/skills/schemas/policies/config — rollback ≤10s) · simulación 5x pre-planes
+complejos (3/5 fallos→bloquea) · INTERFAZ: pinned bar 🔒 + modales + frontend
+abierto MCP + Centro Control 9 capas / 3 modos</div>
+</div>
+
+<div class="cap">
+<h2>⚙️ Explicación + 🎄 Simple</h2>
+gobernanza.py implementa la matriz de CAPA 9 como tabla de reglas consultada por el FSM antes de EXECUTE; destructiva.py añade la categoría de SIM C (nada irreversible sin UNLOCK + snapshot). auto_mejora.py orquesta el ciclo de 6 pasos conectando piezas ya construidas (registry V10, self_audit copiado, Sentinela V10, consenso5 V8, ficha→planner V3, patch_engine V10) — es GLUE, no lógica nueva. Los multiplicadores 100x NO se programan aquí: se emiten como 7 FICHA-MEJORA que entran al pipeline normal — el sistema se acelera a sí mismo usando su propio proceso (regla del parche).
+<div class="simple"><b class="ok">🎄 Simple:</b> el consejo del Polo Norte: decide qué necesita firma de Santa, qué va solo y qué está prohibido para siempre; mide cada noche si el taller mejora o empeora (y si empeora, deshace); y cuando descubre cómo ir más rápido, no lo instala a lo loco — escribe la petición, la vota el consejo, y pasa por el mismo control que cualquier juguete.</div>
+</div>
+
+<div class="cap">
+<h2>🎁 Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Traza</th></tr>
+<tr><td>881-890</td><td>gobernanza.py: matriz 3 categorías + audit trail + hook al FSM</td><td>gobernanza/gobernanza.py (≤250)</td><td>CAPA 9 · #GAP-P3-015</td></tr>
+<tr><td>891-896</td><td>destructiva.py: DESTRUCTIVA_IRREVERSIBLE + UNLOCK + snapshot previo</td><td>gobernanza/destructiva.py (≤150)</td><td>#GAP-PARCHE-005 · SIM C</td></tr>
+<tr><td>897-904</td><td>documental.py: authority_map + decision_registry + changelog + releases</td><td>gobernanza/documental.py (≤250)</td><td>DOC3 · #GAP-P2-010</td></tr>
+<tr><td>905-912</td><td>metricas.py: 3 scores + 8 KPIs + feed al Model Selector · rubrica_oss.py: 13 criterios</td><td>gobernanza/ (2×≤200)</td><td>última_versión_1 · #GAP-P2-012 · P3-045</td></tr>
+<tr><td>913-926</td><td>auto_mejora.py: ciclo 6 pasos (glue de piezas V3/V8/V10) + FICHA-MEJORA.yaml schema</td><td>mejoras/auto_mejora.py (≤300)</td><td>#GAP-PARCHE-001</td></tr>
+<tr><td>927-934</td><td>timeout_adaptativo.py: p95×1.5 por ficha desde usage_analytics</td><td>mejoras/timeout_adaptativo.py (≤150)</td><td>#GAP-PARCHE-004 · SIM B</td></tr>
+<tr><td>935-942</td><td>Emitir las 7 FICHA-MEJORA del 100x (batching/streams/async/multi-pool/time-wheel/shards/pre-warm) como YAML al catálogo — NO implementarlas aquí</td><td>mejoras/fichas_100x/*.yaml</td><td>#GAP-PARCHE-006 · PARCHE-100X</td></tr>
+<tr><td>943-948</td><td>event_bus.py: 3 tipos con canal+retry · hash_todo.py: chain sobre DSL/skills/config</td><td>gobernanza/ (2×≤250)</td><td>última_versión_1 · #GAP-P3-015</td></tr>
+<tr><td>949-954</td><td>simulador5x.py: 5 corridas con variación, 3/5 fallos→bloquea</td><td>gobernanza/simulador5x.py (≤200)</td><td>última_versión_1</td></tr>
+<tr><td>955-958</td><td>Tests: destructiva exige UNLOCK · ciclo emite ficha válida · regresión hace rollback de reglas · bus entrega con retry</td><td>test_v12_*.py (4×≤250)</td><td>SIM B/C</td></tr>
+<tr><td>959-960</td><td><b class="ok">🎁 DESPLIEGUE D12</b>: gobernanza/ + mejoras/</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ PROHIBIDO:</b> mejora aplicada sin pasar el pipeline · acción destructiva sin UNLOCK+snapshot · contradicción documental resuelta ignorando el authority_map · multiplicador 100x implementado directo saltando ficha.</div>
+<div class="cap"><b class="oro">🎄 Fuentes:</b> orquestador_última_versión_1 (CAPA 9/bus/hash/simulación/métricas) · DOC3 (gobernanza documental) · serie MAXBRY 27 (rúbrica 13) · PARCHE-FINAL-100X (ciclo+multiplicadores+SIM B/C) · DOC7/DOC9 (self_audit/patch) · NCT_INTERFACE_v2 (frontend abierto) · GAPS: P2-010/012, P3-015/045, PARCHE-001/004/005/006. ✔3 pasadas · V12 transversal → V13.</div>
+</body></html>

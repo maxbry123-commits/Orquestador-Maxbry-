@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PIPELINE NCT · VAGÓN 5 — F4a MOTOR COGNITIVO 🚂</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.tren{text-align:center;font-size:1.05em;letter-spacing:1px;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎄🚂💨 [V0]═[V1]═[V2]═[V3]═[V4]═<b>[V5★]</b>═[V6]═[V7]═[V8]═[V9]═[V10]═[V11]═[V12]═[V13] 🎁🎄</div>
+<h1>🎅 VAGÓN 5 · F4a — MOTOR COGNITIVO (el taller de los elfos)</h1>
+<div class="tag">pasos 201–320</div><div class="tag">IA: PLENA (única junto a F6-C)</div><div class="tag">LOC: ~1.200 nuevas + ~2.350 copiadas</div><div class="tag">🎁 despliegue D5</div>
+
+<div class="cap">
+<h2>🚂 Raíz · Proceso · Diagrama</h2>
+<b>Raíz:</b> <span class="oro">nct-backend/motores/</span> + <span class="oro">nct-backend/loop_engine/</span><br>
+<b>Proceso:</b> el único vagón donde la IA piensa — y aun así encadenada: Mythos estructura, el motor razona, 300 elfos proponen, uno solo consolida.
+<div class="flujo">handoff(F3) → MYTHOS (fase FM: 40 pasos, 5 arquetipos — estructura el problema como cuento)
+→ MOTOR F0-F11 (nivel decide fases: n1=3 · n4=12 · n0=auto):
+  F0 incógnitas → F1 árbol → F2 fractal(≤7 nodos, poda≥40) → F3 hipótesis A/B/C →
+  F4 combina → F5 panel 5 expertos 0-100 → F6 evolución genética
+  fitness=(viab+imp+(100-costo))/3, top20%→muta→top5% → F7 estrés triple
+→ CADENA CONTROL 12 CAPAS (orden fijo — el pensamiento NUNCA ejecuta):
+  MYTHOS→FSM→ROUTER→SHERIFF→SENTINEL→VERIFIER→CRITIC→JUDGE→POLICY→PYDANTICAI→RETRY→LLM
+→ LOOP ENGINE (9 fases · escala 20→1000 · progreso&lt;esperado×0.6 → escala)
+→ EXPERT POOL: 300 elfos YAML (0 LOC c/u) en 15 células · mapeo fase→célula ·
+  falta capability → TDAG spawn draft (permanente SOLO con firma Director)
+→ anti-echo ≤0.30 → proposals append-only (NADIE escribe directo) →
+  FUSION: acc·0.35+evid·0.30+ctx·0.20+rec·0.15 → 1 COMMIT →
+  ObjetoCognitivo.evolucionar() (9 bloques, versión++, huella sha256 encadenada)</div>
+</div>
+
+<div class="cap">
+<h2>⚙️ Explicación técnica</h2>
+MODIFICACIONES declaradas (CAMBIOS-BASE §B): cognitive_engine.py deja de llamar razonamiento directo — invoca motor F0-F11 con Mythos como FM interna, su salida entra a la cadena de 12 capas antes del FusionEngine, y recibe entrada nivel(0-4). loop_engine/core.py recibe los 6 detectores UOOS + delta_score + pool rotativo de estrategias; LOOPS-INFRA se separa (va al Vagón 7). expert_pool.py se activa por mapeo fase→célula (GUIA_A1) y se segmenta en multi-pool lógico. motor_razonamiento_v4 se ABSORBE aquí — deja de ser módulo suelto (CAMBIOS-BASE §D).
+<div class="simple"><b class="ok">🎄 Simple:</b> este vagón es el taller de Papá Noel: Mythos cuenta el cuento del problema, el motor lo piensa por etapas, 300 elfos dan ideas a la vez pero ninguno toca el regalo — solo el capataz (FusionEngine) arma la pieza final, con sello y número de serie.</div>
+</div>
+
+<div class="cap">
+<h2>🎁 Construcción paso a paso (Sonnet, formato UOOS §7 por paso)</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Traza</th></tr>
+<tr><td>201-204</td><td><b>COPIAR</b> cognitive_engine + expert_pool + fusion_engine + ObjetoCognitivo</td><td>motores/ (H1, ~800 existentes)</td><td>H1 · #GAP-P2-045/046</td></tr>
+<tr><td>205-212</td><td>PARCHE cognitive_engine: entrada nivel + invoca F0-F11 + salida a cadena 12 (diff mostrado)</td><td>cognitive_engine.py (+≤120)</td><td>CAMBIOS-BASE §B · #GAP-CIERRE-006</td></tr>
+<tr><td>213-228</td><td>Motor F0-F11 absorbido: incógnitas/árbol/fractal/hipótesis/panel/genética/estrés — 4 archivos ≤300 c/u</td><td>motores/fases_a..d.py</td><td>SISTEMA_MOTOR_v4 · #GAP-P2-054/055</td></tr>
+<tr><td>229-238</td><td>mythos_fm.py: 40 pasos + 5 arquetipos como fase FM invocable</td><td>mythos_fm.py (≤300)</td><td>mythos parte1-3 · FABLES_Mythos</td></tr>
+<tr><td>239-250</td><td>cadena_control.py: 12 capas en orden fijo, contrato pass/block por capa</td><td>cadena_control.py (≤300)</td><td>#GAP-P3-031 · parte_3 mythos</td></tr>
+<tr><td>251-256</td><td><b>COPIAR</b> loop_engine/core.py</td><td>loop_engine/core.py (~400)</td><td>GUIA_C · #GAP-P3-040</td></tr>
+<tr><td>257-270</td><td>PARCHE loop: 6 detectores + delta_score + pool estrategias rotativo (diff)</td><td>detectores.py (≤250) + core (+≤80)</td><td>#GAP-P2-041 · UOOS §5</td></tr>
+<tr><td>271-280</td><td>mapeo_celulas.py: fase→célula (15 células, E001-E300) + activación por nivel</td><td>mapeo_celulas.py (≤200)</td><td>GUIA_A1 · #GAP-P3-008</td></tr>
+<tr><td>281-288</td><td>tdag_spawner.py: elfo ad-hoc draft + ledger de aprobación del Director</td><td>tdag_spawner.py (≤180)</td><td>#GAP-P2-047</td></tr>
+<tr><td>289-296</td><td>Cargar 300 fichas YAML de elfos (validador del V3 aplica a cada una)</td><td>motores/elfos/*.yaml</td><td>GRUPO_H · resumen_fables</td></tr>
+<tr><td>297-310</td><td>Tests: anti-echo, fusión ponderada, commit único, escalado, cadena 12</td><td>test_f4a_*.py (4×≤250)</td><td>evidencia L11</td></tr>
+<tr><td>311-318</td><td>Test integración F3→F4a (handoff → razonamiento → objeto evolucionado)</td><td>test_f4a_e2e.py (≤250)</td><td>IT-estilo</td></tr>
+<tr><td>319-320</td><td><b class="ok">🎁 DESPLIEGUE D5</b>: motores/ + loop_engine/ (dry-run→OK→push→verificar)</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ PROHIBIDO:</b> elfo escribiendo directo al objeto · pensamiento ejecutando código · re-generar H1 (se copia) · motor_v4 como módulo suelto · elfo permanente sin firma en ledger.</div>
+
+<div class="cap"><b class="oro">🎄 Fuentes:</b> H1_MOTOR_COGNITIVO (código) · SISTEMA_MOTOR_RAZONAMIENTO_v4 · mythos parte 1/2/3 + FABLES_Mythos_Paso_01/02B/03C · GUIA_C (loop) · GUIA_A1 (células) · GRUPO_H + resumen_de_salida_de_fables (300 elfos) · UOOS §5 · GAPS: P2-041/045/046/047/054/055, P3-008/031/040, CIERRE-006. ✔3 pasadas · V5 ← V4 → V6.</div>
+
+</body></html>

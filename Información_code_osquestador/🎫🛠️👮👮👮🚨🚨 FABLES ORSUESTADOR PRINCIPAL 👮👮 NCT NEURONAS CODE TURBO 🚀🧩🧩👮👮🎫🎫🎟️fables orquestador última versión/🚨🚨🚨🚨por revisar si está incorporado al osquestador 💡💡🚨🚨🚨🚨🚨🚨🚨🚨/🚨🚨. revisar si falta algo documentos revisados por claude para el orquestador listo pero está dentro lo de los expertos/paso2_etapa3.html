@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAXBRY/NCT · Paso 2 Etapa 3 — Output Cognitive Fabric</title>
+<style>
+:root{--bg:#0a0e1a;--panel:#111827;--panel2:#1a2235;--line:#2a3550;--text:#e6ecff;--muted:#9aa6c7;--accent:#5eead4;--accent2:#7dd3fc;--warn:#fbbf24;--err:#f87171;--ok:#4ade80;--purple:#a78bfa;--pink:#f472b6;--code-bg:#060912}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter','SF Pro Text',-apple-system,sans-serif;line-height:1.7;padding:32px 16px}
+.container{max-width:1280px;margin:0 auto}
+header{background:linear-gradient(135deg,#0d1424,#1a2640);border:1px solid var(--line);border-radius:16px;padding:36px;margin-bottom:32px}
+.kicker{color:var(--accent);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;font-weight:700}
+h1{font-size:30px;line-height:1.2;margin-bottom:14px;font-weight:800;background:linear-gradient(90deg,#5eead4,#7dd3fc,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{color:var(--muted);font-size:15px;max-width:900px;margin-bottom:20px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:20px}
+.meta-item{background:rgba(255,255,255,.03);border:1px solid var(--line);padding:12px 14px;border-radius:8px}
+.meta-label{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.meta-value{color:var(--accent);font-size:13px;font-weight:700}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px;margin-bottom:24px}
+h2{color:var(--accent2);font-size:22px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+h2 .icon{font-size:26px}
+h3{color:var(--accent);font-size:18px;margin:24px 0 12px;padding-left:14px;border-left:3px solid var(--accent)}
+h4{color:var(--purple);font-size:14px;margin:16px 0 8px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+p{margin-bottom:14px}
+code,pre{font-family:'SF Mono','Monaco','Cascadia Code','Fira Code',monospace}
+code{background:var(--panel2);padding:2px 8px;border-radius:4px;color:var(--accent);font-size:13px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:18px;overflow-x:auto;margin:14px 0;font-size:12.5px;line-height:1.6;border-left:3px solid var(--accent)}
+pre .comment{color:#6b7280;font-style:italic}
+pre .key{color:var(--accent2);font-weight:600}
+pre .str{color:#fde68a}
+pre .num{color:#f9a8d4}
+pre .bool{color:var(--purple)}
+pre .cls{color:#fbbf24}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--panel2);color:var(--accent2);text-align:left;padding:12px 14px;border-bottom:2px solid var(--line);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px}
+td{padding:12px 14px;border-bottom:1px solid var(--line);color:var(--text);vertical-align:top}
+tr:hover td{background:rgba(94,234,212,.04)}
+.source-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:20px;margin:16px 0;border-left:4px solid var(--accent)}
+.source-name{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:6px;font-family:'SF Mono',monospace}
+.source-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.tag-paper{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid var(--purple)}
+.tag-fw{background:rgba(125,211,252,.15);color:var(--accent2);border:1px solid var(--accent2)}
+.tag-lib{background:rgba(94,234,212,.15);color:var(--accent);border:1px solid var(--accent)}
+.improvement-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:22px;margin:18px 0;border-left:4px solid var(--purple)}
+.improvement-num{background:rgba(167,139,250,.15);color:var(--purple);padding:4px 12px;border-radius:6px;font-weight:800;font-size:13px;border:1px solid var(--purple);display:inline-block;margin-bottom:8px;font-family:'SF Mono',monospace}
+.improvement-title{font-size:17px;font-weight:700;color:var(--text);margin:8px 0}
+ul.checklist{list-style:none;padding-left:0}
+ul.checklist li{padding:6px 0 6px 28px;position:relative;color:var(--text);font-size:14px}
+ul.checklist li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:24px;margin-top:32px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="kicker">MAXBRY/NCT · Paso 2 Etapa 3 · 3 Tareas Ejecutadas</div>
+  <h1>Output Cognitive Fabric — Validación Final</h1>
+  <p class="subtitle">
+    Los 10 expertos del Output Fabric (Format Controller, Completeness Checker, Evidence Checker, Goal Checker, 
+    JSON Validator, Markdown Builder, Report Builder, Consistency Checker, Hallucination Checker, Final Judge) 
+    validan que la respuesta final sea correcta, completa y formateada antes de entregarla al usuario.
+  </p>
+  <div class="meta">
+    <div class="meta-item"><div class="meta-label">Paso</div><div class="meta-value">2 / Etapa 3</div></div>
+    <div class="meta-item"><div class="meta-label">Expertos</div><div class="meta-value">10 output</div></div>
+    <div class="meta-item"><div class="meta-label">Fuentes</div><div class="meta-value">5 investigadas</div></div>
+    <div class="meta-item"><div class="meta-label">Mejoras 100x</div><div class="meta-value">6 al output</div></div>
+  </div>
+</header>
+
+<section>
+<h2><span class="icon">🔍</span>TAREA 1 — Investigación</h2>
+<p>Fuentes que借鉴 para mejorar el Output Cognitive Fabric.</p>
+
+<div class="source-card">
+  <div class="source-name">SelfCheckGPT</div>
+  <div class="source-meta"><span class="tag tag-paper">Paper</span><span class="tag">2023</span></div>
+  <h4>Qué es</h4>
+  <p>Método de detección de alucinaciones: muestrea N respuestas del mismo modelo y mide inconsistencia.</p>
+  <h4>Qué借鉴</h4>
+  <p>El patrón de <strong>sampling + consistency check</strong>: si N respuestas del mismo modelo se contradicen, hay alta probabilidad de alucinación.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Hallucination Checker muestrea 5 variantes del output y mide inconsistencia. Si &gt; 30% se contradicen → marca como sospechoso.</p>
+</div>
+
+<div class="source-card">
+  <div class="source-name">Guardrails AI</div>
+  <div class="source-meta"><span class="tag tag-fw">Framework</span></div>
+  <h4>Qué es</h4>
+  <p>Framework de validación de outputs con RAIL (Reliable AI Markup Language) — especifica qué debe tener el output.</p>
+  <h4>Qué借鉴</h4>
+  <p>El patrón de <strong>spec-driven validation</strong>: defines un contrato (qué artefactos, qué formato, qué campos), el sistema valida contra él.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Output Contract usa Pydantic + reglas custom para validar que el output cumple exactamente lo esperado.</p>
+</div>
+
+<div class="source-card">
+  <div class="source-name">HHEM (Hughes Hallucination Evaluation Model)</div>
+  <div class="source-meta"><span class="tag tag-paper">Paper</span><span class="tag">Vectara</span></div>
+  <h4>Qué es</h4>
+  <p>Modelo open-source especializado en detectar si un resumen está respaldado por el documento fuente.</p>
+  <h4>Qué借鉴</h4>
+  <p>El patrón de <strong>groundedness check</strong>: ¿cada claim del output está respaldado por evidencia?</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Evidence Checker usa HHEM-style: cada claim del output debe tener source reference verificable.</p>
+</div>
+
+<div class="source-card">
+  <div class="source-name">NLI Models (DeBERTa)</div>
+  <div class="source-meta"><span class="tag tag-paper">Model</span><span class="tag">Microsoft</span></div>
+  <h4>Qué es</h4>
+  <p>Modelos de Natural Language Inference que detectan si dos frases se contradicen, se implican o son neutrales.</p>
+  <h4>Qué借鉴</h4>
+  <p>El patrón de <strong>pairwise consistency</strong>: comparar cada par de claims del output con NLI.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Consistency Checker usa DeBERTa-NLI para detectar contradicciones internas en el output.</p>
+</div>
+
+<div class="source-card">
+  <div class="source-name">JSON Schema + Pydantic</div>
+  <div class="source-meta"><span class="tag tag-lib">Spec</span><span class="tag">Standard</span></div>
+  <h4>Qué es</h4>
+  <p>Estándares de validación de estructura de datos.</p>
+  <h4>Qué借鉴</h4>
+  <p>El patrón de <strong>strict structural validation</strong>: el JSON output debe cumplir exactamente el schema.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu JSON Validator usa JSON Schema draft-07 para validar que cada campo esté presente y con el tipo correcto.</p>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">💻</span>TAREA 2 — Mejoras al Diseño + Tareas</h2>
+
+<div class="improvement-card">
+  <span class="improvement-num">MEJORA #1</span>
+  <div class="improvement-title">Output Pipeline con 10 Checks Binarios</div>
+<pre><span class="key">class</span> <span class="cls">OutputPipeline</span>:
+    <span class="str">"""10 checks binarios ejecutados en paralelo."""</span>
+
+    <span class="key">def</span> __init__(self):
+        self.checkers = [
+            FormatController(),
+            CompletenessChecker(),
+            EvidenceChecker(),
+            GoalChecker(),
+            JSONValidator(),
+            MarkdownBuilder(),
+            ReportBuilder(),
+            ConsistencyChecker(),
+            HallucinationChecker(),
+            FinalJudge(),
+        ]
+
+    <span class="key">async def</span> validate(
+        self, 
+        artifacts: list[<span class="str">"Artifact"</span>], 
+        contract: <span class="str">"OutputContract"</span>,
+        original_goal: <span class="str">"Goal"</span>
+    ) -> <span class="str">"ValidationReport"</span>:
+        state = ValidationState(
+            artifacts=artifacts,
+            contract=contract,
+            goal=original_goal,
+            results={},
+        )
+        <span class="comment"># Cada check devuelve PASS o FAIL con issues</span>
+        <span class="key">for</span> checker <span class="key">in</span> self.checkers:
+            result = <span class="key">await</span> checker.check(state)
+            state.results[type(checker).__name__] = result
+            <span class="key">if</span> result.status == <span class="str">"FAIL"</span> <span class="key">and</span> result.is_blocking:
+                state.escalate = <span class="bool">True</span>
+                <span class="key">break</span>
+
+        <span class="key">return</span> ValidationReport(
+            state=state,
+            approved=all(r.status == <span class="str">"PASS"</span> <span class="key">for</span> r <span class="key">in</span> state.results.values()),
+            issues=[i <span class="key">for</span> r <span class="key">in</span> state.results.values() <span class="key">for</span> i <span class="key">in</span> r.issues],
+        )</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">MEJORA #2</span>
+  <div class="improvement-title">Tareas Concretas por Experto</div>
+
+<table>
+  <thead><tr><th>Experto</th><th>Tarea concreta</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Format Controller</strong></td><td>Recibe output + contract. Verifica que el formato (markdown, json, code, etc.) coincide con lo pedido.</td></tr>
+    <tr><td><strong>Completeness Checker</strong></td><td>Verifica que TODOS los artefactos declarados en el OutputContract están presentes y no vacíos.</td></tr>
+    <tr><td><strong>Evidence Checker</strong></td><td>Verifica que cada claim del output tiene source reference. Usa HHEM-style groundedness.</td></tr>
+    <tr><td><strong>Goal Checker</strong></td><td>Compara output vs goal original. ¿Cumplió el usuario lo que pidió? Devuelve score 0-1.</td></tr>
+    <tr><td><strong>JSON Validator</strong></td><td>Si el output debe ser JSON, valida contra el schema JSON Schema del OutputContract.</td></tr>
+    <tr><td><strong>Markdown Builder</strong></td><td>Si el output es Markdown, renderiza y verifica que la sintaxis es válida.</td></tr>
+    <tr><td><strong>Report Builder</strong></td><td>Estructura el reporte final con secciones: resumen, análisis, conclusiones, fuentes.</td></tr>
+    <tr><td><strong>Consistency Checker</strong></td><td>Usa NLI para detectar contradicciones entre párrafos del output.</td></tr>
+    <tr><td><strong>Hallucination Checker</strong></td><td>Sample 5 variantes del output (SelfCheckGPT). Mide inconsistencia. Si &gt;30% se contradicen → FAIL.</td></tr>
+    <tr><td><strong>Final Judge</strong></td><td>Revisa todos los resultados de checks anteriores. Si TODOS pasan → aprueba. Si alguno falla irreparable → escala al humano.</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">🚀</span>TAREA 3 — Mejoras 100x al Output Original</h2>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #1</span>
+  <div class="improvement-title">Output Contract Tipado</div>
+<pre><span class="key">from</span> pydantic <span class="key">import</span> BaseModel, Field
+<span class="key">from</span> typing <span class="key">import</span> Literal
+
+<span class="key">class</span> <span class="cls">OutputContract</span>(BaseModel):
+    <span class="str">"""Lo que el output DEBE contener (validado en runtime)."""</span>
+    artifacts: list[Literal[<span class="str">"report.md"</span>, <span class="str">"state.json"</span>, <span class="str">"tests.xml"</span>, <span class="str">"code.zip"</span>]]
+    requirements: list[Literal[
+        <span class="str">"no_placeholders"</span>,
+        <span class="str">"formato_valido"</span>,
+        <span class="str">"evidencia_incluida"</span>,
+        <span class="str">"citas_verificables"</span>,
+        <span class="str">"sin_contradicciones"</span>,
+        <span class="str">"completitud_total"</span>,
+    ]]
+    max_tokens: int = Field(gt=<span class="num">0</span>, le=<span class="num">50000</span>)
+    audience: Literal[<span class="str">"technical"</span>, <span class="str">"executive"</span>, <span class="str">"general"</span>]
+    format: Literal[<span class="str">"markdown"</span>, <span class="str">"json"</span>, <span class="str">"code"</span>, <span class="str">"multi_file"</span>]</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #2</span>
+  <div class="improvement-title">10 Checks Objetivos Binarios</div>
+<pre><span class="key">class</span> <span class="cls">BinaryChecks</span>:
+    <span class="str">"""Cada check devuelve PASS o FAIL con issues específicos."""</span>
+
+    <span class="key">async def</span> check_no_placeholders(self, output: str) -> <span class="str">"CheckResult"</span>:
+        placeholders = [<span class="str">"TODO"</span>, <span class="str">"FIXME"</span>, <span class="str">"XXX"</span>, <span class="str">"PLACEHOLDER"</span>, <span class="str">"[insertar"</span>]
+        found = [p <span class="key">for</span> p <span class="key">in</span> placeholders <span class="key">if</span> p.lower() <span class="key">in</span> output.lower()]
+        <span class="key">return</span> CheckResult(
+            check=<span class="str">"no_placeholders"</span>,
+            status=<span class="str">"PASS"</span> <span class="key">if not</span> found <span class="key">else</span> <span class="str">"FAIL"</span>,
+            issues=[<span class="str">f"Found placeholder: {p}"</span> <span class="key">for</span> p <span class="key">in</span> found],
+        )
+
+    <span class="key">async def</span> check_format_valid(self, output: str, expected: str) -> <span class="str">"CheckResult"</span>:
+        <span class="comment"># JSON schema, markdown lint, etc.</span>
+        ...
+    <span class="comment"># ... 8 checks más</span></pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #3</span>
+  <div class="improvement-title">Hallucination Detection (SelfCheckGPT)</div>
+<pre><span class="key">class</span> <span class="cls">HallucinationChecker</span>:
+    <span class="str">"""借鉴 SelfCheckGPT: muestrea N respuestas y mide inconsistencia."""</span>
+
+    SAMPLES = <span class="num">5</span>
+    THRESHOLD = <span class="num">0.30</span>
+
+    <span class="key">async def</span> check(self, output: str) -> <span class="str">"CheckResult"</span>:
+        <span class="comment"># 1. Generar N variantes del mismo output</span>
+        variants = <span class="key">await</span> asyncio.gather(*[
+            self._regenerate(output) <span class="key">for</span> _ <span class="key">in</span> range(self.SAMPLES)
+        ])
+
+        <span class="comment"># 2. Medir inconsistencia entre variantes con NLI</span>
+        contradictions = <span class="num">0</span>
+        <span class="key">for</span> i <span class="key">in</span> range(len(variants)):
+            <span class="key">for</span> j <span class="key">in</span> range(i + <span class="num">1</span>, len(variants)):
+                <span class="key">if await</span> self._nli_contradicts(variants[i], variants[j]):
+                    contradictions += <span class="num">1</span>
+
+        total_pairs = len(variants) * (len(variants) - <span class="num">1</span>) // <span class="num">2</span>
+        inconsistency = contradictions / total_pairs
+
+        <span class="key">return</span> CheckResult(
+            check=<span class="str">"no_hallucinations"</span>,
+            status=<span class="str">"FAIL"</span> <span class="key">if</span> inconsistency > self.THRESHOLD <span class="key">else</span> <span class="str">"PASS"</span>,
+            inconsistency_score=inconsistency,
+        )</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #4</span>
+  <div class="improvement-title">Repair Automático (1 retry antes de escalar)</div>
+<pre><span class="key">class</span> <span class="cls">OutputRepair</span>:
+    <span class="str">"""Si un check falla, intenta reparar 1 vez antes de escalar."""</span>
+
+    <span class="key">async def</span> repair(self, output: str, issues: list[str]) -> str:
+        prompt = <span class="str">f"""The following output has these issues:
+{chr(10).join(issues)}
+
+Original output:
+{output}
+
+Please fix ONLY the issues listed, keeping everything else the same.
+Return the corrected output."""</span>
+        fixed = <span class="key">await</span> self.llm.invoke(prompt)
+        <span class="comment"># Re-validar</span>
+        new_issues = <span class="key">await</span> self._re_validate(fixed)
+        <span class="key">if</span> <span class="key">not</span> new_issues:
+            <span class="key">return</span> fixed
+        <span class="comment"># Si sigue fallando, escalar</span>
+        <span class="key">raise</span> UnrepairableError(new_issues)</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #5</span>
+  <div class="improvement-title">Output Diff (compara goal inicial vs output final)</div>
+<pre><span class="key">class</span> <span class="cls">OutputDiff</span>:
+    <span class="str">"""Compara el goal inicial con el output final, marca gaps."""</span>
+
+    <span class="key">def</span> diff(self, original_goal: <span class="str">"Goal"</span>, output: str) -> <span class="str">"DiffReport"</span>:
+        <span class="key">return</span> DiffReport(
+            goal=original_goal.description,
+            success_criteria=original_goal.success_criteria,
+            coverage=self._check_coverage(original_goal.success_criteria, output),
+            gaps=self._find_gaps(original_goal, output),
+            extras=self._find_extras(original_goal, output),
+        )</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #6</span>
+  <div class="improvement-title">Audit Log Inmutable</div>
+<pre><span class="key">class</span> <span class="cls">AuditLog</span>:
+    <span class="str">"""Hash-chained log inmutable de cada output (借鉴 kbot-finance)."""</span>
+
+    <span class="key">def</span> __init__(self):
+        self._chain: list[<span class="str">"AuditEntry"</span>] = []
+        self._last_hash = <span class="str">"0"</span> * <span class="num">64</span>
+
+    <span class="key">def</span> append(self, entry: <span class="str">"AuditEntry"</span>) -> <span class="key">None</span>:
+        <span class="key">import</span> hashlib
+        payload = <span class="str">f"{self._last_hash}|{entry.timestamp}|{entry.action}|{entry.actor}"</span>
+        new_hash = hashlib.sha256(payload.encode()).hexdigest()
+        entry.prev_hash = self._last_hash
+        entry.hash = new_hash
+        self._chain.append(entry)
+        self._last_hash = new_hash
+
+    <span class="key">def</span> verify_integrity(self) -> bool:
+        <span class="str">"""Recorre toda la cadena y verifica que ningún hash fue alterado."""</span>
+        <span class="key">for</span> i, entry <span class="key">in</span> <span class="key">enumerate</span>(self._chain):
+            expected = hashlib.sha256(
+                <span class="str">f"{entry.prev_hash}|{entry.timestamp}|{entry.action}|{entry.actor}"</span>.encode()
+            ).hexdigest()
+            <span class="key">if</span> expected != entry.hash:
+                <span class="key">return</span> <span class="bool">False</span>
+        <span class="key">return</span> <span class="bool">True</span></pre>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">✅</span>Checklist del Paso 2 Etapa 3</h2>
+<ul class="checklist">
+  <li>Investigación: 5 fuentes documentadas (SelfCheckGPT, Guardrails, HHEM, NLI, JSON Schema)</li>
+  <li>10 expertos del Output Fabric con tareas concretas</li>
+  <li>Output Contract tipado con Pydantic</li>
+  <li>10 checks binarios objetivos</li>
+  <li>Hallucination detection con sampling + NLI</li>
+  <li>Repair automático con 1 retry</li>
+  <li>Output Diff que compara goal vs output</li>
+  <li>Audit log hash-chained inmutable</li>
+  <li>Final Judge aprueba solo si TODOS los checks pasan</li>
+  <li>Escalación al humano solo si irreparable</li>
+</ul>
+</section>
+
+<footer>
+  MAXBRY/NCT · Paso 2 Etapa 3 · Output Cognitive Fabric · 3 Tareas Ejecutadas<br>
+  Próximo: <strong>Paso 3 — Kernel + Router</strong>
+</footer>
+
+</div>
+</body>
+</html>

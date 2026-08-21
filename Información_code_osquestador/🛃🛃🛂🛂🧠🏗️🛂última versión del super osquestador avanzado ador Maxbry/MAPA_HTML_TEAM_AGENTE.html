@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Team Agente — Mapa Segmentado</title>
+<style>
+  :root{
+    --bg:#0f1210; --panel:#161d19; --line:#22302a;
+    --ink:#e7f2ec; --dim:#8ba69a;
+    --seg1:#ff9d5c; --seg2:#5cd9ff; --seg3:#a0e05c; --seg4:#e0985c;
+    --seg5:#c85cff; --seg6:#5cffb0; --seg7:#ffd65c; --seg8:#5c8eff;
+    --seg9:#ff5c8a; --seg10:#8a8a8a;
+    --mono: "JetBrains Mono","SF Mono",Consolas,monospace;
+    --sans: -apple-system,"Segoe UI",Inter,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.5;}
+  header{
+    padding:28px 32px 18px; border-bottom:1px solid var(--line);
+    position:sticky; top:0; background:rgba(15,18,16,.92); backdrop-filter:blur(8px); z-index:10;
+  }
+  h1{margin:0 0 4px; font-size:22px}
+  .sub{color:var(--dim); font-size:13.5px; font-family:var(--mono)}
+  .flow{
+    margin:32px; padding:20px 22px; background:var(--panel);
+    border:1px solid var(--line); border-radius:10px;
+    font-family:var(--mono); font-size:12.8px; color:#a9ffcf;
+    overflow-x:auto; white-space:pre;
+  }
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; margin:0 32px 32px;}
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; border-left:4px solid var(--c); cursor:pointer;
+    transition:transform .15s, border-color .15s;
+  }
+  .card:hover{transform:translateY(-2px)}
+  .card h3{margin:0 0 10px; font-size:14.5px; display:flex; gap:8px; align-items:baseline}
+  .card h3 .num{color:var(--c); font-family:var(--mono); font-size:12px}
+  .card ul{margin:0; padding-left:18px; font-size:12.6px; color:var(--dim)}
+  .card ul li{margin:3px 0}
+  .card ul li b{color:var(--ink); font-weight:600}
+  .repo-tag{
+    display:inline-block; margin-top:10px; font-family:var(--mono); font-size:10.5px;
+    color:var(--c); background:color-mix(in srgb, var(--c) 15%, transparent);
+    padding:2px 8px; border-radius:999px; border:1px solid color-mix(in srgb, var(--c) 40%, transparent);
+  }
+  .staff-row{
+    margin:0 32px 40px; padding:18px 20px; background:var(--panel);
+    border:1px dashed var(--line); border-radius:10px;
+  }
+  .staff-row h4{margin:0 0 10px; font-size:13px; color:var(--dim); font-weight:500}
+  .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .chip{
+    font-family:var(--mono); font-size:12px; padding:5px 12px; border-radius:999px;
+    background:#1c2621; border:1px solid var(--line); color:#cfe6da;
+  }
+  .modal-bg{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:50; align-items:center; justify-content:center;}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--panel); border:1px solid var(--line); border-radius:12px; max-width:560px; width:90%; padding:26px 28px; max-height:80vh; overflow-y:auto;}
+  .modal h2{margin-top:0; font-size:17px}
+  .modal .close{float:right; cursor:pointer; color:var(--dim); font-size:20px}
+  footer{padding:24px 32px 40px; color:var(--dim); font-size:12px; font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>👥 Team Agente — Mapa Segmentado</h1>
+  <div class="sub">Sub-orquestador · 10 segmentos · click en cada bloque para expandir</div>
+</header>
+
+<div class="flow">Orden MAXBRY → [Seg.1 cerebro decide pipeline] → [Seg.7 DAG+simulación 5x]
+→ [Seg.2 pipeline elegido] → ¿capability en staff?
+   SÍ → [Seg.3 staff ejecuta en paralelo]
+   NO → [Seg.4 crea micro-agente propio]
+→ [Seg.5 Escritor+Runtime valida código real] → [Seg.6 Loop Engine si necesita razonar]
+→ resultado firmado → [Seg.9 vuelve a MAXBRY Orquestador]</div>
+
+<div class="staff-row">
+  <h4>STAFF DE AGENTES EXTERNOS (viven fuera del repo, solo se conectan)</h4>
+  <div class="chips">
+    <span class="chip">Open Claw</span><span class="chip">Open Code</span>
+    <span class="chip">Open Hand</span><span class="chip">Claude Code</span>
+    <span class="chip">Mimo Code</span><span class="chip">Aider</span><span class="chip">Codex</span>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>Team Agente v1.0 · fuente: DOC2 + GRUPO_F + GUÍA A.1/D/E · 2026-07-05</footer>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <span class="close" onclick="closeModal()">×</span>
+    <h2 id="modalTitle"></h2>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const segmentos = [
+  {n:1,c:"--seg1",repo:"repo 7: team-agente-cerebro",t:"Cerebro pequeño",
+   items:["<b>core.py</b> ≤100 LOC — recibe orden de MAXBRY","<b>pipeline_selector.py</b> ≤80 LOC",
+   "<b>multitask_scheduler.py</b> ≤120 LOC — asyncio.gather()","staff_registry.json — capability→agente"],
+   detalle:"Inspirado en el Orquestador pero minúsculo (≤300 LOC total). No es un super-agente monolítico — decide qué pipeline usar y nada más."},
+
+  {n:2,c:"--seg2",repo:"repo 7",t:"Pipelines intercambiables",
+   items:["pipeline_code_gen.py → Claude Code/Open Code","pipeline_research.py → agentes investigación",
+   "pipeline_refactor.py → Aider/Open Claw","pipeline_generic.py → fallback micro-agente"],
+   detalle:"Cada pipeline es un método de trabajo. Se pueden mejorar o sustituir sin tocar el cerebro (Segmento 1)."},
+
+  {n:3,c:"--seg3",repo:"externo (referencia)",t:"Staff de agentes",
+   items:["Open Claw, Open Code, Open Hand","Claude Code, Mimo Code (instancia del staff)","Aider, Codex","Ejecutan en <b>paralelo</b>"],
+   detalle:"Team Agente NO necesita saber programar — solo enruta la tarea al agente correcto y coordina resultados en paralelo."},
+
+  {n:4,c:"--seg4",repo:"repo 8: micro-agentes",t:"Micro-agentes propios",
+   items:["Se crean <b>solo si</b> el staff no cubre la capability","15 ya definidos (MA-CODE-GEN...MA-RUNTIME-CHECK)",
+   "90% code / 10% LLM, más determinista que SmolAgent","spawn→run→emit JSON→die, ≤200 LOC"],
+   detalle:"Regla exacta: si staff_registry ya tiene la capability, se usa el staff. Si no, se construye un micro-agente DSL/DAG."},
+
+  {n:5,c:"--seg5",repo:"repo 9: escritor-runtime",t:"Escritor + Runtime",
+   items:["<b>LLM_ESCRITOR</b> — genera código, nunca declara \"funciona\"","<b>Builder</b> — escribe archivo, instala deps",
+   "<b>Validator</b> — L1_static","<b>Witness</b> — L2/L3/L4 + evidence_hash"],
+   detalle:"Solo el Witness puede decir que algo funciona, y solo con prueba real (build+runtime+tests), nunca por palabra del Escritor."},
+
+  {n:6,c:"--seg6",repo:"repo 3 (compartido con Orquestador)",t:"Loop Engine (reutilizado)",
+   items:["Mismo módulo que usa el Orquestador","checkpoint_cada_n=10 (más frecuente)",
+   "Cada sub-tarea del enjambre puede llamar su propia instancia"],
+   detalle:"No se duplica el Loop Engine — es el mismo módulo aislado, llamado con distintos parámetros según quién lo invoque."},
+
+  {n:7,c:"--seg7",repo:"DOC2, 26 secciones",t:"Enjambre / Team Agent original",
+   items:["7 goals, DAG con parallel_groups","<b>Simulación 5x</b> antes de ejecutar",
+   "Validación 3 capas (MA-VERIFY-3CAPAS)","12 preguntas de objetivos","Devil Agent + hipótesis"],
+   detalle:"El diseño original de 26 secciones sigue vigente como el motor de coordinación del enjambre de micro-tareas."},
+
+  {n:8,c:"--seg8",repo:"DOC2 AG2",t:"Plan Agent",
+   items:["Separa <b>pensamiento</b> de <b>ejecución</b>","Diseña y firma el plan ANTES de ejecutar",
+   "Sin Plan Agent aprobado → Team Agente no inicia"],
+   detalle:"Complementario al Team Agent: primero se piensa y valida el plan completo, después se ejecuta."},
+
+  {n:9,c:"--seg9",repo:"línea de autoridad",t:"Conexión con el cerebro",
+   items:["Recibe <b>handoff_package</b> firmado SHA256","Nunca lee orquestador-nucleo/ directamente",
+   "Nunca lee contracts-schemas/ directamente","Solo recibe payload ya validado (GCL/SC)"],
+   detalle:"Team Agente vive en una burbuja de confianza limitada: todo lo que recibe ya pasó por Guardian+GCL+SlotContract del cerebro."},
+
+  {n:10,c:"--seg10",repo:"repo 15: sentinela",t:"Sentinela mejora este agente",
+   items:["Puede modificar: pipelines/*.py","Puede modificar: staff_registry.json (prioridades)",
+   "<b>NO</b> puede modificar: core.py del cerebro pequeño"],
+   detalle:"El Sentinela vigila el desempeño del Team Agente y propone mejoras de método — nunca reescribe su cerebro pequeño."},
+];
+
+const grid = document.getElementById('grid');
+segmentos.forEach(s=>{
+  const card = document.createElement('div');
+  card.className='card';
+  card.style.setProperty('--c', `var(${s.c})`);
+  card.onclick=()=>openModal(s);
+  card.innerHTML = `<h3><span class="num">SEG.${s.n}</span> ${s.t}</h3>
+    <ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+    <span class="repo-tag">${s.repo}</span>`;
+  grid.appendChild(card);
+});
+
+function openModal(s){
+  document.getElementById('modalTitle').innerText = `Segmento ${s.n} — ${s.t}`;
+  document.getElementById('modalBody').innerHTML = `<p style="color:#cfe6da;font-size:14px">${s.detalle}</p>
+    <p style="color:#8ba69a;font-size:12px;font-family:monospace;margin-top:14px">${s.repo}</p>`;
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
+document.getElementById('modalBg').onclick = (e)=>{ if(e.target.id==='modalBg') closeModal(); };
+</script>
+</body>
+</html>

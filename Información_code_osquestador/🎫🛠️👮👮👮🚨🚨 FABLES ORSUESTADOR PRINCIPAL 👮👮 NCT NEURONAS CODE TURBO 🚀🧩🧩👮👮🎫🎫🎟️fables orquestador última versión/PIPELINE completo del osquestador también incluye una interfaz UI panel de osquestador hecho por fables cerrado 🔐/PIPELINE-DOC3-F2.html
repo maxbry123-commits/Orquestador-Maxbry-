@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIPELINE NCT · DOC 3 — F2 PLANNER OFFLINE</title>
+<style>
+body{background:#2B2926;color:#E4DFD3;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#E4DFD3;font-size:1.4em;margin:0 0 4px}
+h2{color:#5B9BD5;font-size:1.1em;border-bottom:1px solid #4a453d;padding-bottom:5px;margin-top:24px}
+.cap{background:#17150F;border:1px solid #4a453d;border-radius:10px;padding:14px;margin:12px 0}
+.flujo{background:#17150F;border-left:3px solid #5B9BD5;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#5B9BD5;text-align:left;padding:6px;border-bottom:2px solid #4a453d}
+td{padding:5px 6px;border-bottom:1px solid #3a362e;vertical-align:top}
+.ok{color:#6FBF73}.crit{color:#E0554F}.az{color:#5B9BD5}
+.tag{display:inline-block;background:#17150F;border:1px solid #4a453d;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em}
+.regla{background:#17150F;border-left:3px solid #E0554F;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#17150F;border-left:3px solid #6FBF73;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+</style></head><body>
+
+<h1>DOC 3 · FASE F2 — PLANNER OFFLINE + CAPABILITY · estado: <span class="ok">NÚCLEO EXISTE (planner_offline.py) — SE COPIA + EXTIENDE</span></h1>
+<div class="tag">pasos globales 101–140</div><div class="tag">IA: 0%</div><div class="tag">LOC: ~300 nuevas + ~350 copiadas</div><div class="tag">despliegue parcial: D3</div>
+
+<div class="cap">
+<h2>Archivo raíz · Proceso · Diagrama</h2>
+<b>Archivo raíz:</b> <span class="az">nct-backend/planner/</span><br>
+<b>Proceso:</b> el ÚNICO lugar donde se decide el orden de ejecución; convierte requirements en un sequence.json inmutable con hash; en runtime el kernel solo ejecuta lo congelado.
+<div class="flujo">task_graph(F0) + nivel(F1) → requirements.json → planner_offline.py
+   graphlib.TopologicalSorter → detecta ciclos(abortar) → sequence.json INMUTABLE + hash
+   schema por step: {step_id, tipo:secuencial|paralelo, fichas[], depends_on[], critico,
+   condition(safe_eval AST sin Call/Import), timeout_seg, on_failure:fallback|abort|compensate}
+→ capability_registry.py: "necesito X" (capability-based, NO name-based)
+   → 1º staff externo → 2º resources.yaml OSS → 3º ficha propia (último recurso)
+→ pipeline_juez.py: P-DISCOVER→P00..P10 (simple omite 6; critical corre 14; P13 NUNCA se omite)
+   presupuesto: P09 declara → P10 aprueba</div>
+</div>
+
+<div class="cap">
+<h2>Explicación técnica</h2>
+planner_offline.py existe (H4): compilador Python puro sin LLM, orden topológico real, salida congelada con hash — patrón "planificar offline, ejecutar ciego". EXTENSIONES nuevas: (1) safe_eval para el campo condition (AST restringido: ast.Call y ast.Import prohibidos — anti-inyección, PARCHE_G06); (2) capability_registry con cadena de resolución en 3 pasos que consulta resources.yaml (propuesta DeepSeek) antes de crear fichas; (3) regla de ficha aplicada como validador: 1 ficha = 1 función, ≤200 LOC, PROHIBIDO runtime/orquestador/DAG/FSM dentro de una ficha (el validador rechaza el plan si una ficha viola esto); (4) las 325 fichas mapeadas entran como catálogo inicial del registry (30 con código → estado "real", 295 → "planeada").
+<div class="simple"><b class="ok">Simple:</b> F2 escribe la receta completa antes de cocinar: qué pasos, en qué orden, cuáles en paralelo, qué hacer si uno falla — y la sella con huella para que nadie la cambie a mitad de camino. Antes de inventar una herramienta nueva, pregunta tres veces: ¿ya la tiene el staff? ¿ya existe gratis? Solo si no, se fabrica.</div>
+</div>
+
+<div class="cap">
+<h2>Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Fuente/traza</th></tr>
+<tr><td>101</td><td><b>COPIAR</b> planner_offline.py íntegro</td><td>planner/planner_offline.py (existente ~350)</td><td>H4 · #GAP-P2-052</td></tr>
+<tr><td>102-104</td><td>Tests del planner copiado (topológico, ciclo→aborta, hash estable)</td><td>test_planner.py (≤200)</td><td>evidencia L11</td></tr>
+<tr><td>105-110</td><td>schema_step.py: los 9 campos del step + validador; safe_eval AST restringido</td><td>planner/schema_step.py (≤200)</td><td>PARCHE_G06 · #GAP-P3-044</td></tr>
+<tr><td>111-118</td><td>capability_registry.py: registro capability-based + cadena staff→OSS→ficha</td><td>planner/capability_registry.py (≤250)</td><td>última_versión_1 · #GAP-CIERRE-004</td></tr>
+<tr><td>119-122</td><td>catalogo_fichas.py: cargar las 325 fichas (30 real / 295 planeada) desde YAML</td><td>planner/catalogo_fichas.py (≤150)</td><td>GAP_04 · ESQUELETO_MAESTRO</td></tr>
+<tr><td>123-126</td><td>validador_ficha.py: 1 ficha=1 función, ≤200 LOC, lista PROHIBIDO</td><td>planner/validador_ficha.py (≤120)</td><td>#GAP-P2-015 · DOC4</td></tr>
+<tr><td>127-134</td><td>pipeline_juez.py: P-DISCOVER→P13 con reglas de omisión por complejidad + presupuesto P09/P10</td><td>planner/pipeline_juez.py (≤300)</td><td>PARCHE_CIERRE_H_F · #GAP-P3-012</td></tr>
+<tr><td>135-137</td><td>fallback.json + plantilla on_failure por step</td><td>raíz + planner/fallback_loader.py (≤100)</td><td>PARCHE_G06</td></tr>
+<tr><td>138-139</td><td>Test integración F1→F2 (nivel+task_graph → sequence.json válido e inmutable)</td><td>test_f2_e2e.py (≤200)</td><td>IT-estilo</td></tr>
+<tr><td>140</td><td><b class="ok">DESPLIEGUE PARCIAL D3</b>: planner/ + raíces actualizadas</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">PROHIBIDO en F2:</b> decidir orden en runtime · editar sequence.json tras el hash (cambio = versión nueva + aprobación) · crear ficha sin agotar staff→OSS · condition con Call/Import · ficha que contenga runtime/DAG/FSM.</div>
+
+<div class="cap"><b class="az">Fuentes de este bloque:</b> H4_ENSAMBLAJE (planner) · PARCHE_G06_ARCHIVOS_RAIZ.md · GAP_04_FICHAS.md · ESQUELETO_MAESTRO_PIPELINES.md (catálogo) · PARCHE_CIERRE_H_F.md (P00-P13) · DOC4_ESTANDARES (regla ficha) · 30___deepseck (resources.yaml) · orquestador_última_versión_1 (capability-based) · GAPS: P2-052/015, P3-044/012/042, CIERRE-004. Verificado 3 pasadas · pieza_id F2 · alimentado_por F0,F1 · alimenta_a F3,F4.</div>
+
+</body></html>

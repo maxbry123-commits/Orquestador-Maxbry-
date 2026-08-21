@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>proyecto_general</title>
+<style>
+body{font-family:system-ui;background:#111;
+  color:#eee;max-width:760px;margin:0 auto;padding:24px}
+h1{font-size:26px} h2{font-size:18px;margin:18px 0 8px}
+.alta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+input{padding:8px;border-radius:8px;border:1px solid #444;
+  background:#222;color:inherit}
+button{padding:8px 14px;border-radius:8px;border:none;color:#fff;cursor:pointer}
+ul{list-style:none;padding:0} li{padding:7px 10px;border-bottom:1px solid #333}
+</style></head><body>
+<h1>proyecto_general</h1>
+<!-- componente generado: item -->
+<section class="ent" id="sec-item">
+  <h2>Items</h2>
+  <form class="alta" onsubmit="return crear_item(event)">
+      <input id="f-nombre" placeholder="nombre" type="text">
+      <input id="f-descripcion" placeholder="descripcion" type="text">
+      <button style="background:#BE752C">Agregar</button>
+  </form>
+  <ul id="lista-item"></ul>
+</section>
+<script>
+function v(id){return document.getElementById(id).value}
+async function cargar_item(){
+  const r = await fetch('/items'); const xs = await r.json();
+  document.getElementById('lista-item').innerHTML = xs.map(x =>
+    `<li>#${x.id} ${x.nombre} · ${x.descripcion}
+     <button onclick="borrar_item(${x.id})">✕</button></li>`).join('');
+}
+async function crear_item(e){
+  e.preventDefault();
+  await fetch('/items', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({nombre: v('f-nombre'), descripcion: v('f-descripcion')})});
+  cargar_item(); return false;
+}
+async function borrar_item(id){
+  await fetch(`/items/${id}`, {method:'DELETE'});
+  cargar_item();
+}
+cargar_item();
+</script>
+<!-- componente generado: usuario -->
+<section class="ent" id="sec-usuario">
+  <h2>Usuarios</h2>
+  <form class="alta" onsubmit="return crear_usuario(event)">
+      <input id="f-email" placeholder="email" type="text">
+      <input id="f-password_hash" placeholder="password_hash" type="text">
+      <button style="background:#BE752C">Agregar</button>
+  </form>
+  <ul id="lista-usuario"></ul>
+</section>
+<script>
+function v(id){return document.getElementById(id).value}
+async function cargar_usuario(){
+  const r = await fetch('/usuarios'); const xs = await r.json();
+  document.getElementById('lista-usuario').innerHTML = xs.map(x =>
+    `<li>#${x.id} ${x.email} · ${x.password_hash}
+     <button onclick="borrar_usuario(${x.id})">✕</button></li>`).join('');
+}
+async function crear_usuario(e){
+  e.preventDefault();
+  await fetch('/usuarios', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email: v('f-email'), password_hash: v('f-password_hash')})});
+  cargar_usuario(); return false;
+}
+async function borrar_usuario(id){
+  await fetch(`/usuarios/${id}`, {method:'DELETE'});
+  cargar_usuario();
+}
+cargar_usuario();
+</script>
+
+</body></html>

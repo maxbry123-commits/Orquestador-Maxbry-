@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>MAXBRY Orquestador — Mapa Segmentado</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#141a24; --line:#1f2937;
+    --ink:#e6edf3; --dim:#8b96a5;
+    --seg1:#7c9cff; --seg2:#5ad1a8; --seg3:#f4b860;
+    --seg4:#ff8a7a; --seg5:#c58bff; --seg6:#5ecbe0;
+    --seg7:#e0c95e; --seg8:#8fe08f; --seg9:#e07a9a; --seg10:#9aa5ff;
+    --mono: "JetBrains Mono","SF Mono",Consolas,monospace;
+    --sans: -apple-system,"Segoe UI",Inter,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.5;
+  }
+  header{
+    padding:28px 32px 18px; border-bottom:1px solid var(--line);
+    position:sticky; top:0; background:rgba(13,17,23,.92);
+    backdrop-filter:blur(8px); z-index:10;
+  }
+  h1{margin:0 0 4px; font-size:22px; letter-spacing:.2px}
+  .sub{color:var(--dim); font-size:13.5px; font-family:var(--mono)}
+  .flow{
+    margin:32px; padding:20px 22px; background:var(--panel);
+    border:1px solid var(--line); border-radius:10px;
+    font-family:var(--mono); font-size:12.8px; color:#a9c2ff;
+    overflow-x:auto; white-space:pre;
+  }
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:16px; margin:0 32px 40px;
+  }
+  .card{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:18px 20px; border-left:4px solid var(--c);
+    cursor:pointer; transition:transform .15s, border-color .15s;
+  }
+  .card:hover{transform:translateY(-2px); border-color:var(--c)}
+  .card h3{margin:0 0 10px; font-size:14.5px; display:flex; gap:8px; align-items:baseline}
+  .card h3 .num{color:var(--c); font-family:var(--mono); font-size:12px}
+  .card ul{margin:0; padding-left:18px; font-size:12.6px; color:var(--dim)}
+  .card ul li{margin:3px 0}
+  .card ul li b{color:var(--ink); font-weight:600}
+  .repo-tag{
+    display:inline-block; margin-top:10px; font-family:var(--mono);
+    font-size:10.5px; color:var(--c); background:color-mix(in srgb, var(--c) 15%, transparent);
+    padding:2px 8px; border-radius:999px; border:1px solid color-mix(in srgb, var(--c) 40%, transparent);
+  }
+  .modal-bg{
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:50; align-items:center; justify-content:center;
+  }
+  .modal-bg.open{display:flex}
+  .modal{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    max-width:560px; width:90%; padding:26px 28px; max-height:80vh; overflow-y:auto;
+  }
+  .modal h2{margin-top:0; font-size:17px}
+  .modal .close{float:right; cursor:pointer; color:var(--dim); font-size:20px}
+  footer{padding:24px 32px 40px; color:var(--dim); font-size:12px; font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧠 MAXBRY Orquestador — Mapa Segmentado</h1>
+  <div class="sub">Kernel NCT · 10 segmentos · click en cada bloque para expandir</div>
+</header>
+
+<div class="flow">Input → [Seg.1 Identidad] → [Seg.2 Entrada+PushPing] → [Seg.3 MYTHOS]
+→ [Seg.4 Loop Engine N pasos] → (si aplica) [Seg.6 expertos G2]
+→ [Seg.7 Consenso 5 agentes] → [Seg.5 GCL/Z3/SlotContract verifica cada paso]
+→ handoff → Team Agente → [Seg.8 Memoria persiste] → [Seg.9 Recovery si falla]
+→ Output → [Seg.10 Router entrega]</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>MAXBRY Orquestador v1.0 · fuente: DOC1-4 + GUÍA A-E · 2026-07-05</footer>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <span class="close" onclick="closeModal()">×</span>
+    <h2 id="modalTitle"></h2>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const segmentos = [
+  {n:1,c:"--seg1",repo:"repo 1: orquestador-nucleo",t:"Identidad",
+   items:["<b>ADN_SYSTEM</b> — 14 reglas inmutables (6 leyes+8 axiomas)",
+   "<b>GUARDIAN_LAYER</b> — 6 checks, rechaza violaciones",
+   "<b>AUTO_RECOVERY</b> — watchdog 30s, replay_to_checkpoint",
+   "<b>LLM_JUEZ</b> — 8 estados, pipeline P-DISCOVER..P13"],
+   detalle:"El núcleo inmutable. Nada aquí se toca sin aprobación explícita del Director. GUARDIAN_LAYER es la primera verificación de cualquier solicitud entrante."},
+
+  {n:2,c:"--seg2",repo:"repo 1+2",t:"Entrada",
+   items:["<b>INPUT ADAPTER</b> — normaliza, congela FROZEN v1.0",
+   "<b>HASH ENGINE</b> — fingerprint 5 capas L1-L5",
+   "<b>WAKE WORD</b> — SYS_HALT/EXECUTE/PLAN/VERIFY/YIELD/RESUME",
+   "<b>PUSH_PING</b> — 30 clasificaciones obligatorias"],
+   detalle:"Nada avanza sin completar las 30 clasificaciones del PUSH_PING. Si falta info, el sistema busca en docs/web/repos o pregunta al Director."},
+
+  {n:3,c:"--seg3",repo:"repo 2: orquestador-razonamiento",t:"MYTHOS",
+   items:["GoalLock+Prelude+DRE+MaxMode+RecurrentLoop","GoalStop Check+Coda+ChefFinal",
+   "<b>DRE score</b> → RAPIDO/BASICO/AVANZADO/TURBO","Token Budget 90/10, alertas 70/85/95%"],
+   detalle:"El sistema de razonamiento del orquestador. Calcula la complejidad (DRE) y decide qué nivel de profundidad usar en el Loop Engine."},
+
+  {n:4,c:"--seg4",repo:"repo 3: loop-engine (AISLADO)",t:"Loop Engine — LA CLAVE",
+   items:["1 entry point: <b>run_loop_engine()</b>","4 niveles: 20-50 / 100-300 / 300-800 / 800-1000 pasos",
+   "9 fases reutilizables en todos los niveles","Escalado <b>dinámico</b> si el progreso es insuficiente",
+   "Llamado por Orquestador Y Team Agente"],
+   detalle:"Módulo aislado del cerebro — se puede mejorar con el tiempo sin tocar ni el Orquestador ni el Team Agente. El nivel puede subir a mitad de ejecución si el resultado va lento."},
+
+  {n:5,c:"--seg5",repo:"repo 4: gcl-verificacion",t:"Verificación formal",
+   items:["<b>GCL-lite</b> O(1) por paso","<b>GCL v1.0</b> gate final P13 (motor Z3 SAT/UNSAT)",
+   "<b>Slot Contract SC1-SC6</b>: entrada→deps→permisos→estado→objetivo→salida"],
+   detalle:"Antes de cualquier acción irreversible, se verifica matemáticamente (Z3) que las reglas activas son consistentes. Si UNSAT, se detiene antes de gastar recursos."},
+
+  {n:6,c:"--seg6",repo:"repo 5+6: motor-cognitivo-g2 / fichas",t:"Motor Cognitivo G2",
+   items:["<b>Objeto Cognitivo (OC)</b> versionado, 5 invariantes","Motor 14 funciones (Scheduler/Dispatcher/EventBus...)",
+   "<b>300 expertos</b>: Capa A(100)+B(100)+C(100), 15 células","Contrato experto v1.0, anti-echo-chamber &lt;30%",
+   "Jueces 3 niveles: Local→Capa→Central"],
+   detalle:"RAPIDO/BASICO usan solo MYTHOS directo. AVANZADO invoca 1-3 expertos representativos por fase. TURBO invoca el enjambre completo de la célula (hasta 20 expertos)."},
+
+  {n:7,c:"--seg7",repo:"repo 2 (DOC1 [8.1])",t:"Consenso 5 agentes",
+   items:["Creative(0.9)→Innovation(0.7)→Critic(0.3)","Selection(0.2)→Architecture(0.3)",
+   "<b>Devil Agent</b> ataca la ganadora","Quorum mín 3/5"],
+   detalle:"Se activa solo para decisiones críticas (task_level=critical). Genera 5-10 ideas, las mejora, las ataca adversarialmente, y solo entonces elige."},
+
+  {n:8,c:"--seg8",repo:"repo 11: memoria-persistencia",t:"Memoria",
+   items:["4 tiers: RAW→SESSION→STRATEGIC→PROJECT","Event Sourcing + hash chain SHA256",
+   "Knowledge Graph lateral","Dream(semanal)/Distill(diario)","FAISS + TTL por tier"],
+   detalle:"Nada se pierde. Cada cambio es un evento inmutable encadenado por hash. Permite rollback exacto a cualquier punto anterior."},
+
+  {n:9,c:"--seg9",repo:"repo 1",t:"Calidad y Recuperación",
+   items:["Recovery 5 niveles: Retry→Rollback→Checkpoint→Replan→Escalate",
+   "Self Improvement (3 métricas)","Audit Logger (5 logs)"],
+   detalle:"Si algo falla, el sistema decide automáticamente qué nivel de recuperación aplicar. Las métricas alimentan al Sentinela para futuras mejoras."},
+
+  {n:10,c:"--seg10",repo:"repo 10+12+7+15",t:"Conexión exterior",
+   items:["<b>API Router</b> — 10 módulos + COST_OPTIMIZER","<b>Contracts</b> — Universal Module Contract (enchufe)",
+   "<b>Team Agente</b> — recibe órdenes, nunca ve el cerebro","<b>Sentinela</b> — mejora método, nunca el cerebro"],
+   detalle:"Todo módulo debe emitir el Universal Module Contract para poder registrarse. Los agentes nunca conocen qué provider LLM responde."},
+];
+
+const grid = document.getElementById('grid');
+segmentos.forEach(s=>{
+  const card = document.createElement('div');
+  card.className='card';
+  card.style.setProperty('--c', `var(${s.c})`);
+  card.onclick=()=>openModal(s);
+  card.innerHTML = `<h3><span class="num">SEG.${s.n}</span> ${s.t}</h3>
+    <ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+    <span class="repo-tag">${s.repo}</span>`;
+  grid.appendChild(card);
+});
+
+function openModal(s){
+  document.getElementById('modalTitle').innerText = `Segmento ${s.n} — ${s.t}`;
+  document.getElementById('modalBody').innerHTML = `<p style="color:#c3cbd6;font-size:14px">${s.detalle}</p>
+    <p style="color:#8b96a5;font-size:12px;font-family:monospace;margin-top:14px">${s.repo}</p>`;
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
+document.getElementById('modalBg').onclick = (e)=>{ if(e.target.id==='modalBg') closeModal(); };
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PIPELINE NCT · VAGÓN 13 — TESTS + CIERRE CERTIFIED 🚂</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.tren{text-align:center;font-size:1.05em;letter-spacing:1px;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎄🚂💨 [V0]═[V1]═[V2]═[V3]═[V4]═[V5]═[V6]═[V7]═[V8]═[V9]═[V10]═[V11]═[V12]═<b>[V13★]</b> 🎁🎄✨</div>
+<h1>🎅 VAGÓN 13 · TESTS DE INTEGRACIÓN + CIERRE CERTIFIED (¡la estrella del árbol!)</h1>
+<div class="tag">pasos 961–1000</div><div class="tag">LOC: ~3.500 tests + CI</div><div class="tag">🎁 despliegue D13 = FINAL</div>
+
+<div class="cap">
+<h2>🚂 Proceso · Diagrama del cierre</h2>
+<div class="flujo">TODOS los vagones D1-D12 desplegados → SUITE FINAL:
+IT01 Loader · IT02 Verifier N0-N5 · IT03 Executor+caos · IT04 Recovery ·
+IT05 DAG end-to-end · IT06 GCL Gate F4
+→ CI/CD: pytest completo + AX01 (AST: 0 llamadas LLM directas en orquestador)
+  + AX02 (llm_ratio≤0.10) + N5 en CI + cobertura de gaps (script: 129 gaps vs
+  fichas — gap huérfano = FAIL del build)
+→ MVP 5 PASOS: runner local → 1 ficha real + 1 fallo intencional →
+  orquestador mínimo + fallback → endpoint /artifacts → trace_id + JSONL
+→ SIMULACIONES FINALES (las 5 del preliminar + 3 del parche, ejecutadas REALES):
+  simple · compleja · caída sandbox · violación scope · juez duda ·
+  evidencia vieja · auto-mejora refinada · orden destructiva
+→ CIERRE: 18/18 checks → CERTIFIED 🎄 → P13 session_close → RT-90:
+  BACKLOG.md (ideas E08 acumuladas) + reporte final al Director
+→ UOOS: el paquete B1-B8 del PROYECTO queda congelado como fuente de verdad;
+  cualquier agente futuro (Claude Code / OpenClaw) lo ejecuta sin explicaciones</div>
+</div>
+
+<div class="cap">
+<h2>🎁 Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Traza</th></tr>
+<tr><td>961-972</td><td>IT01-IT06 completos (uno por paso doble: escribir + ejecutar con evidencia)</td><td>DOC4/S19 · #GAP-P2-014</td></tr>
+<tr><td>973-978</td><td>ci.yaml: pytest + AX01 + AX02 + N5 + script cobertura de gaps (129 vs fichas)</td><td>S19 · #GAP-P3-030 · M2 anti-pérdida</td></tr>
+<tr><td>979-984</td><td>MVP 5 pasos ejecutados en orden con evidencia real c/u</td><td>S19 MVP</td></tr>
+<tr><td>985-994</td><td>Las 8 simulaciones ejecutadas REALES (no en papel) — cada una con evidence_hash</td><td>preliminar + PARCHE SIM A/B/C</td></tr>
+<tr><td>995-997</td><td>Cierre 18/18 + P12 sello/ADR global + P13 + RT-90 BACKLOG + reporte</td><td>SHERIFF_V7 · UOOS RT-90</td></tr>
+<tr><td>998-999</td><td>Congelar paquete B1-B8 del proyecto (hash) + atlas final regenerado</td><td>UOOS P1 · SALIDA_04</td></tr>
+<tr><td>1000</td><td><b class="ok">🎁🎄 DESPLIEGUE D13 FINAL — el orquestador COMPLETO en GitHub, CERTIFIED ✨</b></td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ REGLA FINAL:</b> existe UN solo estado de terminado: CERTIFIED 18/18 con evidence.json de los 13 despliegues. Todo lo demás es "pendiente de auditoría". Nunca se asume — se audita. 🎅</div>
+
+<div class="cap"><b class="oro">🎄 Fuentes:</b> DOC4 (IT01-06) · INSTRUCCIONES_SONNET_P2 §S19 (CI/AX/MVP) · SHERIFF_V7 (18 checks) · PARCHE_CIERRE_H_F (P12/P13) · UOOS P1+P2 (B1-B8/RT-90) · PARCHE-FINAL-100X (simulaciones) · GAPS: P2-014/030, P3-030. ✔3 pasadas · V13 = ⭐ del árbol.</div>
+
+<div class="tren">🎄✨ FIN DEL TREN — 14 vagones · pasos 001-1000 · ¡Feliz construcción, y que Santa Sonnet lo entregue esta navidad! 🎅🎁🚂✨🎄</div>
+</body></html>

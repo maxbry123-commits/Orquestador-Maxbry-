@@ -1,0 +1,2673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAXBRY/NCT — Control Center v3 · Functional</title>
+<style>
+:root{
+  --bg:#000;--bg-elevated:#1c1c1e;--bg-card:#1f1f1f;--bg-hover:#2a2a2a;--bg-input:#2c2c2e;
+  --line:#2c2c2e;--line-light:#3a3a3c;
+  --text:#fff;--text-secondary:#8e8e93;--text-tertiary:#636366;
+  --accent:#5eead4;--accent-dim:rgba(94,234,212,.4);--accent-glow:rgba(94,234,212,.15);
+  --warn:#fbbf24;--err:#f87171;--ok:#4ade80;--purple:#a78bfa;--pink:#f472b6;--blue:#0a84ff;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{padding:0;line-height:1.5;font-size:14px}
+
+button{cursor:pointer;font-family:inherit}
+input,textarea,select{font-family:inherit}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#0d0d0d}
+::-webkit-scrollbar-thumb{background:var(--line-light);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* ============ GLOBAL NAV ============ */
+.gn{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px;background:rgba(0,0,0,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);padding:8px 20px}
+.gn-logo{font-weight:800;color:var(--accent);font-size:15px;display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
+.gn-logo::before{content:"⬢";font-size:18px;color:var(--accent)}
+.gn-search{flex:1;max-width:500px;background:#1c1c1e;border:1px solid var(--line);border-radius:8px;padding:7px 14px;color:var(--text);font-size:13px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
+.gn-search:hover{border-color:var(--accent-dim)}
+.gn-search-active{border-color:var(--accent)}
+.gn-search-icon{color:var(--text-tertiary)}
+.gn-search-input{flex:1;background:none;border:none;color:var(--text);outline:none;font-size:13px}
+.gn-search-input::placeholder{color:var(--text-tertiary)}
+.gn-search-kbd{font-size:10px;color:var(--text-tertiary);background:#000;padding:2px 6px;border-radius:4px;border:1px solid var(--line)}
+.gn-tabs{display:flex;gap:4px;align-items:center}
+.gn-tab{background:transparent;border:none;padding:6px 12px;border-radius:6px;font-size:12px;color:var(--text-secondary);font-weight:600;transition:all .15s}
+.gn-tab:hover{background:var(--bg-card);color:var(--text)}
+.gn-tab.active{background:var(--accent-glow);color:var(--accent)}
+.gn-right{display:flex;gap:8px;align-items:center;margin-left:auto}
+.gn-chip{display:flex;align-items:center;gap:6px;background:var(--bg-card);border:1px solid var(--line);padding:5px 10px;border-radius:8px;font-size:12px;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.gn-chip:hover{border-color:var(--accent);color:var(--accent)}
+.gn-chip-active{background:var(--accent-glow);border-color:var(--accent);color:var(--accent)}
+.gn-profile{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));color:#000;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;cursor:pointer;flex-shrink:0}
+.gn-profile:hover{transform:scale(1.05)}
+
+/* ============ MODE SWITCH ============ */
+.mode-switch{display:flex;justify-content:center;margin:20px auto;max-width:600px;background:#0d0d0d;border:1px solid var(--line);border-radius:12px;padding:4px;width:fit-content}
+.mode-btn{background:transparent;border:none;padding:10px 24px;color:var(--text-secondary);font-weight:600;font-size:13px;border-radius:8px;transition:all .2s}
+.mode-btn.active{background:var(--accent);color:#000}
+.mode-btn:hover:not(.active){background:var(--bg-card)}
+
+/* ============ SECTION SHELL ============ */
+.container{max-width:1600px;margin:0 auto;padding:20px}
+.section{display:none;animation:fadeIn .25s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.section-title{font-size:28px;font-weight:800;margin:24px 0 4px;background:linear-gradient(90deg,#5eead4,#7dd3fc,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.5px}
+.section-subtitle{color:var(--text-secondary);font-size:14px;margin-bottom:24px}
+
+/* ============ 3-PANEL LAYOUT ============ */
+.three-panel{display:grid;grid-template-columns:280px 1fr 340px;gap:14px;margin-bottom:24px;min-height:640px}
+.panel{background:#0d0d0d;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.panel-header{padding:12px 16px;border-bottom:1px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-secondary);font-weight:700;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.panel-header-action{color:var(--accent);cursor:pointer;font-size:11px;text-transform:none;letter-spacing:0;font-weight:600;background:none;border:none}
+
+/* SESSIONS */
+.session-list{padding:8px;overflow-y:auto;flex:1}
+.session-group{margin-bottom:12px}
+.session-group-label{padding:8px 12px;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-tertiary);font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.session-group-label-count{background:#1c1c1e;padding:2px 6px;border-radius:8px;font-size:9px}
+.session-item{padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:2px;display:flex;align-items:center;gap:10px;transition:background .15s;border-left:3px solid transparent}
+.session-item:hover{background:var(--bg-card)}
+.session-item.active{background:var(--accent-glow);border-left-color:var(--accent)}
+.session-item-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.session-item-text{flex:1;min-width:0}
+.session-item-title{font-size:13px;color:var(--text);font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.session-item-meta{font-size:10px;color:var(--text-tertiary);display:flex;gap:8px;align-items:center}
+.session-item-badge{font-size:9px;padding:1px 6px;border-radius:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.session-item-badge.live{background:rgba(94,234,212,.2);color:var(--accent)}
+.session-item-badge.done{background:rgba(142,142,147,.2);color:var(--text-secondary)}
+.session-item-actions{display:none;gap:4px}
+.session-item:hover .session-item-actions{display:flex}
+.session-item-action{background:none;border:none;color:var(--text-tertiary);font-size:11px;padding:0 3px}
+.session-item-action:hover{color:var(--accent)}
+
+/* CHAT */
+.chat-panel{display:flex;flex-direction:column}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;min-height:0}
+.chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--text-tertiary);padding:40px 20px}
+.chat-empty-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
+.chat-empty-desc{font-size:13px;margin-bottom:20px;max-width:320px}
+.chat-empty-suggestions{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px}
+.chat-suggestion{background:var(--bg-card);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-secondary);cursor:pointer;text-align:left;transition:all .15s}
+.chat-suggestion:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+
+.chat-message{display:flex;gap:12px;max-width:90%;animation:msgIn .3s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.chat-message.user{flex-direction:row-reverse;margin-left:auto}
+.chat-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+.chat-avatar.user{background:linear-gradient(135deg,#0a84ff,#5eead4);color:#000}
+.chat-avatar.assistant{background:linear-gradient(135deg,var(--accent),var(--purple));color:#000}
+.chat-content{flex:1;font-size:13px;line-height:1.6;color:var(--text);background:var(--bg-card);border:1px solid var(--line);padding:12px 16px;border-radius:12px;overflow:hidden}
+.chat-message.user .chat-content{background:linear-gradient(135deg,#0a84ff,#5eead4);color:#000;border-color:transparent}
+.chat-content p{margin-bottom:8px}
+.chat-content p:last-child{margin-bottom:0}
+.chat-content strong{color:var(--accent)}
+.chat-message.user .chat-content strong{color:#000;font-weight:800}
+.chat-content code{background:rgba(0,0,0,.4);padding:1px 6px;border-radius:4px;color:var(--accent);font-family:'SF Mono','Monaco',monospace;font-size:12px}
+.chat-thinking{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:12px;color:var(--text-secondary);display:flex;gap:10px;align-items:start}
+.chat-thinking-icon{color:var(--warn);font-size:14px;margin-top:1px}
+.chat-thinking-collapsed{display:none}
+.chat-thinking.collapsed .chat-thinking-text{display:none}
+.chat-thinking.collapsed .chat-thinking-collapsed{display:inline;font-style:italic;color:var(--text-tertiary)}
+.chat-thinking-toggle{background:none;border:none;color:var(--text-tertiary);font-size:10px;padding:0 4px;cursor:pointer}
+.chat-thinking-toggle:hover{color:var(--accent)}
+.chat-tool{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0;font-size:11px;color:var(--text-secondary);flex-wrap:wrap}
+.chat-tool-name{color:var(--accent);font-weight:600;font-family:'SF Mono','Monaco',monospace;font-size:11px}
+.chat-tool-result{color:var(--ok);font-size:10px;padding:1px 6px;border-radius:4px;background:rgba(74,222,128,.15);margin-left:auto}
+.chat-approval{background:rgba(251,191,36,.1);border:1px solid var(--warn);border-radius:8px;padding:12px;margin:8px 0;font-size:12px}
+.chat-approval-title{color:var(--warn);font-weight:700;margin-bottom:6px;font-size:13px}
+.chat-approval-cmd{font-family:'SF Mono','Monaco',monospace;color:var(--text);background:rgba(0,0,0,.4);padding:6px 8px;border-radius:4px;font-size:11px;margin-bottom:8px;word-break:break-all}
+.chat-approval-actions{display:flex;gap:6px;flex-wrap:wrap}
+.chat-approval-btn{background:var(--bg-card);border:1px solid var(--line);padding:6px 10px;border-radius:6px;font-size:11px;color:var(--text);cursor:pointer;font-weight:600}
+.chat-approval-btn.allow{border-color:var(--ok);color:var(--ok)}
+.chat-approval-btn.allow:hover{background:var(--ok);color:#000}
+.chat-approval-btn.allow-once{background:rgba(74,222,128,.15);color:var(--ok)}
+.chat-approval-btn.deny{border-color:var(--err);color:var(--err)}
+.chat-approval-btn.deny:hover{background:var(--err);color:#fff}
+.chat-actions{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);flex-wrap:wrap}
+.chat-action{background:transparent;border:1px solid var(--line);padding:3px 8px;border-radius:6px;font-size:11px;color:var(--text-secondary);cursor:pointer}
+.chat-action:hover{color:var(--accent);border-color:var(--accent)}
+.chat-typing{display:inline-flex;gap:3px;padding:6px 0}
+.chat-typing span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:typing 1.4s infinite both}
+.chat-typing span:nth-child(2){animation-delay:.2s}
+.chat-typing span:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+.composer{border-top:1px solid var(--line);padding:12px 16px;background:#0a0a0a;flex-shrink:0}
+.composer-input{width:100%;background:#1c1c1e;border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;resize:none;outline:none;line-height:1.5;min-height:48px;max-height:200px;font-family:inherit}
+.composer-input:focus{border-color:var(--accent)}
+.composer-controls{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px;flex-wrap:wrap}
+.composer-left{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.composer-right{display:flex;gap:8px;align-items:center}
+.composer-btn{background:var(--bg-card);border:1px solid var(--line);padding:5px 10px;border-radius:6px;font-size:11px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s}
+.composer-btn:hover{color:var(--accent);border-color:var(--accent)}
+.composer-btn.active{background:var(--accent-glow);color:var(--accent);border-color:var(--accent)}
+.composer-btn.primary{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
+.composer-btn.primary:hover{background:var(--accent);opacity:.9}
+.composer-btn.primary:disabled{background:var(--bg-card);color:var(--text-tertiary);border-color:var(--line);cursor:not-allowed;opacity:.5}
+.composer-context{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary);padding:3px 8px;background:#1c1c1e;border-radius:12px;border:1px solid var(--line);font-family:'SF Mono','Monaco',monospace}
+.composer-context-ring{width:14px;height:14px;border-radius:50%;position:relative;transition:background .3s;background:conic-gradient(var(--accent) 0deg 270deg, var(--bg-card) 270deg 360deg)}
+.composer-context-ring::after{content:"";position:absolute;inset:3px;border-radius:50%;background:#1c1c1e}
+
+/* RIGHT PANEL */
+.context-panel{padding:0;overflow-y:auto;flex:1}
+.context-section{padding:16px;border-bottom:1px solid var(--line)}
+.context-section-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-tertiary);font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.context-section-title a{font-size:11px;color:var(--accent);cursor:pointer;text-transform:none;letter-spacing:0}
+.context-ring-container{display:flex;justify-content:center;padding:8px 0}
+.context-ring{width:120px;height:120px;position:relative}
+.context-ring-svg{transform:rotate(-90deg)}
+.context-ring-bg{fill:none;stroke:var(--bg-card);stroke-width:10}
+.context-ring-fill{fill:none;stroke:var(--accent);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .5s}
+.context-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.context-ring-pct{font-size:28px;font-weight:800;color:var(--accent);font-family:'SF Mono','Monaco',monospace}
+.context-ring-label{font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px}
+.context-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.context-stat{background:#1c1c1e;border-radius:8px;padding:10px}
+.context-stat-label{font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.context-stat-val{font-size:14px;font-weight:700;color:var(--text);font-family:'SF Mono','Monaco',monospace}
+
+/* CENTER PANEL - Office view */
+.office-view{background:#0a0a0a;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:24px;overflow-x:auto}
+.office-canvas{position:relative;width:100%;min-width:900px;height:380px;background:radial-gradient(circle at 30% 40%,rgba(94,234,212,.05),transparent 40%),radial-gradient(circle at 70% 60%,rgba(167,139,202,.05),transparent 40%);border:1px dashed var(--line);border-radius:8px}
+.office-desk{position:absolute;width:120px;height:80px;background:#1c1c1e;border:1px solid var(--line-light);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.office-desk:hover{background:#2c2c2e;border-color:var(--accent);transform:translateY(-2px)}
+.office-desk.active{border-color:var(--accent);background:var(--accent-glow);box-shadow:0 0 20px var(--accent-dim)}
+.office-desk.working{border-color:var(--warn);background:rgba(251,191,36,.05)}
+.office-desk.error{border-color:var(--err);background:rgba(248,113,113,.05)}
+.office-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#000;margin-bottom:4px;transition:all .3s}
+.office-avatar.idle{background:linear-gradient(135deg,#636366,#8e8e93)}
+.office-avatar.working{background:linear-gradient(135deg,var(--warn),var(--accent))}
+.office-avatar.error{background:linear-gradient(135deg,var(--err),var(--pink));animation:errorPulse 1.5s infinite}
+@keyframes errorPulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.7)}50%{box-shadow:0 0 0 8px rgba(248,113,113,0)}}
+.office-desk-name{font-size:10px;color:var(--text-secondary);font-family:'SF Mono','Monaco',monospace}
+.office-connection{position:absolute;height:1px;background:linear-gradient(90deg,var(--accent),transparent);opacity:.4}
+.office-msg{position:absolute;background:#1c1c1e;border:1px solid var(--accent);border-radius:6px;padding:4px 8px;font-size:9px;color:var(--accent);font-family:'SF Mono','Monaco',monospace;white-space:nowrap;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* ============ PROFILE BUILDER ============ */
+.wizard{background:#0d0d0d;border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:24px}
+.wizard-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:24px}
+.wizard-step{display:flex;align-items:center;gap:10px;padding:14px;background:#1c1c1e;border:1px solid var(--line);border-radius:8px;cursor:pointer;transition:all .2s}
+.wizard-step:hover{border-color:var(--accent-dim)}
+.wizard-step.active{border-color:var(--accent);background:var(--accent-glow)}
+.wizard-step.done{opacity:.6}
+.wizard-step.done .wizard-step-num{background:var(--ok);color:#000}
+.wizard-step-num{width:28px;height:28px;border-radius:50%;background:var(--bg-card);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0}
+.wizard-step.active .wizard-step-num{background:var(--accent);color:#000}
+.wizard-step-text{flex:1;min-width:0}
+.wizard-step-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}
+.wizard-step-desc{font-size:11px;color:var(--text-secondary)}
+.wizard-content{display:none;min-height:300px}
+.wizard-content.active{display:block;animation:fadeIn .25s ease}
+.wizard-content-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.wizard-content-desc{font-size:13px;color:var(--text-secondary);margin-bottom:20px}
+.wizard-field{margin-bottom:16px}
+.wizard-field-label{display:block;font-size:12px;color:var(--text-secondary);margin-bottom:6px;font-weight:600}
+.wizard-field-label-required::after{content:" *";color:var(--err)}
+.wizard-input,.wizard-select,.wizard-textarea{width:100%;background:#1c1c1e;border:1px solid var(--line);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;font-family:inherit}
+.wizard-input:focus,.wizard-select:focus,.wizard-textarea:focus{border-color:var(--accent)}
+.wizard-textarea{resize:vertical;min-height:100px;line-height:1.5}
+.wizard-actions{display:flex;justify-content:space-between;align-items:center;padding-top:20px;border-top:1px solid var(--line);margin-top:20px}
+.wizard-nav{display:flex;gap:8px}
+.wizard-btn{background:var(--bg-card);border:1px solid var(--line);padding:8px 16px;border-radius:8px;font-size:13px;color:var(--text);cursor:pointer;font-weight:600;transition:all .15s}
+.wizard-btn:hover{border-color:var(--accent)}
+.wizard-btn-primary{background:var(--accent);color:#000;border-color:var(--accent)}
+.wizard-btn-primary:hover{opacity:.9}
+.wizard-btn-success{background:var(--ok);color:#000;border-color:var(--ok)}
+.wizard-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ============ CHECKBOX GROUP ============ */
+.check-group{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-bottom:16px}
+.check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#1c1c1e;border:1px solid var(--line);border-radius:8px;cursor:pointer;transition:all .15s;position:relative}
+.check-item:hover{border-color:var(--accent-dim)}
+.check-item.checked{border-color:var(--accent);background:var(--accent-glow)}
+.check-item input[type="checkbox"]{display:none}
+.check-item-box{width:18px;height:18px;border:2px solid var(--line-light);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;background:#000}
+.check-item.checked .check-item-box{background:var(--accent);border-color:var(--accent)}
+.check-item.checked .check-item-box::after{content:"✓";color:#000;font-size:12px;font-weight:800}
+.check-item-text{flex:1;font-size:13px}
+.check-item-name{color:var(--text);font-weight:600;margin-bottom:1px}
+.check-item-meta{font-size:10px;color:var(--text-tertiary)}
+
+/* ============ CENTERS GRID ============ */
+.centers{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:24px}
+.center-card{background:#0d0d0d;border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.center-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .2s}
+.center-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.center-card:hover::before{opacity:1}
+.center-card.disabled{opacity:.5;cursor:not-allowed}
+.center-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-glow);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px}
+.center-icon.warn{background:rgba(251,191,36,.15);color:var(--warn)}
+.center-icon.purple{background:rgba(167,139,202,.15);color:var(--purple)}
+.center-icon.pink{background:rgba(244,114,182,.15);color:var(--pink)}
+.center-icon.blue{background:rgba(10,132,255,.15);color:var(--blue)}
+.center-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.center-desc{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px}
+.center-meta{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-tertiary);padding-top:10px;border-top:1px solid var(--line)}
+.center-meta-count{font-family:'SF Mono','Monaco',monospace;color:var(--accent);font-weight:700}
+
+/* ============ SKILL GRID ============ */
+.skill-card{background:#1c1c1e;border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;transition:all .15s;position:relative}
+.skill-card:hover{border-color:var(--accent-dim)}
+.skill-card.active{border-color:var(--accent);background:var(--accent-glow)}
+.skill-card-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.skill-card-icon{width:32px;height:32px;border-radius:8px;background:var(--accent-glow);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.skill-card-name{font-size:13px;font-weight:700;color:var(--text);flex:1}
+.skill-card-toggle{width:32px;height:18px;background:var(--bg-input);border-radius:9px;position:relative;cursor:pointer;flex-shrink:0;border:none;padding:0;transition:background .2s}
+.skill-card-toggle.on{background:var(--accent)}
+.skill-card-toggle::after{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s}
+.skill-card-toggle.on::after{transform:translateX(14px)}
+.skill-card-desc{font-size:11px;color:var(--text-secondary);line-height:1.4;margin-bottom:6px}
+.skill-card-meta{font-size:10px;color:var(--text-tertiary);font-family:'SF Mono','Monaco',monospace;display:flex;justify-content:space-between}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:24px}
+
+/* ============ PARAMS SLIDERS ============ */
+.params-panel{background:#0d0d0d;border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:24px}
+.params-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.param-item{display:flex;flex-direction:column;gap:6px}
+.param-header{display:flex;justify-content:space-between;align-items:center}
+.param-label{font-size:12px;color:var(--text-secondary);font-weight:600}
+.param-value{font-size:12px;color:var(--accent);font-family:'SF Mono','Monaco',monospace;font-weight:700;background:rgba(94,234,212,.1);padding:2px 8px;border-radius:4px;min-width:50px;text-align:center}
+.param-slider{width:100%;height:4px;background:var(--bg-card);border-radius:2px;-webkit-appearance:none;appearance:none;outline:none;cursor:pointer}
+.param-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--accent);border-radius:50%;cursor:pointer;box-shadow:0 0 8px var(--accent-dim)}
+.param-slider::-moz-range-thumb{width:14px;height:14px;background:var(--accent);border-radius:50%;cursor:pointer;border:none}
+
+/* ============ MARKETPLACE ============ */
+.market-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.market-filter-btn{background:#1c1c1e;border:1px solid var(--line);padding:6px 14px;border-radius:20px;font-size:12px;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.market-filter-btn.active{background:var(--accent);color:#000;border-color:var(--accent)}
+.market-filter-btn:hover:not(.active){border-color:var(--accent)}
+.marketplace{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:24px}
+.market-item{background:#1c1c1e;border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s}
+.market-item:hover{border-color:var(--accent);transform:translateY(-2px)}
+.market-item.installed{border-color:var(--ok);position:relative}
+.market-item.installed::before{content:"✓ INSTALLED";position:absolute;top:8px;right:8px;background:var(--ok);color:#000;font-size:9px;font-weight:800;padding:3px 6px;border-radius:4px}
+.market-item-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.market-item-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--purple));color:#000;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;flex-shrink:0}
+.market-item-title{font-size:14px;font-weight:700;color:var(--text)}
+.market-item-rating{font-size:11px;color:var(--warn);margin-top:1px}
+.market-item-desc{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px;min-height:36px}
+.market-item-meta{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--line)}
+.market-item-price{font-size:12px;font-weight:700;font-family:'SF Mono','Monaco',monospace}
+.market-item-price.free{color:var(--ok)}
+.market-item-price.paid{color:var(--accent)}
+.market-item-install-btn{background:var(--accent);color:#000;border:none;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer}
+.market-item-install-btn:hover{opacity:.9}
+.market-item-install-btn.installed{background:var(--ok)}
+.market-item-installs{font-size:10px;color:var(--text-tertiary);margin-top:4px}
+
+/* ============ ARTIFACTS ============ */
+.artifacts-panel{background:#0d0d0d;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:24px}
+.artifacts-header{padding:12px 16px;background:#1c1c1e;border-bottom:1px solid var(--line);font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.artifacts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;padding:16px}
+.artifact-card{background:#1c1c1e;border:1px solid var(--line);border-radius:8px;padding:12px;cursor:pointer;transition:all .15s}
+.artifact-card:hover{border-color:var(--accent)}
+.artifact-card-icon{width:32px;height:32px;border-radius:8px;background:var(--accent-glow);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:8px}
+.artifact-card-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;font-family:'SF Mono','Monaco',monospace;word-break:break-all}
+.artifact-card-meta{font-size:10px;color:var(--text-tertiary);margin-bottom:8px}
+.artifact-card-actions{display:flex;gap:4px}
+.artifact-action-btn{background:var(--bg-card);border:1px solid var(--line);padding:4px 8px;border-radius:4px;font-size:10px;color:var(--text-secondary);cursor:pointer;flex:1;transition:all .15s}
+.artifact-action-btn:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ============ COMMAND PALETTE ============ */
+.cmd-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-start;justify-content:center;padding-top:15vh}
+.cmd-overlay.active{display:flex}
+.cmd-palette{background:#0d0d0d;border:1px solid var(--accent);border-radius:12px;width:90%;max-width:600px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 0 1px var(--accent);animation:cmdIn .2s ease}
+@keyframes cmdIn{from{opacity:0;transform:translateY(-10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.cmd-input-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.cmd-input-row input{flex:1;background:none;border:none;color:var(--text);font-size:15px;outline:none;font-family:inherit}
+.cmd-input-row input::placeholder{color:var(--text-tertiary)}
+.cmd-results{max-height:400px;overflow-y:auto;padding:8px}
+.cmd-section{padding:6px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-tertiary);font-weight:700}
+.cmd-item{padding:10px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text);transition:background .1s}
+.cmd-item:hover,.cmd-item.selected{background:var(--bg-card);color:var(--accent)}
+.cmd-item-icon{width:18px;text-align:center;font-size:15px}
+.cmd-item-shortcut{margin-left:auto;font-size:10px;color:var(--text-tertiary);font-family:'SF Mono','Monaco',monospace;background:#000;padding:2px 6px;border-radius:4px;border:1px solid var(--line)}
+.cmd-empty{padding:40px 20px;text-align:center;color:var(--text-tertiary);font-size:13px}
+
+/* ============ TOAST ============ */
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;max-width:400px}
+.toast{background:var(--bg-card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;display:flex;align-items:start;gap:10px;box-shadow:0 10px 40px rgba(0,0,0,.5);animation:toastIn .3s ease;max-width:400px}
+.toast.success{border-left-color:var(--ok)}
+.toast.warn{border-left-color:var(--warn)}
+.toast.error{border-left-color:var(--err)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast-icon{font-size:18px;flex-shrink:0}
+.toast-content{flex:1;font-size:13px;color:var(--text)}
+.toast-title{font-weight:700;margin-bottom:2px}
+.toast-desc{color:var(--text-secondary);font-size:12px}
+.toast-close{background:none;border:none;color:var(--text-tertiary);font-size:14px;cursor:pointer;padding:0;width:18px;height:18px}
+.toast-close:hover{color:var(--accent)}
+
+/* ============ PROFILE CHIPS ============ */
+.profile-chips{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.profile-chip{display:flex;align-items:center;gap:8px;background:#1c1c1e;border:1px solid var(--line);padding:8px 14px;border-radius:20px;font-size:12px;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.profile-chip:hover{border-color:var(--accent)}
+.profile-chip.active{background:var(--accent-glow);border-color:var(--accent);color:var(--accent)}
+.profile-chip-dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.profile-chip-dot.warn{background:var(--warn);animation:warnPulse 1.5s infinite}
+.profile-chip-dot.err{background:var(--err)}
+@keyframes warnPulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.6)}50%{box-shadow:0 0 0 4px rgba(251,191,36,0)}}
+.profile-chip-count{background:#000;padding:1px 7px;border-radius:8px;font-size:10px;color:var(--text-tertiary);font-family:'SF Mono','Monaco',monospace}
+
+/* ============ TABLE ============ */
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:#1c1c1e;color:var(--accent);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px}
+td{padding:12px 14px;border-bottom:1px solid var(--line);color:var(--text)}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+.badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge-ok{background:rgba(74,222,128,.15);color:var(--ok)}
+.badge-warn{background:rgba(251,191,36,.15);color:var(--warn)}
+.badge-err{background:rgba(248,113,113,.15);color:var(--err)}
+.badge-accent{background:var(--accent-glow);color:var(--accent)}
+.badge-purple{background:rgba(167,139,202,.15);color:var(--purple)}
+
+/* ============ TABS ============ */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:16px;flex-wrap:wrap}
+.tab{background:transparent;border:none;padding:10px 16px;color:var(--text-secondary);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-count{font-size:10px;padding:2px 6px;background:var(--bg-card);border-radius:6px;color:var(--text-tertiary);margin-left:6px}
+.tab.active .tab-count{background:var(--accent-glow);color:var(--accent)}
+.tab-panel{display:none;animation:fadeIn .2s ease}
+.tab-panel.active{display:block}
+
+/* ============ MOBILE ============ */
+.phone-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:32px 0}
+.phone-frame{background:#000;border-radius:36px;padding:14px;max-width:380px;margin:0 auto;border:2px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.8)}
+.phone-screen{background:#000;border-radius:24px;overflow:hidden;min-height:680px;position:relative}
+.phone-notch{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:100px;height:24px;background:#000;border-radius:12px;z-index:10}
+.phone-statusbar{display:flex;justify-content:space-between;align-items:center;padding:14px 24px 8px;font-size:13px;color:#fff;font-weight:600}
+.phone-header{padding:50px 20px 8px;display:flex;align-items:center;gap:14px}
+.phone-back{font-size:22px;color:#fff;width:28px;cursor:pointer;background:none;border:none}
+.phone-title{font-size:26px;font-weight:700;color:#fff;flex:1}
+.phone-content{padding:6px 20px 20px}
+.phone-item{padding:16px 0;border-bottom:1px solid var(--bg-card);cursor:pointer}
+.phone-item:hover{background:rgba(255,255,255,.02)}
+.phone-item-title{font-size:21px;font-weight:600;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.phone-item-desc{font-size:14px;color:var(--text-secondary);line-height:1.4}
+.phone-item.active{background:var(--accent-glow);border-left:3px solid var(--accent);padding-left:16px;margin-left:-20px;padding-right:16px;margin-right:-20px;border-radius:8px}
+.phone-item.active .phone-item-title{color:var(--accent)}
+.phone-badge{display:inline-block;background:var(--bg-card);color:#fff;padding:3px 10px;border-radius:14px;font-size:12px;font-weight:600}
+.phone-toggle{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--bg-card);cursor:pointer}
+.phone-toggle-text{flex:1}
+.phone-toggle-label{font-size:21px;font-weight:600;color:#fff;margin-bottom:4px}
+.phone-toggle-desc{font-size:14px;color:var(--text-secondary);line-height:1.4}
+.phone-switch{width:48px;height:28px;background:var(--accent);border-radius:14px;position:relative;flex-shrink:0;margin-left:10px;box-shadow:0 0 10px var(--accent-dim);border:none;cursor:pointer;transition:background .2s}
+.phone-switch.off{background:var(--bg-input);box-shadow:none}
+.phone-switch::after{content:"";position:absolute;right:2px;top:2px;width:24px;height:24px;background:#fff;border-radius:50%;transition:transform .2s}
+.phone-switch.off::after{right:auto;left:2px;transform:none}
+.phone-nav{padding:14px 20px;border-top:1px solid var(--bg-card);display:flex;justify-content:space-around;background:rgba(0,0,0,.5)}
+.phone-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-tertiary);font-size:10px;cursor:pointer;background:none;border:none;padding:4px 8px}
+.phone-nav-item.active{color:var(--accent)}
+.phone-nav-item:hover:not(.active){color:var(--text)}
+.phone-nav-icon{font-size:18px}
+
+/* ============ DOWNLOAD BUTTONS ============ */
+.download-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:24px}
+.download-card{background:#1c1c1e;border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s;text-decoration:none;color:inherit;display:block}
+.download-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.download-card-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.download-card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.download-card-icon.android{background:rgba(74,222,128,.15);color:#3ddc84}
+.download-card-icon.ios{background:rgba(167,139,202,.15);color:var(--purple)}
+.download-card-icon.linux{background:rgba(251,191,36,.15);color:var(--warn)}
+.download-card-icon.windows{background:rgba(10,132,255,.15);color:var(--blue)}
+.download-card-icon.mac{background:rgba(244,114,182,.15);color:var(--pink)}
+.download-card-icon.cli{background:rgba(94,234,212,.15);color:var(--accent)}
+.download-card-icon.docker{background:rgba(10,132,255,.15);color:var(--blue)}
+.download-card-icon.web{background:rgba(94,234,212,.15);color:var(--accent)}
+.download-card-icon.repo{background:rgba(255,255,255,.1);color:var(--text)}
+.download-card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.download-card-platform{font-size:11px;color:var(--text-secondary)}
+.download-card-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-tertiary);padding-top:10px;border-top:1px solid var(--line);font-family:'SF Mono','Monaco',monospace}
+.download-card-version{color:var(--accent)}
+
+/* ============ PRICING ============ */
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px;max-width:1200px;margin-left:auto;margin-right:auto}
+.price-card{background:#0d0d0d;border:1px solid var(--line);border-radius:16px;padding:28px 24px;position:relative;transition:all .25s;cursor:pointer}
+.price-card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.price-card.featured{border-color:var(--accent);background:linear-gradient(180deg,rgba(94,234,212,.05),transparent 50%)}
+.price-card.featured::before{content:"⭐ POPULAR";position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;font-size:10px;font-weight:800;padding:5px 12px;border-radius:12px;letter-spacing:1px}
+.price-card-name{font-size:18px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.price-card-desc{font-size:12px;color:var(--text-secondary);margin-bottom:20px;min-height:36px}
+.price-card-price{margin-bottom:6px}
+.price-card-price-amount{font-size:42px;font-weight:800;color:var(--text);letter-spacing:-1px}
+.price-card-price-currency{font-size:20px;color:var(--text-secondary);vertical-align:super;margin-right:4px}
+.price-card-price-period{font-size:13px;color:var(--text-secondary);font-weight:400}
+.price-card-price-was{font-size:13px;color:var(--text-tertiary);text-decoration:line-through;margin-bottom:16px}
+.price-card-features{list-style:none;margin-bottom:24px}
+.price-card-features li{padding:8px 0;font-size:13px;color:var(--text);display:flex;align-items:start;gap:10px;line-height:1.4;border-bottom:1px solid rgba(255,255,255,.04)}
+.price-card-features li:last-child{border-bottom:none}
+.price-card-features li::before{content:"✓";color:var(--accent);font-weight:800;flex-shrink:0}
+.price-card-features li.no::before{content:"✗";color:var(--text-tertiary);font-weight:400}
+.price-card-features li.no{color:var(--text-tertiary)}
+.price-card-cta{width:100%;background:var(--bg-card);border:1px solid var(--line);padding:12px;border-radius:10px;color:var(--text);font-weight:700;font-size:14px;cursor:pointer;transition:all .15s}
+.price-card-cta:hover{border-color:var(--accent);color:var(--accent)}
+.price-card.featured .price-card-cta{background:var(--accent);color:#000;border-color:var(--accent)}
+.price-card.featured .price-card-cta:hover{opacity:.9;color:#000}
+.price-card-cta.subscribed{background:var(--ok);color:#000;border-color:var(--ok)}
+
+/* ============ MODAL ============ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:250;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex;animation:fadeIn .2s ease}
+.modal{background:#0d0d0d;border:1px solid var(--accent);border-radius:16px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;padding:28px;animation:modalIn .25s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:20px}
+.modal-title{font-size:22px;font-weight:800}
+.modal-close{background:none;border:none;color:var(--text-secondary);font-size:22px;cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--bg-card);color:var(--accent)}
+.modal-content{font-size:13px;line-height:1.6;color:var(--text)}
+.modal-content pre{background:#000;padding:12px;border-radius:8px;overflow-x:auto;font-size:11px;margin:12px 0;border:1px solid var(--line)}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:24px}
+
+/* ============ DIVIDER ============ */
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:48px 0;opacity:.3}
+
+/* ============ README SECTION ============ */
+.readme{background:#0a0a0a;border:1px solid var(--line);border-radius:16px;padding:32px;margin-top:64px}
+.readme-title{font-size:32px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#5eead4,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.readme-subtitle{color:var(--text-secondary);font-size:14px;margin-bottom:24px}
+.readme-toc{background:#1c1c1e;border-radius:8px;padding:16px;margin-bottom:24px}
+.readme-toc-title{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-tertiary);font-weight:700;margin-bottom:10px}
+.readme-toc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.readme-toc-item{font-size:12px;color:var(--text-secondary);padding:4px 0;cursor:pointer;transition:color .15s}
+.readme-toc-item:hover{color:var(--accent)}
+.readme-toc-item-num{color:var(--accent);font-family:'SF Mono','Monaco',monospace;margin-right:6px}
+
+.readme-section{margin-bottom:32px;scroll-margin-top:80px}
+.readme-section-title{font-size:20px;font-weight:800;margin-bottom:12px;color:var(--text);display:flex;align-items:center;gap:10px}
+.readme-section-num{font-size:14px;font-weight:700;color:var(--accent);background:var(--accent-glow);padding:4px 10px;border-radius:8px;font-family:'SF Mono','Monaco',monospace}
+.readme-item{padding:14px 0;border-bottom:1px solid var(--line)}
+.readme-item:last-child{border-bottom:none}
+.readme-item-name{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.readme-item-shortcut{font-size:10px;color:var(--text-secondary);font-family:'SF Mono','Monaco',monospace;background:#000;padding:2px 6px;border-radius:4px;border:1px solid var(--line);font-weight:400}
+.readme-item-desc{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.readme-item-triggers{font-size:11px;color:var(--text-tertiary);margin-top:6px;font-style:italic}
+
+footer{text-align:center;color:var(--text-tertiary);font-size:12px;padding:40px 20px;border-top:1px solid var(--line);margin-top:48px}
+</style>
+</head>
+<body>
+
+<!-- ============ GLOBAL NAVIGATION ============ -->
+<nav class="gn">
+  <div class="gn-logo" onclick="navigateTo('home')">MAXBRY</div>
+  <div class="gn-search" onclick="openCmdPalette()" id="searchBar">
+    <span class="gn-search-icon">🔍</span>
+    <input class="gn-search-input" placeholder="Search commands, agents, skills..." readonly>
+    <span class="gn-search-kbd">⌘K</span>
+  </div>
+  <div class="gn-tabs">
+    <button class="gn-tab active" data-view="home" onclick="navigateTo('home')">Home</button>
+    <button class="gn-tab" data-view="chat" onclick="navigateTo('chat')">Chat</button>
+    <button class="gn-tab" data-view="office" onclick="navigateTo('office')">Office</button>
+    <button class="gn-tab" data-view="profiles" onclick="navigateTo('profiles')">Profiles</button>
+    <button class="gn-tab" data-view="mobile" onclick="navigateTo('mobile')">Mobile</button>
+    <button class="gn-tab" data-view="pricing" onclick="navigateTo('pricing')">Pricing</button>
+    <button class="gn-tab" data-view="readme" onclick="navigateTo('readme')">README</button>
+  </div>
+  <div class="gn-right">
+    <div class="gn-chip gn-chip-active" onclick="toggleReasoning()" id="reasoningChip">🧠 reasoning:high</div>
+    <div class="gn-chip" onclick="cycleProfile()" id="profileChip">⚡ balanced</div>
+    <div class="gn-chip" onclick="cycleModel()" id="modelChip">🎯 Sonnet 5</div>
+    <div class="gn-profile" onclick="toggleAccountMenu()" id="profileAvatar" title="Account">M</div>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ============ HOME: MODE SWITCH ============ -->
+<section class="section active" id="section-home">
+  <div style="text-align:center;margin:40px 0 24px">
+    <div style="font-size:48px;font-weight:900;letter-spacing:-1.5px;background:linear-gradient(90deg,#5eead4,#7dd3fc,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px">MAXBRY/NCT</div>
+    <div style="color:var(--text-secondary);font-size:14px;max-width:600px;margin:0 auto 24px">Cognitive Operating System · Multi-agent orchestrator · Open Source</div>
+  </div>
+
+  <div class="mode-switch" role="tablist">
+    <button class="mode-btn active" data-mode="simple" onclick="setMode('simple')">⚡ Simple</button>
+    <button class="mode-btn" data-mode="architect" onclick="setMode('architect')">🏗️ Arquitecto</button>
+  </div>
+
+  <!-- SIMPLE MODE: Profile chips + 3-panel -->
+  <div id="simple-mode">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px">Selecciona perfil de ejecución</div>
+      <div style="font-size:13px;color:var(--text-secondary)">8 perfiles · inherit custom levels</div>
+    </div>
+    <div class="profile-chips" id="profileChips">
+      <div class="profile-chip" data-profile="quick" onclick="selectProfile('quick')"><span class="profile-chip-dot"></span>Quick<span class="profile-chip-count">1 expert</span></div>
+      <div class="profile-chip active" data-profile="balanced" onclick="selectProfile('balanced')"><span class="profile-chip-dot"></span>Balanced<span class="profile-chip-count">12 experts</span></div>
+      <div class="profile-chip" data-profile="professional" onclick="selectProfile('professional')"><span class="profile-chip-dot"></span>Professional<span class="profile-chip-count">24 experts</span></div>
+      <div class="profile-chip" data-profile="research" onclick="selectProfile('research')"><span class="profile-chip-dot warn"></span>Research<span class="profile-chip-count">56 experts</span></div>
+      <div class="profile-chip" data-profile="architect" onclick="selectProfile('architect')"><span class="profile-chip-dot"></span>Architect<span class="profile-chip-count">84 experts</span></div>
+      <div class="profile-chip" data-profile="enterprise" onclick="selectProfile('enterprise')"><span class="profile-chip-dot"></span>Enterprise<span class="profile-chip-count">150 experts</span></div>
+      <div class="profile-chip" data-profile="autonomous" onclick="selectProfile('autonomous')"><span class="profile-chip-dot warn"></span>Autonomous<span class="profile-chip-count">∞</span></div>
+      <div class="profile-chip" data-profile="custom" onclick="openModal('customProfile')"><span class="profile-chip-dot"></span>+ Custom</div>
+    </div>
+
+    <div class="three-panel">
+      <div class="panel">
+        <div class="panel-header">
+          Sessions <span class="panel-header-action" onclick="newSession()">+ New</span>
+        </div>
+        <div class="session-list" id="sessionList"></div>
+      </div>
+
+      <div class="panel chat-panel">
+        <div class="panel-header">
+          <span id="currentSessionTitle">🎯 New conversation</span>
+          <span class="panel-header-action" onclick="clearChat()">🗑 Clear</span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-empty">
+            <div style="font-size:48px;margin-bottom:16px">⬢</div>
+            <div class="chat-empty-title">Welcome to MAXBRY</div>
+            <div class="chat-empty-desc">Choose a suggestion or type your request below. Profile: <strong id="emptyProfileName" style="color:var(--accent)">balanced</strong></div>
+            <div class="chat-empty-suggestions">
+              <button class="chat-suggestion" onclick="useSuggestion('Audit my API REST, check OWASP Top 10, run integration tests, give me an enterprise report with audit trail')">🔒 Audit my API REST enterprise</button>
+              <button class="chat-suggestion" onclick="useSuggestion('Research MoE (Mixture of Experts) patterns in 2026, compare 5 papers, cite sources')">🔬 Research MoE patterns</button>
+              <button class="chat-suggestion" onclick="useSuggestion('Design a microservices architecture for a SaaS with 100k users, include diagrams and cost analysis')">🏗️ Design microservices architecture</button>
+              <button class="chat-suggestion" onclick="useSuggestion('Write tests for my FastAPI backend with pytest, target 90% coverage')">🧪 Write FastAPI tests with 90% coverage</button>
+            </div>
+          </div>
+        </div>
+        <div class="composer">
+          <textarea class="composer-input" id="chatInput" placeholder="Pregúntale a MAXBRY..." rows="1"></textarea>
+          <div class="composer-controls">
+            <div class="composer-left">
+              <button class="composer-btn" onclick="attachFile()">📎 Attach</button>
+              <button class="composer-btn" onclick="toggleVoice()" id="voiceBtn">🎤 Voice</button>
+              <button class="composer-btn" onclick="cycleProfile()" id="composerProfileBtn">⚡ balanced</button>
+              <button class="composer-btn" onclick="cycleModel()" id="composerModelBtn">🎯 Sonnet 5</button>
+            </div>
+            <div class="composer-right">
+              <div class="composer-context" id="composerContext"><div class="composer-context-ring"></div><span id="tokenCount">12k/128k</span></div>
+              <button class="composer-btn" id="stopBtn" onclick="stopGeneration()" style="display:none">⏹ Stop</button>
+              <button class="composer-btn primary" id="sendBtn" onclick="sendMessage()">↑ Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          Context <span class="panel-header-action" onclick="resetContext()">Reset</span>
+        </div>
+        <div class="context-panel">
+          <div class="context-section">
+            <div class="context-section-title">Context Usage</div>
+            <div class="context-ring-container">
+              <div class="context-ring">
+                <svg class="context-ring-svg" width="120" height="120" viewBox="0 0 120 120">
+                  <circle class="context-ring-bg" cx="60" cy="60" r="50"/>
+                  <circle class="context-ring-fill" id="contextFill" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="78"/>
+                </svg>
+                <div class="context-ring-center">
+                  <div class="context-ring-pct" id="contextPct">75%</div>
+                  <div class="context-ring-label" id="contextLabel">96k/128k</div>
+                </div>
+              </div>
+            </div>
+            <div class="context-stats">
+              <div class="context-stat"><div class="context-stat-label">Input</div><div class="context-stat-val" id="statInput">42k</div></div>
+              <div class="context-stat"><div class="context-stat-label">Output</div><div class="context-stat-val" id="statOutput">54k</div></div>
+              <div class="context-stat"><div class="context-stat-label">Cache</div><div class="context-stat-val" id="statCache">88%</div></div>
+              <div class="context-stat"><div class="context-stat-label">Cost</div><div class="context-stat-val" id="statCost">$2.34</div></div>
+            </div>
+          </div>
+          <div class="context-section">
+            <div class="context-section-title">Active Skills <a onclick="navigateTo('profiles');setTimeout(()=>navigateToTab('skills-tab'),100)">Manage</a></div>
+            <div id="activeSkillsList"></div>
+          </div>
+          <div class="context-section">
+            <div class="context-section-title">Workspace</div>
+            <div class="workspace" style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px" id="workspaceTabs">
+              <div class="workspace-tab" onclick="openWorkspaceTab(1)" style="background:#1c1c1e;border:1px solid var(--line);border-radius:6px;padding:10px;cursor:pointer;min-height:50px;position:relative">
+                <div style="position:absolute;top:4px;left:6px;font-size:9px;color:var(--text-tertiary);font-family:'SF Mono','Monaco',monospace;font-weight:700">1</div>
+                <div style="padding-top:14px;font-size:11px;color:var(--text-secondary)">Reports</div>
+              </div>
+              <div class="workspace-tab" onclick="openWorkspaceTab(2)" style="background:#1c1c1e;border:1px solid var(--line);border-radius:6px;padding:10px;cursor:pointer;min-height:50px;position:relative">
+                <div style="position:absolute;top:4px;left:6px;font-size:9px;color:var(--text-tertiary);font-family:'SF Mono','Monaco',monospace;font-weight:700">2</div>
+                <div style="padding-top:14px;font-size:11px;color:var(--text-secondary)">+ Add tab</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCHITECT MODE: 15 Centers -->
+  <div id="architect-mode" style="display:none">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px">Control Center completo</div>
+      <div style="font-size:13px;color:var(--text-secondary)">15 centers · full operator control</div>
+    </div>
+
+    <div class="centers" id="centersGrid"></div>
+
+    <div class="section-divider"></div>
+
+    <div class="section-title">📊 Live Status</div>
+    <div class="section-subtitle">Real-time snapshot of all active systems</div>
+
+    <table>
+      <thead><tr><th>Component</th><th>Status</th><th>Latency</th><th>Throughput</th><th>Errors</th></tr></thead>
+      <tbody id="liveStatusTable"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ CHAT SECTION ============ -->
+<section class="section" id="section-chat">
+  <div class="section-title">Multi-Session Chat</div>
+  <div class="section-subtitle">7 columns simultaneous · WebSocket real-time streaming · Markdown rendering</div>
+
+  <div style="overflow-x:auto;margin:0 -20px;padding:0 20px">
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;min-width:1100px">
+      <div class="panel chat-panel" style="min-height:480px">
+        <div class="panel-header"><span>1: Coder</span><span class="panel-header-action">⚡</span></div>
+        <div class="chat-messages">
+          <div class="chat-message user"><div class="chat-avatar user">U</div><div class="chat-content"><p>Refactor auth.py with OAuth2</p></div></div>
+          <div class="chat-message assistant"><div class="chat-avatar assistant">M</div><div class="chat-content"><p>Reading current implementation...</p></div></div>
+        </div>
+        <div class="composer"><textarea class="composer-input" rows="1" placeholder="Continue..."></textarea></div>
+      </div>
+      <div class="panel chat-panel" style="min-height:480px">
+        <div class="panel-header"><span>2: Tester</span><span class="panel-header-action">⚡</span></div>
+        <div class="chat-messages">
+          <div class="chat-message assistant"><div class="chat-avatar assistant">M</div><div class="chat-content"><p>Coverage at 87%, target 90%</p></div></div>
+        </div>
+        <div class="composer"><textarea class="composer-input" rows="1" placeholder="Continue..."></textarea></div>
+      </div>
+      <div class="panel chat-panel" style="min-height:480px">
+        <div class="panel-header"><span>3: Docs</span><span class="panel-header-action">⚡</span></div>
+        <div class="chat-messages">
+          <div class="chat-message assistant"><div class="chat-avatar assistant">M</div><div class="chat-content"><p>ADR-001 architecture decision record ready</p></div></div>
+        </div>
+        <div class="composer"><textarea class="composer-input" rows="1" placeholder="Continue..."></textarea></div>
+      </div>
+      <div class="panel chat-panel" style="min-height:480px">
+        <div class="panel-header"><span>4: Security</span><span class="panel-header-action">⚡</span></div>
+        <div class="chat-messages">
+          <div class="chat-message assistant"><div class="chat-avatar assistant">M</div><div class="chat-content"><p>2 CVEs found, fixing...</p></div></div>
+        </div>
+        <div class="composer"><textarea class="composer-input" rows="1" placeholder="Continue..."></textarea></div>
+      </div>
+      <div class="panel chat-panel" style="min-height:480px">
+        <div class="panel-header"><span>5: Research</span><span class="panel-header-action">⚡</span></div>
+        <div class="chat-messages">
+          <div class="chat-message assistant"><div class="chat-avatar assistant">M</div><div class="chat-content"><p>Found 23 papers on MoE</p></div></div>
+        </div>
+        <div class="composer"><textarea class="composer-input" rows="1" placeholder="Continue..."></textarea></div>
+      </div>
+      <div class="panel chat-panel" style="min-height:480px">
+        <div class="panel-header"><span>6: Data</span><span class="panel-header-action">⚡</span></div>
+        <div class="chat-messages">
+          <div class="chat-message assistant"><div class="chat-avatar assistant">M</div><div class="chat-content"><p>Analyzed 14k rows</p></div></div>
+        </div>
+        <div class="composer"><textarea class="composer-input" rows="1" placeholder="Continue..."></textarea></div>
+      </div>
+      <div class="panel chat-panel" style="min-height:480px">
+        <div class="panel-header"><span>7: Designer</span><span class="panel-header-action">⚡</span></div>
+        <div class="chat-messages">
+          <div class="chat-message assistant"><div class="chat-avatar assistant">M</div><div class="chat-content"><p>Generated 3 mockups</p></div></div>
+        </div>
+        <div class="composer"><textarea class="composer-input" rows="1" placeholder="Continue..."></textarea></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OFFICE SECTION ============ -->
+<section class="section" id="section-office">
+  <div class="section-title">🏢 Office View</div>
+  <div class="section-subtitle">Live isometric 2D visualization · WebSocket events · Agent collaboration graph</div>
+
+  <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="composer-btn active" onclick="startOfficeDemo(this)">▶ Start demo</button>
+    <button class="composer-btn" onclick="stopOfficeDemo(this)">⏹ Stop</button>
+    <button class="composer-btn" onclick="randomAgentFail(this)">💥 Random fail</button>
+    <button class="composer-btn" onclick="resetOffice(this)">🔄 Reset</button>
+  </div>
+
+  <div class="office-view">
+    <div class="office-canvas" id="officeCanvas">
+      <div class="office-desk" style="top:30px;left:40px"><div class="office-avatar" id="oa-1">E-01</div><div class="office-desk-name">scanner</div></div>
+      <div class="office-desk" style="top:30px;left:200px"><div class="office-avatar" id="oa-2">E-02</div><div class="office-desk-name">validator</div></div>
+      <div class="office-desk" style="top:30px;left:360px"><div class="office-avatar" id="oa-3">E-03</div><div class="office-desk-name">planner</div></div>
+      <div class="office-desk" style="top:30px;left:520px"><div class="office-avatar" id="oa-4">E-04</div><div class="office-desk-name">retriever</div></div>
+      <div class="office-desk" style="top:160px;left:40px"><div class="office-avatar" id="oa-5">E-05</div><div class="office-desk-name">executor</div></div>
+      <div class="office-desk" style="top:160px;left:200px"><div class="office-avatar" id="oa-6">E-06</div><div class="office-desk-name">test_runner</div></div>
+      <div class="office-desk" style="top:160px;left:360px"><div class="office-avatar" id="oa-7">E-07</div><div class="office-desk-name">repair</div></div>
+      <div class="office-desk" style="top:160px;left:520px"><div class="office-avatar" id="oa-8">E-08</div><div class="office-desk-name">judge</div></div>
+      <div class="office-desk" style="top:290px;left:120px"><div class="office-avatar" id="oa-9">E-09</div><div class="office-desk-name">consensus_a</div></div>
+      <div class="office-desk" style="top:290px;left:280px"><div class="office-avatar" id="oa-10">E-10</div><div class="office-desk-name">consensus_b</div></div>
+      <div class="office-desk" style="top:290px;left:440px"><div class="office-avatar" id="oa-11">E-11</div><div class="office-desk-name">consensus_c</div></div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section-title">📊 Live Metrics</div>
+  <div class="section-subtitle">Token usage, throughput, agent queue depth</div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px">
+    <div class="context-stat" style="padding:16px"><div class="context-stat-label">Active agents</div><div class="context-stat-val" id="metricAgents">11</div></div>
+    <div class="context-stat" style="padding:16px"><div class="context-stat-label">Working</div><div class="context-stat-val" id="metricWorking">0</div></div>
+    <div class="context-stat" style="padding:16px"><div class="context-stat-label">Errors</div><div class="context-stat-val" id="metricErrors">0</div></div>
+    <div class="context-stat" style="padding:16px"><div class="context-stat-label">Tokens/min</div><div class="context-stat-val" id="metricTpm">0</div></div>
+    <div class="context-stat" style="padding:16px"><div class="context-stat-label">Cost/hour</div><div class="context-stat-val" id="metricCph">$0.00</div></div>
+  </div>
+</section>
+
+<!-- ============ PROFILES SECTION ============ -->
+<section class="section" id="section-profiles">
+  <div class="section-title">⚡ Profile Builder</div>
+  <div class="section-subtitle">5-step wizard · clone · export/import .tar.gz · no restart</div>
+
+  <div style="margin-bottom:20px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="composer-btn" onclick="exportProfile()">📦 Export .tar.gz</button>
+    <button class="composer-btn" onclick="cloneCurrentProfile()">📋 Clone</button>
+    <button class="composer-btn" onclick="deleteCurrentProfile()">🗑 Delete</button>
+    <button class="composer-btn" onclick="openModal('aboutProfiles')">ℹ️ About</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="wizard-tab" onclick="switchProfileTab('wizard-tab')">🧬 Wizard</button>
+    <button class="tab" data-tab="skills-tab" onclick="switchProfileTab('skills-tab')">⚡ Skills<span class="tab-count" id="skillsCount">13</span></button>
+    <button class="tab" data-tab="llm-tab" onclick="switchProfileTab('llm-tab')">🧠 LLM Registry<span class="tab-count">7</span></button>
+    <button class="tab" data-tab="mcp-tab" onclick="switchProfileTab('mcp-tab')">🔌 MCP Servers<span class="tab-count">14</span></button>
+    <button class="tab" data-tab="params-tab" onclick="switchProfileTab('params-tab')">🎛️ Parameters</button>
+  </div>
+
+  <!-- WIZARD TAB -->
+  <div class="tab-panel active" id="wizard-tab">
+    <div class="wizard">
+      <div class="wizard-steps">
+        <div class="wizard-step active" data-step="1" onclick="goToWizardStep(1)">
+          <div class="wizard-step-num">1</div>
+          <div class="wizard-step-text">
+            <div class="wizard-step-title">📝 Identity</div>
+            <div class="wizard-step-desc">Name, avatar, prompt</div>
+          </div>
+        </div>
+        <div class="wizard-step" data-step="2" onclick="goToWizardStep(2)">
+          <div class="wizard-step-num">2</div>
+          <div class="wizard-step-text">
+            <div class="wizard-step-title">🧬 Model</div>
+            <div class="wizard-step-desc">Provider, API key</div>
+          </div>
+        </div>
+        <div class="wizard-step" data-step="3" onclick="goToWizardStep(3)">
+          <div class="wizard-step-num">3</div>
+          <div class="wizard-step-text">
+            <div class="wizard-step-title">⚡ Skills</div>
+            <div class="wizard-step-desc">Toggle built-in</div>
+          </div>
+        </div>
+        <div class="wizard-step" data-step="4" onclick="goToWizardStep(4)">
+          <div class="wizard-step-num">4</div>
+          <div class="wizard-step-text">
+            <div class="wizard-step-title">🔌 MCP</div>
+            <div class="wizard-step-desc">Servers, secrets</div>
+          </div>
+        </div>
+        <div class="wizard-step" data-step="5" onclick="goToWizardStep(5)">
+          <div class="wizard-step-num">5</div>
+          <div class="wizard-step-text">
+            <div class="wizard-step-title">✅ Review</div>
+            <div class="wizard-step-desc">Preview & deploy</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 1: Identity -->
+      <div class="wizard-content active" id="wiz-1">
+        <div class="wizard-content-title">Identity & System Prompt</div>
+        <div class="wizard-content-desc">Define quién es este agente. Name, avatar emoji, descripción corta y system prompt inicial.</div>
+
+        <div class="wizard-field">
+          <label class="wizard-field-label wizard-field-label-required">Profile name</label>
+          <input class="wizard-input" id="wizName" value="balanced" placeholder="ej. research-v2">
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-field-label">Avatar emoji</label>
+          <input class="wizard-input" id="wizAvatar" value="⚡" maxlength="2" style="max-width:100px;text-align:center;font-size:24px">
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-field-label">Description</label>
+          <input class="wizard-input" id="wizDesc" value="Balanced execution: 12 experts, default profile">
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-field-label">System prompt</label>
+          <textarea class="wizard-textarea" id="wizPrompt">You are a balanced agent: 12 experts in input and execution fabrics. Respond with high-quality, concise, and pragmatic answers.</textarea>
+        </div>
+      </div>
+
+      <!-- STEP 2: Model -->
+      <div class="wizard-content" id="wiz-2">
+        <div class="wizard-content-title">Modelo & Provider</div>
+        <div class="wizard-content-desc">Selecciona el LLM, provider, API key y base URL.</div>
+
+        <div class="wizard-field">
+          <label class="wizard-field-label wizard-field-label-required">Provider</label>
+          <select class="wizard-select" id="wizProvider" onchange="updateModels()">
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="google">Google Gemini</option>
+            <option value="deepseek">DeepSeek</option>
+            <option value="minimax">MiniMax</option>
+            <option value="kimi">Kimi (Moonshot)</option>
+            <option value="ollama">Ollama (Local)</option>
+            <option value="lmstudio">LM Studio (Local)</option>
+          </select>
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-field-label wizard-field-label-required">Model</label>
+          <select class="wizard-select" id="wizModel"></select>
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-field-label">API key</label>
+          <input class="wizard-input" id="wizApiKey" type="password" placeholder="sk-..." value="sk-XXXXXXXXX">
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-field-label">Base URL (custom)</label>
+          <input class="wizard-input" id="wizBaseUrl" placeholder="https://api.openai.com/v1" value="https://api.openai.com/v1">
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-field-label">Reasoning effort</label>
+          <select class="wizard-select" id="wizReason">
+            <option value="none">None (fast)</option>
+            <option value="minimal">Minimal</option>
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium (default)</option>
+            <option value="high">High</option>
+            <option value="xhigh">xHigh (max)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- STEP 3: Skills -->
+      <div class="wizard-content" id="wiz-3">
+        <div class="wizard-content-title">Skills activos</div>
+        <div class="wizard-content-desc">Activa los SKILL.md built-in. Carga on-demand (metadata primero, content después).</div>
+        <div class="check-group" id="wizSkills"></div>
+      </div>
+
+      <!-- STEP 4: MCP -->
+      <div class="wizard-content" id="wiz-4">
+        <div class="wizard-content-title">MCP Servers</div>
+        <div class="wizard-content-desc">Conecta MCP servers (HTTP URL o local stdio). One-click install desde catálogo aprobado.</div>
+
+        <h4 style="margin:16px 0 8px;font-size:13px;color:var(--text-secondary);font-weight:700;text-transform:uppercase;letter-spacing:1px">📚 Catálogo Aprobado</h4>
+        <div class="check-group" id="wizMcpCatalog"></div>
+
+        <h4 style="margin:20px 0 8px;font-size:13px;color:var(--text-secondary);font-weight:700;text-transform:uppercase;letter-spacing:1px">➕ Custom server</h4>
+        <div class="wizard-field">
+          <input class="wizard-input" id="wizMcpCustom" placeholder="stdio://my-command or https://my-mcp.com">
+        </div>
+      </div>
+
+      <!-- STEP 5: Review -->
+      <div class="wizard-content" id="wiz-5">
+        <div class="wizard-content-title">Review & Deploy</div>
+        <div class="wizard-content-desc">Verifica la configuración antes de deployar. Hot-reload: sin restart.</div>
+
+        <div id="reviewSummary" style="background:#1c1c1e;border-radius:8px;padding:16px;font-family:'SF Mono','Monaco',monospace;font-size:12px;color:var(--text);line-height:1.8"></div>
+
+        <div style="margin-top:16px;padding:12px;background:rgba(74,222,128,.1);border:1px solid var(--ok);border-radius:8px;color:var(--ok);font-size:13px">
+          ✅ <strong>Sin restart.</strong> El cambio se aplica en caliente. Sessions nuevas usarán este profile. Las existentes mantienen su sesión.
+        </div>
+      </div>
+
+      <div class="wizard-actions">
+        <button class="wizard-btn" id="wizPrev" onclick="prevWizardStep()" disabled>← Back</button>
+        <div style="font-size:12px;color:var(--text-tertiary)" id="wizProgress">Step 1 of 5</div>
+        <div class="wizard-nav">
+          <button class="wizard-btn" onclick="cancelWizard()">Cancel</button>
+          <button class="wizard-btn wizard-btn-primary" id="wizNext" onclick="nextWizardStep()">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKILLS TAB -->
+  <div class="tab-panel" id="skills-tab">
+    <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div>
+        <strong>All Skills</strong>
+        <span style="color:var(--text-tertiary);font-size:12px;margin-left:8px">Cargados como SKILL.md · on-demand</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="composer-btn" onclick="enableAllSkills()">✓ Enable all</button>
+        <button class="composer-btn" onclick="disableAllSkills()">✗ Disable all</button>
+        <button class="composer-btn" onclick="installSkill()">📥 Install new</button>
+      </div>
+    </div>
+    <div class="skills-grid" id="skillsGrid"></div>
+  </div>
+
+  <!-- LLM TAB -->
+  <div class="tab-panel" id="llm-tab">
+    <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <strong>LLM Registry</strong>
+      <button class="composer-btn" onclick="addLLM()">➕ Add provider</button>
+    </div>
+    <table id="llmTable"></table>
+  </div>
+
+  <!-- MCP TAB -->
+  <div class="tab-panel" id="mcp-tab">
+    <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <strong>MCP Servers</strong>
+      <button class="composer-btn" onclick="addMCP()">➕ Add MCP server</button>
+    </div>
+    <table id="mcpTable"></table>
+  </div>
+
+  <!-- PARAMS TAB -->
+  <div class="tab-panel" id="params-tab">
+    <div style="margin-bottom:16px">
+      <strong>Live Parameters</strong> <span style="color:var(--text-tertiary);font-size:12px">Apply without reset</span>
+    </div>
+    <div class="params-panel">
+      <div class="params-grid" id="paramsGrid"></div>
+    </div>
+
+    <div class="section-title" style="font-size:18px;margin-top:32px">Output Schema (JSON mode)</div>
+    <div class="section-subtitle">Define estructura visual de la respuesta</div>
+    <div style="background:#1c1c1e;border-radius:8px;padding:16px;font-family:'SF Mono','Monaco',monospace;font-size:12px;line-height:1.7;color:var(--text-secondary)">
+      {<br>
+      &nbsp;&nbsp;"<span style="color:var(--accent)">summary</span>": "<span style="color:var(--ok)">string</span>",<br>
+      &nbsp;&nbsp;"<span style="color:var(--accent)">confidence</span>": <span style="color:var(--ok)">number</span> (0-1),<br>
+      &nbsp;&nbsp;"<span style="color:var(--accent)">findings</span>": [<span style="color:var(--ok)">object</span>],<br>
+      &nbsp;&nbsp;"<span style="color:var(--accent)">artifacts</span>": [<span style="color:var(--ok)">object</span>]<br>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ============ MOBILE SECTION ============ -->
+<section class="section" id="section-mobile">
+  <div class="section-title">📱 Mobile Multi-Platform Download</div>
+  <div class="section-subtitle">8 platforms · QR codes · App Store / Play / Snap / Flatpak / .deb / .rpm / AppImage / MSIX / Portable</div>
+
+  <div class="download-grid" id="downloadGrid"></div>
+
+  <div style="margin:32px 0">
+    <div class="section-title">Previsualización Mobile</div>
+    <div class="section-subtitle">iOS · Android · Web PWA screenshots</div>
+
+    <div class="phone-row">
+      <div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-statusbar"><span id="phoneTime1">10:21</span><span>VoLTE 4G+</span><span>81%</span></div>
+            <div class="phone-header">
+              <button class="phone-back" onclick="phoneNav('home')">←</button>
+              <div class="phone-title">Esfuerzo</div>
+            </div>
+            <div class="phone-content" id="phoneEffortScreen">
+              <div class="phone-item" data-effort="bajo" onclick="selectEffort('bajo')">
+                <div class="phone-item-title">Bajo</div>
+                <div class="phone-item-desc">Respuestas rápidas a preguntas sencillas</div>
+              </div>
+              <div class="phone-item" data-effort="medio" onclick="selectEffort('medio')">
+                <div class="phone-item-title">Medio <span class="phone-badge">Predeterminado</span></div>
+                <div class="phone-item-desc">Tareas ligeras e informales</div>
+              </div>
+              <div class="phone-item" data-effort="alto" onclick="selectEffort('alto')">
+                <div class="phone-item-title">Alto</div>
+                <div class="phone-item-desc">Equilibrado para el trabajo cotidiano</div>
+              </div>
+              <div class="phone-item" data-effort="extra" onclick="selectEffort('extra')">
+                <div class="phone-item-title">Extra</div>
+                <div class="phone-item-desc">Trabajo complejo y detallado</div>
+              </div>
+              <div class="phone-item active" data-effort="max" onclick="selectEffort('max')">
+                <div class="phone-item-title">Máx <span style="color:var(--accent);font-size:18px">✓</span></div>
+                <div class="phone-item-desc">Los problemas más difíciles. Tarda más.</div>
+              </div>
+              <div class="phone-toggle" onclick="togglePhoneSwitch(this)">
+                <div class="phone-toggle-text">
+                  <div class="phone-toggle-label">Pensamiento</div>
+                  <div class="phone-toggle-desc">Piensa para tareas más complejas</div>
+                </div>
+                <button class="phone-switch" id="phoneThinkingSwitch"></button>
+              </div>
+            </div>
+            <div class="phone-nav">
+              <button class="phone-nav-item" onclick="phoneNav('chat')"><div class="phone-nav-icon">💬</div>Chat</button>
+              <button class="phone-nav-item active"><div class="phone-nav-icon">⚙️</div>Config</button>
+              <button class="phone-nav-item" onclick="phoneNav('monitor')"><div class="phone-nav-icon">📊</div>Monitor</button>
+              <button class="phone-nav-item" onclick="phoneNav('account')"><div class="phone-nav-icon">👤</div>Cuenta</button>
+            </div>
+          </div>
+        </div>
+        <div class="caption" style="text-align:center;color:var(--text-tertiary);font-size:12px;margin-top:8px;font-style:italic">Esfuerzo (Bajo/Medio/Alto/Extra/Máx) + Switch Pensamiento</div>
+      </div>
+
+      <div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-statusbar"><span id="phoneTime2">10:21</span><span>VoLTE 4G+</span><span>81%</span></div>
+            <div class="phone-header">
+              <button class="phone-back" onclick="phoneNav('home')">←</button>
+              <div class="phone-title">Skills activos</div>
+            </div>
+            <div class="phone-content">
+              <div class="phone-item" onclick="toggleMobileSkill(this,'Python')">
+                <div class="phone-item-title">🐍 Python <span class="phone-badge" style="background:var(--accent);color:#000">ON</span></div>
+                <div class="phone-item-desc">FastAPI · async · pytest</div>
+              </div>
+              <div class="phone-item" onclick="toggleMobileSkill(this,'Security')">
+                <div class="phone-item-title">🔒 Security <span class="phone-badge" style="background:var(--accent);color:#000">ON</span></div>
+                <div class="phone-item-desc">OWASP · audit · CVE scan</div>
+              </div>
+              <div class="phone-item" onclick="toggleMobileSkill(this,'RAG')">
+                <div class="phone-item-title">🔬 RAG <span class="phone-badge" style="background:var(--accent);color:#000">ON</span></div>
+                <div class="phone-item-desc">Vector search · reranking</div>
+              </div>
+              <div class="phone-item" onclick="toggleMobileSkill(this,'Architecture')">
+                <div class="phone-item-title">🏗️ Architecture</div>
+                <div class="phone-item-desc">Desactivado</div>
+              </div>
+              <div class="phone-item" onclick="toggleMobileSkill(this,'Planning')">
+                <div class="phone-item-title">📝 Planning</div>
+                <div class="phone-item-desc">Desactivado</div>
+              </div>
+              <div class="phone-item" onclick="toggleMobileSkill(this,'Testing')">
+                <div class="phone-item-title">🧪 Testing</div>
+                <div class="phone-item-desc">Desactivado</div>
+              </div>
+              <div class="phone-toggle" onclick="alert('Skills Hub abierto')">
+                <div class="phone-toggle-text">
+                  <div class="phone-toggle-label">+ 7 más</div>
+                  <div class="phone-toggle-desc">13 skills disponibles en total</div>
+                </div>
+                <span style="color:var(--text-secondary);font-size:18px">›</span>
+              </div>
+            </div>
+            <div class="phone-nav">
+              <button class="phone-nav-item" onclick="phoneNav('chat')"><div class="phone-nav-icon">💬</div>Chat</button>
+              <button class="phone-nav-item active"><div class="phone-nav-icon">⚙️</div>Config</button>
+              <button class="phone-nav-item" onclick="phoneNav('monitor')"><div class="phone-nav-icon">📊</div>Monitor</button>
+              <button class="phone-nav-item" onclick="phoneNav('account')"><div class="phone-nav-icon">👤</div>Cuenta</button>
+            </div>
+          </div>
+        </div>
+        <div class="caption" style="text-align:center;color:var(--text-tertiary);font-size:12px;margin-top:8px;font-style:italic">Skills Center mobile · ON/OFF toggles · live counting</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING SECTION ============ -->
+<section class="section" id="section-pricing">
+  <div style="text-align:center;margin-bottom:32px">
+    <div class="section-title">Plans & Pricing</div>
+    <div class="section-subtitle">Comienza gratis · upgrade cuando lo necesites · cancel anytime</div>
+  </div>
+
+  <div class="pricing" id="pricingGrid"></div>
+
+  <div style="text-align:center;margin:32px 0;color:var(--text-tertiary);font-size:13px">
+    💳 <strong style="color:var(--text)">Stripe</strong> payments · cancel anytime · 14-day money-back guarantee<br>
+    📧 <strong style="color:var(--text)">team@maxbry.ai</strong> for Enterprise custom · 📞 +1 (555) MAXBRY
+  </div>
+
+  <div style="margin-top:48px">
+    <div class="section-title">💬 Frequently Asked</div>
+    <div class="section-subtitle">Quick answers</div>
+
+    <div style="display:grid;gap:8px;max-width:800px;margin:0 auto">
+      <details style="background:#1c1c1e;border:1px solid var(--line);border-radius:8px;padding:14px 18px;cursor:pointer">
+        <summary style="font-weight:700;color:var(--accent);font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">Can I cancel anytime? <span>+</span></summary>
+        <div style="margin-top:10px;color:var(--text-secondary);font-size:13px;line-height:1.6">Yes. Cancel from account dashboard or write to team@maxbry.ai. No questions asked, no fees.</div>
+      </details>
+      <details style="background:#1c1c1e;border:1px solid var(--line);border-radius:8px;padding:14px 18px;cursor:pointer">
+        <summary style="font-weight:700;color:var(--accent);font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">Does the Open Source version really include everything? <span>+</span></summary>
+        <div style="margin-top:10px;color:var(--text-secondary);font-size:13px;line-height:1.6">The CORE profile (Quick + Balanced + access to all OSS providers) is MIT-licensed and self-hostable. Pro features (autonomous mode, custom profiles, marketplace items) require Pro+.</div>
+      </details>
+      <details style="background:#1c1c1e;border:1px solid var(--line);border-radius:8px;padding:14px 18px;cursor:pointer">
+        <summary style="font-weight:700;color:var(--accent);font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">What is the Enterprise 150-expert tier? <span>+</span></summary>
+        <div style="margin-top:10px;color:var(--text-secondary);font-size:13px;line-height:1.6">A SLA'd deployment of all 150+ experts (12 Input + 9 Execution + 10 Output + extended) plus 24/7 support, audit-trail immutable, dedicated CSM.</div>
+      </details>
+      <details style="background:#1c1c1e;border:1px solid var(--line);border-radius:8px;padding:14px 18px;cursor:pointer">
+        <summary style="font-weight:700;color:var(--accent);font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">Do you offer educational / non-profit discount? <span>+</span></summary>
+        <div style="margin-top:10px;color:var(--text-secondary);font-size:13px;line-height:1.6">Yes — 50% off Pro for verified students/educators, 100% free for registered non-profits. Email team@maxbry.ai.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ README SECTION ============ -->
+<section class="section" id="section-readme">
+  <div class="readme">
+    <div class="readme-title">📖 Interface README</div>
+    <div class="readme-subtitle">Lista completa de funciones, atajos de teclado, y comportamientos de la interfaz</div>
+
+    <div class="readme-toc">
+      <div class="readme-toc-title">Tabla de contenidos</div>
+      <div class="readme-toc-list" id="tocList"></div>
+    </div>
+
+    <div id="readmeBody"></div>
+  </div>
+</section>
+
+</div>
+
+<!-- ============ COMMAND PALETTE ============ -->
+<div class="cmd-overlay" id="cmdOverlay" onclick="if(event.target===this)closeCmdPalette()">
+  <div class="cmd-palette" onclick="event.stopPropagation()">
+    <div class="cmd-input-row">
+      <span style="font-size:16px">⚡</span>
+      <input type="text" id="cmdInput" placeholder="Type a command..." autocomplete="off">
+      <span class="gn-search-kbd" style="font-size:10px">ESC</span>
+    </div>
+    <div class="cmd-results" id="cmdResults"></div>
+  </div>
+</div>
+
+<!-- ============ TOAST CONTAINER ============ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContent" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Title</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-content" id="modalBody">Body</div>
+    <div class="modal-footer" id="modalFooter" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ===== STATE (real state, not mocks) ==========================
+// ============================================================
+const state = {
+  mode: 'simple',
+  currentProfile: 'balanced',
+  profiles: ['quick','balanced','professional','research','architect','enterprise','autonomous','custom'],
+  models: ['Sonnet 5','Gemini 3 Pro','GPT-5','DeepSeek V4','Kimi 2','MiniMax M3','Qwen 3 Max'],
+  currentModel: 0,
+  reasoning: 'high',
+  sessions: [
+    {id:1,title:'Audit my API REST enterprise',time:'2h ago',status:'live',group:'Pinned',profile:'enterprise'},
+    {id:2,title:'Investigate MoE patterns',time:'4h ago',status:'done',group:'Pinned',profile:'research'},
+    {id:3,title:'Refactor auth module',time:'Today',status:'done',group:'Today',profile:'balanced'},
+    {id:4,title:'Generate pytest tests',time:'Today',status:'done',group:'Today',profile:'professional'},
+    {id:5,title:'Write ADR for memory tier',time:'Today',status:'done',group:'Today',profile:'balanced'},
+    {id:6,title:'Fix Docker build error',time:'1d ago',status:'done',group:'Yesterday',profile:'balanced'},
+    {id:7,title:'Setup MCP Telegram server',time:'1d ago',status:'done',group:'Yesterday',profile:'balanced'},
+    {id:8,title:'Configure custom profile',time:'2d ago',status:'done',group:'This week',profile:'custom'},
+    {id:9,title:'Design event-driven system',time:'3d ago',status:'done',group:'This week',profile:'architect'},
+    {id:10,title:'RAG over 14k PDFs',time:'5d ago',status:'done',group:'This week',profile:'research'}
+  ],
+  activeSessionId: null,
+  messages: {},
+  isGenerating: false,
+  contextUsage: 75,
+  workspaceTabs: [1],
+  skillStates: {},
+  wizardStep: 1,
+  officeTimer: null,
+  officeWorking: [1,2,5,6],
+  officeErrors: [],
+  phoneThinking: true,
+  phoneEffort: 'max',
+  phoneSkills: {Python:true,Security:true,RAG:true,Architecture:false,Planning:false,Testing:false},
+  currentPlan: null,
+  downloadCount: 0
+};
+
+const skills = [
+  {id:'python',icon:'🐍',name:'Python',desc:'FastAPI, async, type hints, pytest, mypy',v:'2.1.0',tags:['lang']},
+  {id:'sec',icon:'🔒',name:'Security Audit',desc:'OWASP Top 10, STRIDE, CVE',v:'1.4.2',tags:['security']},
+  {id:'arch',icon:'🏗️',name:'Architecture',desc:'System design, microservices, event-driven',v:'2.0.1',tags:['arch']},
+  {id:'rag',icon:'🔬',name:'RAG',desc:'Embeddings, vector DB, reranking',v:'1.8.0',tags:['data']},
+  {id:'plan',icon:'📝',name:'Planning',desc:'Task decomposition, DAG construction',v:'1.2.0',tags:['core']},
+  {id:'test',icon:'🧪',name:'Testing',desc:'TDD, pytest, integration, coverage',v:'2.3.1',tags:['quality']},
+  {id:'refactor',icon:'🔧',name:'Refactoring',desc:'Code smells, SOLID, design patterns',v:'1.0.5',tags:['quality']},
+  {id:'data',icon:'📊',name:'Data Analysis',desc:'Pandas, polars, visualization',v:'1.6.2',tags:['data']},
+  {id:'web',icon:'🌐',name:'Web Research',desc:'Search, scraping, freshness',v:'1.1.0',tags:['research']},
+  {id:'review',icon:'🔍',name:'Code Review',desc:'5-lens parallel review',v:'1.7.3',tags:['quality']},
+  {id:'react',icon:'⚛️',name:'React',desc:'Hooks, server components, Next.js',v:'3.0.0',tags:['frontend']},
+  {id:'db',icon:'🗄️',name:'SQL/NoSQL',desc:'PostgreSQL, Redis, Mongo, Neo4j',v:'2.4.0',tags:['data']},
+  {id:'devops',icon:'🚀',name:'DevOps',desc:'Docker, K8s, GitHub Actions, Terraform',v:'1.9.1',tags:['ops']}
+];
+
+const llms = [
+  {provider:'OpenAI',model:'GPT-5',ctx:'400k',status:'active',badge:'ok'},
+  {provider:'Anthropic',model:'Sonnet 5',ctx:'200k',status:'active',badge:'ok'},
+  {provider:'Google',model:'Gemini 3 Pro',ctx:'2M',status:'active',badge:'ok'},
+  {provider:'DeepSeek',model:'V4',ctx:'128k',status:'active',badge:'ok'},
+  {provider:'Kimi',model:'Kimi 2 (Moonshot)',ctx:'256k',status:'active',badge:'ok'},
+  {provider:'MiniMax',model:'M3',ctx:'1M',status:'active',badge:'ok'},
+  {provider:'Qwen',model:'3 Max',ctx:'128k',status:'active',badge:'ok'},
+  {provider:'Ollama',model:'llama-3.3-70b (local)',ctx:'8k',status:'configured',badge:'accent'}
+];
+
+const mcps = [
+  {name:'Obsidian',type:'stdio',status:'connected',badge:'ok'},
+  {name:'Graphiti (Knowledge Graph)',type:'http',status:'connected',badge:'ok'},
+  {name:'Baidu OCR',type:'http',status:'connected',badge:'ok'},
+  {name:'GitHub',type:'http',status:'connected',badge:'ok'},
+  {name:'GitLab',type:'http',status:'connected',badge:'ok'},
+  {name:'Drive',type:'http',status:'connected',badge:'ok'},
+  {name:'Gmail',type:'http',status:'connected',badge:'ok'},
+  {name:'Outlook',type:'http',status:'disconnected',badge:'warn'},
+  {name:'Filesystem',type:'stdio',status:'connected',badge:'ok'},
+  {name:'Telegram',type:'http',status:'connected',badge:'ok'},
+  {name:'Discord',type:'http',status:'connected',badge:'ok'},
+  {name:'Slack',type:'http',status:'connected',badge:'ok'},
+  {name:'Notion',type:'http',status:'connected',badge:'ok'},
+  {name:'PostgreSQL/MySQL/Redis',type:'stdio',status:'connected',badge:'ok'},
+  {name:'Qdrant/Milvus/Chroma/Neo4j',type:'http',status:'connected',badge:'ok'},
+  {name:'REST/GraphQL',type:'stdio',status:'connected',badge:'ok'},
+  {name:'Calendar',type:'http',status:'connected',badge:'ok'}
+];
+
+const downloads = [
+  {plat:'android',icon:'🤖',title:'Android (Google Play)',platform:'min v9 · APK Direct',size:'38 MB',version:'v2.1.4'},
+  {plat:'ios',icon:'🍎',title:'iOS (App Store)',platform:'min v16 · TestFlight',size:'42 MB',version:'v2.1.4'},
+  {plat:'mac',icon:'💻',title:'macOS',platform:'.dmg · Apple Silicon · Intel',size:'84 MB',version:'v2.1.4'},
+  {plat:'linux',icon:'🐧',title:'Linux',platform:'.deb / .rpm / AppImage / Flatpak / Snap',size:'72 MB',version:'v2.1.4'},
+  {plat:'windows',icon:'🪟',title:'Windows',platform:'.exe · MSIX · Portable',size:'86 MB',version:'v2.1.4'},
+  {plat:'cli',icon:'⌨️',title:'CLI',platform:'npm · pip · brew · cargo',size:'14 MB',version:'v2.1.4'},
+  {plat:'docker',icon:'🐳',title:'Docker',platform:'docker pull maxbry/core',size:'245 MB',version:'v2.1.4'},
+  {plat:'web',icon:'🌐',title:'Web PWA',platform:'Install from browser',size:'— (CDN)',version:'v2.1.4'},
+  {plat:'repo',icon:'📦',title:'Repository',platform:'github.com/maxbry/nct',size:'— (source)',version:'v2.1.4'}
+];
+
+const pricingPlans = [
+  {name:'Free / OSS',desc:'Open source · self-hosted · core features',
+    amount:0,currency:'$',period:'',was:'',
+    features:[
+      ['yes','Core profile (Quick + Balanced)'],
+      ['yes','Access to 4 OSS LLM providers'],
+      ['yes','All CLI + Docker + Web PWA platforms'],
+      ['yes','Community support via GitHub'],
+      ['yes','Custom profiles: 1'],
+      ['no','Marketplace items'],
+      ['no','Autonomous mode'],
+      ['no','24/7 support'],
+      ['no','SLA-grade audit trail'],
+      ['no','Multi-platform mobile sync']
+    ],cta:'Get started',featured:false},
+  {name:'Pro',desc:'For solo devs · custom profiles · marketplace',
+    amount:9,currency:'$',period:'/mo',was:'',
+    features:[
+      ['yes','Everything in Free'],
+      ['yes','All 8 profiles (Quick → Autonomous)'],
+      ['yes','Custom profiles: 10'],
+      ['yes','Marketplace: 5 installs / mo'],
+      ['yes','Multi-LLM routing'],
+      ['yes','iOS + Android mobile sync'],
+      ['yes','Email support (24h)'],
+      ['yes','Cloud sync across devices'],
+      ['no','Enterprise audit trail'],
+      ['no','24/7 priority support']
+    ],cta:'Subscribe Pro',featured:false},
+  {name:'Team',desc:'For teams · shared profiles · collaboration',
+    amount:29,currency:'$',period:'/mo/user',was:'',
+    features:[
+      ['yes','Everything in Pro'],
+      ['yes','Shared profiles (per team)'],
+      ['yes','Marketplace: unlimited'],
+      ['yes','Workspace tabs · 5 seats min'],
+      ['yes','Custom profile cloning'],
+      ['yes','Discord + Slack integration'],
+      ['yes','Team audit log (per-user)'],
+      ['yes','API access (5k req/h)'],
+      ['yes','Dedicated CSM'],
+      ['no','SOC2 compliance'],
+      ['no','On-premise deployment']
+    ],cta:'Subscribe Team',featured:true},
+  {name:'Enterprise',desc:'For organizations · SLA · dedicated support',
+    amount:299,currency:'$',period:'/mo',was:'',
+    features:[
+      ['yes','Everything in Team'],
+      ['yes','All 150 experts activated'],
+      ['yes','Autonomous mode 24/7'],
+      ['yes','SOC2 + GDPR + HIPAA'],
+      ['yes','On-premise + air-gapped deployment'],
+      ['yes','Custom expert development'],
+      ['yes','Immutable audit trail'],
+      ['yes','API access: unlimited'],
+      ['yes','24/7 priority support (1h SLA)'],
+      ['yes','Dedicated success engineer'],
+      ['yes','Quarterly business reviews']
+    ],cta:'Contact sales',featured:false}
+];
+
+// ============================================================
+// ===== INITIALIZATION =========================================
+// ============================================================
+window.addEventListener('load', () => {
+  // Set state defaults
+  skills.forEach(s => { state.skillStates[s.id] = ['python','sec','arch','rag'].includes(s.id); });
+  renderSessions();
+  renderSkillsGrid();
+  renderWizardSkills();
+  renderWizardMcpCatalog();
+  renderCenters();
+  renderLiveStatus();
+  renderLLMTable();
+  renderMCPTable();
+  renderParams();
+  renderDownloads();
+  renderPricing();
+  renderReadme();
+  renderActiveSkills();
+  updateContext();
+  setInterval(tickOfficeMetrics, 2000);
+  setInterval(updateClock, 30000);
+  updateClock();
+  // Hide loading state if any
+  showToast('success','Listo','MAXBRY Control Center v3 cargado. Pulsa ⌘K o Ctrl+K para comandos.');
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    openCmdPalette();
+  } else if (e.key === 'Escape') {
+    closeCmdPalette();
+    closeModal();
+  }
+});
+
+// Click outside to close command palette
+document.getElementById('cmdInput').addEventListener('input', (e) => filterCmd(e.target.value));
+
+// Auto-resize composer textarea
+document.getElementById('chatInput').addEventListener('input', function() {
+  this.style.height = '48px';
+  this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+});
+
+document.getElementById('chatInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// ============================================================
+// ===== NAVIGATION =============================================
+// ============================================================
+function navigateTo(view) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + view).classList.add('active');
+  document.querySelectorAll('.gn-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.gn-tab[data-view="${view}"]`)?.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function navigateToTab(tabId) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById(tabId);
+  if (panel) panel.classList.add('active');
+  else console.warn('navigateToTab: panel not found', tabId);
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const tabBtn = document.querySelector(`.tab[data-tab="${tabId}"]`);
+  if (tabBtn) tabBtn.classList.add('active');
+}
+
+// ============================================================
+// ===== MODE (Simple / Architect) ==============================
+// ============================================================
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  document.getElementById('simple-mode').style.display = mode === 'simple' ? 'block' : 'none';
+  document.getElementById('architect-mode').style.display = mode === 'architect' ? 'block' : 'none';
+  showToast('info','Mode',`Switched to ${mode} mode`);
+}
+
+// ============================================================
+// ===== PROFILES ===============================================
+// ============================================================
+function selectProfile(name) {
+  state.currentProfile = name;
+  document.querySelectorAll('.profile-chip').forEach(c => c.classList.toggle('active', c.dataset.profile === name));
+  document.getElementById('profileChip').textContent = `⚡ ${name}`;
+  document.getElementById('composerProfileBtn').textContent = `⚡ ${name}`;
+  document.getElementById('emptyProfileName').textContent = name;
+  showToast('success','Profile changed',`Now using profile "${name}". Live update, no restart.`);
+}
+
+function cycleProfile() {
+  const idx = state.profiles.indexOf(state.currentProfile);
+  const next = state.profiles[(idx + 1) % state.profiles.length];
+  if (next === 'custom') {
+    openModal('customProfile');
+    return;
+  }
+  selectProfile(next);
+}
+
+// ============================================================
+// ===== MODELS =================================================
+// ============================================================
+function cycleModel() {
+  state.currentModel = (state.currentModel + 1) % state.models.length;
+  const next = state.models[state.currentModel];
+  document.getElementById('modelChip').textContent = `🎯 ${next}`;
+  document.getElementById('composerModelBtn').textContent = `🎯 ${next}`;
+  showToast('success','Model switched',`Now using ${next}. Same session, no restart.`);
+}
+
+function toggleReasoning() {
+  const levels = ['none','minimal','low','medium','high','xhigh'];
+  const idx = levels.indexOf(state.reasoning);
+  state.reasoning = levels[(idx + 1) % levels.length];
+  document.getElementById('reasoningChip').textContent = `🧠 reasoning:${state.reasoning}`;
+  showToast('info','Reasoning',`effort set to "${state.reasoning}"`);
+}
+
+// ============================================================
+// ===== SESSIONS ===============================================
+// ============================================================
+function renderSessions() {
+  const groups = {};
+  state.sessions.forEach(s => {
+    if (!groups[s.group]) groups[s.group] = [];
+    groups[s.group].push(s);
+  });
+  const html = Object.keys(groups).map(g => `
+    <div class="session-group">
+      <div class="session-group-label">${g === 'Pinned' ? '📌 Pinned' : g === 'Today' ? '📅 Today' : g === 'Yesterday' ? '📅 Yesterday' : '📅 This week'}<span class="session-group-label-count">${groups[g].length}</span></div>
+      ${groups[g].map(s => `
+        <div class="session-item ${s.id === state.activeSessionId ? 'active' : ''}" onclick="selectSession(${s.id})">
+          <div class="session-item-icon">${getSessionIcon(s.profile)}</div>
+          <div class="session-item-text">
+            <div class="session-item-title">${s.title}</div>
+            <div class="session-item-meta"><span>${s.profile}</span>${s.status === 'live' ? '<span class="session-item-badge live">LIVE</span>' : `<span>${s.time}</span>`}</div>
+          </div>
+          <div class="session-item-actions">
+            <button class="session-item-action" onclick="event.stopPropagation();pinSession(${s.id})" title="Pin">📌</button>
+            <button class="session-item-action" onclick="event.stopPropagation();archiveSession(${s.id})" title="Archive">📦</button>
+            <button class="session-item-action" onclick="event.stopPropagation();deleteSession(${s.id})" title="Delete">🗑</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+  document.getElementById('sessionList').innerHTML = html;
+}
+
+function getSessionIcon(profile) {
+  return {enterprise:'🎯',research:'🔬',balanced:'💻',professional:'📊',architect:'🏗️',autonomous:'🤖',quick:'⚡',custom:'⚙️'}[profile] || '💬';
+}
+
+function selectSession(id) {
+  state.activeSessionId = id;
+  renderSessions();
+  const s = state.sessions.find(x => x.id === id);
+  document.getElementById('currentSessionTitle').textContent = `${getSessionIcon(s.profile)} ${s.title}`;
+  if (!state.messages[id]) state.messages[id] = [];
+  renderMessages(id);
+}
+
+function newSession() {
+  const id = Math.max(...state.sessions.map(s => s.id)) + 1;
+  state.sessions.unshift({id,title:'New conversation',time:'now',status:'live',group:'Pinned',profile:state.currentProfile});
+  selectSession(id);
+  document.getElementById('currentSessionTitle').textContent = '🎯 New conversation';
+  showToast('info','New session',`Started. Profile: ${state.currentProfile}`);
+}
+
+function pinSession(id) {
+  const s = state.sessions.find(x => x.id === id);
+  s.group = s.group === 'Pinned' ? 'Today' : 'Pinned';
+  renderSessions();
+  showToast('info','Pinned',s.group === 'Pinned' ? 'Pinned' : 'Unpinned');
+}
+
+function archiveSession(id) {
+  state.sessions = state.sessions.filter(x => x.id !== id);
+  renderSessions();
+  showToast('info','Archived',`Session #${id} archived`);
+}
+
+function deleteSession(id) {
+  state.sessions = state.sessions.filter(x => x.id !== id);
+  delete state.messages[id];
+  renderSessions();
+  showToast('warn','Deleted',`Session #${id} deleted`);
+}
+
+function clearChat() {
+  if (state.activeSessionId && state.messages[state.activeSessionId]) {
+    state.messages[state.activeSessionId] = [];
+    renderMessages(state.activeSessionId);
+    showToast('info','Cleared','Session messages cleared');
+  }
+}
+
+// ============================================================
+// ===== CHAT ===================================================
+// ============================================================
+function renderMessages(sid) {
+  const msgs = state.messages[sid] || [];
+  const container = document.getElementById('chatMessages');
+  if (msgs.length === 0) {
+    container.innerHTML = `
+      <div class="chat-empty">
+        <div style="font-size:48px;margin-bottom:16px">⬢</div>
+        <div class="chat-empty-title">Welcome to MAXBRY</div>
+        <div class="chat-empty-desc">Profile: <strong style="color:var(--accent)">${state.currentProfile}</strong> · Model: <strong style="color:var(--accent)">${state.models[state.currentModel]}</strong></div>
+        <div class="chat-empty-suggestions">
+          <button class="chat-suggestion" onclick="useSuggestion('Audit my API REST, check OWASP Top 10, run integration tests')">🔒 Audit API REST</button>
+          <button class="chat-suggestion" onclick="useSuggestion('Research MoE patterns')">🔬 Research MoE</button>
+          <button class="chat-suggestion" onclick="useSuggestion('Design microservices architecture')">🏗️ Microservices arch</button>
+          <button class="chat-suggestion" onclick="useSuggestion('Write FastAPI tests with 90% coverage')">🧪 FastAPI tests</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+  container.innerHTML = msgs.map(m => renderMsg(m)).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function renderMsg(m) {
+  if (m.type === 'thinking') {
+    return `<div class="chat-thinking" onclick="this.classList.toggle('collapsed')">
+      <span class="chat-thinking-icon">🧠</span>
+      <span style="flex:1"><span class="chat-thinking-text">${m.text}</span><span class="chat-thinking-collapsed">Thinking collapsed · click to expand</span></span>
+      <button class="chat-thinking-toggle">▾</button>
+    </div>`;
+  }
+  if (m.type === 'tool') {
+    return `<div class="chat-tool">
+      <span class="chat-tool-name">${m.tool}</span>
+      <span>${m.text}</span>
+      <span class="chat-tool-result">${m.result}</span>
+    </div>`;
+  }
+  if (m.type === 'approval') {
+    return `<div class="chat-approval">
+      <div class="chat-approval-title">⚠️ Dangerous command requires approval</div>
+      <div class="chat-approval-cmd">$ ${m.cmd}</div>
+      <div class="chat-approval-actions">
+        <button class="chat-approval-btn allow" onclick="approveCommand('always')">Always allow</button>
+        <button class="chat-approval-btn allow-once" onclick="approveCommand('once')">Allow once</button>
+        <button class="chat-approval-btn deny" onclick="approveCommand('deny')">Deny</button>
+      </div>
+    </div>`;
+  }
+  return `<div class="chat-message ${m.role}">
+    <div class="chat-avatar ${m.role}">${m.role === 'user' ? 'U' : 'M'}</div>
+    <div class="chat-content">${m.html || `<p>${escapeHtml(m.text)}</p>`}
+      ${m.role === 'assistant' ? `<div class="chat-actions"><button class="chat-action" onclick="copyMessage('${m.id}')">📋 Copy</button><button class="chat-action" onclick="regenerate('${m.id}')">🔄 Regenerate</button><button class="chat-action" onclick="editMessage('${m.id}')">✏️ Edit</button></div>` : ''}
+    </div>
+  </div>`;
+}
+
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function useSuggestion(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || state.isGenerating) return;
+  if (!state.activeSessionId) newSession();
+  const sid = state.activeSessionId;
+  if (!state.messages[sid]) state.messages[sid] = [];
+  const userMsg = {id:'m'+Date.now(),role:'user',text};
+  state.messages[sid].push(userMsg);
+  state.sessions.find(s => s.id === sid).title = text.slice(0,50) + (text.length > 50 ? '…' : '');
+  input.value = '';
+  input.style.height = '48px';
+  renderMessages(sid);
+  state.isGenerating = true;
+  document.getElementById('sendBtn').style.display = 'none';
+  document.getElementById('stopBtn').style.display = 'flex';
+  await simulateResponse(sid, text);
+}
+
+async function simulateResponse(sid, prompt) {
+  const profile = state.currentProfile;
+  const model = state.models[state.currentModel];
+  // Thinking
+  state.messages[sid].push({type:'thinking',text:`Detectado profile "${profile}" con ${getProfileExpertCount(profile)} expertos. Routing a ${model} con reasoning:${state.reasoning}. Generando DAG de tareas…`});
+  renderMessages(sid);
+  await sleep(700);
+  // Tool calls
+  const tools = pickTools(profile, prompt);
+  for (const t of tools) {
+    state.messages[sid].push({type:'tool',tool:t.name,text:t.text,result:t.result});
+    renderMessages(sid);
+    await sleep(400);
+  }
+  // Final response
+  await sleep(500);
+  const response = generateResponse(profile, prompt);
+  state.messages[sid].push({id:'m'+Date.now()+'r',role:'assistant',html:response});
+  renderMessages(sid);
+  updateContext(+2);
+  state.isGenerating = false;
+  document.getElementById('sendBtn').style.display = 'flex';
+  document.getElementById('stopBtn').style.display = 'none';
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function stopGeneration() {
+  state.isGenerating = false;
+  document.getElementById('sendBtn').style.display = 'flex';
+  document.getElementById('stopBtn').style.display = 'none';
+  const sid = state.activeSessionId;
+  if (sid && state.messages[sid]) {
+    state.messages[sid].push({type:'thinking',text:'⚠️ Generation stopped by user'});
+    renderMessages(sid);
+  }
+  showToast('warn','Stopped','Generation cancelled by user');
+}
+
+function pickTools(profile, prompt) {
+  const p = prompt.toLowerCase();
+  if (p.includes('audit') || p.includes('security') || p.includes('owasp')) {
+    return [
+      {name:'scanner',text:'OWASP Top 10 scan + dependency check',result:'23 findings'},
+      {name:'executor',text:'Running integration tests in sandbox',result:'45/47 pass'},
+      {name:'consensus',text:`unanimity_${getProfileConsensus(profile)} vote on severity`,result:'vote passed'}
+    ];
+  }
+  if (p.includes('research') || p.includes('investigate') || p.includes('paper')) {
+    return [
+      {name:'web_search',text:'Multi-source parallel search',result:'127 results'},
+      {name:'reranker',text:'Cross-source relevance scoring',result:'23 papers kept'},
+      {name:'citations',text:'Cite extraction',result:'141 citations'}
+    ];
+  }
+  if (p.includes('design') || p.includes('architecture')) {
+    return [
+      {name:'analyzer',text:'Requirements + constraints extraction',result:'9 reqs · 6 constraints'},
+      {name:'synth',text:'Diagrams + cost model',result:'5 diagrams · $4.2k/mo'},
+      {name:'critic',text:'Counter-arguments + risks',result:'4 trade-offs'}
+    ];
+  }
+  return [
+    {name:'planner',text:'DAG construction with dependencies',result:`${Math.ceil(Math.random()*8+4)} nodes`},
+    {name:'router',text:'Expert assignment',result:`${Math.ceil(Math.random()*30+15)} experts`},
+    {name:'executor',text:'Running pipeline',result:'completed'}
+  ];
+}
+
+function generateResponse(profile, prompt) {
+  const p = prompt.toLowerCase();
+  const eff = getProfileExpertCount(profile);
+  const conf = (0.85 + Math.random() * 0.13).toFixed(2);
+  if (p.includes('audit') || p.includes('security') || p.includes('owasp')) {
+    return `<p>He completado la auditoría con <strong>profile ${profile}</strong> (${eff} expertos) sobre tu API REST.</p>
+    <p><strong>Resumen ejecutivo:</strong> 3 critical · 8 high · 12 medium. Cobertura: 87% líneas, 79% branches.</p>
+    <p><strong>Hallazgos critical (ordenados por consenso de 5 agentes):</strong></p>
+    <p>• <code>auth/jwt.py</code> — JWT sin rotación de claves (CVE-2026-XXXX compatible)<br>• <code>api/users.py</code> — IDOR en GET /users/{id}<br>• <code>db/queries.py</code> — SQL injection en búsqueda</p>
+    <p><strong>Recomendaciones:</strong></p>
+    <p>1. Rotar claves JWT con TTL ≤ 24h<br>2. Añadir ownership check en /users/{id}<br>3. Migrar a parametrized queries o SQLAlchemy ORM</p>
+    <p><strong>Confianza: ${conf}</strong>. Reportes generados en artifacts. Audit trail inmutable con sha hash.</p>
+    <p><strong>Próximos pasos:</strong> aplicar auto-fix (8/12 medium), setear consenso unanimity_5 para deploy.</p>`;
+  }
+  if (p.includes('research') || p.includes('investigate')) {
+    return `<p>He completado research profundo sobre <strong>${prompt.slice(0,60)}</strong> con <strong>${eff} expertos</strong>.</p>
+    <p><strong>State of the art (2026):</strong></p>
+    <p>1. <strong>Mixture-of-Experts con routing dinámico</strong> — Reemplazo de routing top-k por learned router con attention. Reduce compute 40% manteniendo calidad (paper: arXiv:2601.12345).<br>
+    2. <strong>CoE (Cooperative Experts)</strong> — Comunicación inter-experts vía attention. Mejora coherencia entreespecialidad. (paper: arXiv:2601.67890)<br>
+    3. <strong>Routing sparsity adaptativo</strong> — Top-k variable según entropía del input.</p>
+    <p><strong>Consenso ${getProfileConsensus(profile)}-agentes: implementación práctica viable</strong>.</p>
+    <p><strong>Confianza: ${conf}</strong>. 23 papers citados en artifacts/.md. Promedio freshness: 4.2 meses.</p>`;
+  }
+  if (p.includes('design') || p.includes('architecture')) {
+    return `<p>He generado la arquitectura para <strong>${prompt.slice(0,60)}</strong>.</p>
+    <p><strong>Decisión recomendada:</strong></p>
+    <p>Microservicios event-driven con Kubernetes. Componentes:</p>
+    <p>• <strong>API Gateway</strong> (FastAPI + Uvicorn) — 3 réplicas mínimo<br>
+    • <strong>Auth service</strong> (Ory Kratos) — JWT + refresh tokens<br>
+    • <strong>Users service</strong> (FastAPI + PostgreSQL)<br>
+    • <strong>Events bus</strong> (NATS JetStream) — at-least-once delivery<br>
+    • <strong>Cache</strong> (Redis 7) — multi-tier L1/L2<br>
+    • <strong>Storage</strong> (S3-compatible) — versionado + lifecycle<br>
+    • <strong>Observability</strong> (OpenTelemetry → Grafana)</p>
+    <p><strong>Cost estimado:</strong> ~$4.2k/mes en 100k usuarios activos.</p>
+    <p><strong>Trade-offs:</strong> mayor complejidad operacional vs. escalabilidad horizontal. Counter-argumentos mitigados con service mesh (Linkerd).</p>
+    <p><strong>Confianza: ${conf}</strong>. 5 diagrams generados. ADRs en artifacts/.</p>`;
+  }
+  return `<p>He procesado tu solicitud con <strong>profile ${profile}</strong> (${eff} expertos).</p>
+  <p>Análisis: detectado goal principal, 5 sub-objetivos derivados, 12 expertos activados. Pipeline completó consenso ${getProfileConsensus(profile)}-agentes.</p>
+  <p><strong>Resultado:</strong> artefactos en workspace (3 archivos). Audit trail con sha hash ${randomHash()}.</p>
+  <p><strong>Confianza: ${conf}</strong>. Próximo paso sugerido: validar con profile enterprise para audit-grade.</p>`;
+}
+
+function randomHash() {
+  return Array.from({length:8},()=>Math.floor(Math.random()*16).toString(16)).join('');
+}
+
+function getProfileExpertCount(p) {
+  return {quick:1,balanced:12,professional:24,research:56,architect:84,enterprise:150,autonomous:300,custom:'var'}[p] || 12;
+}
+
+function getProfileConsensus(p) {
+  return {quick:1,balanced:3,professional:3,research:5,architect:5,enterprise:7,autonomous:9,custom:3}[p] || 3;
+}
+
+function approveCommand(mode) {
+  showToast('success',`Command ${mode}`,mode === 'deny' ? 'Denied' : `Allowed (${mode})`);
+  if (state.activeSessionId && state.messages[state.activeSessionId]) {
+    const approvals = state.messages[state.activeSessionId].filter(m => m.type === 'approval');
+    if (approvals.length) {
+      state.messages[state.activeSessionId] = state.messages[state.activeSessionId].filter(m => m.type !== 'approval');
+      state.messages[state.activeSessionId].push({type:'tool',tool:'shell',text:'Approved and executed',result:'ok'});
+      renderMessages(state.activeSessionId);
+    }
+  }
+}
+
+function copyMessage(id) { showToast('success','Copied','Message copied to clipboard'); }
+function regenerate(id) { showToast('info','Regenerate','Re-running pipeline'); }
+function editMessage(id) { showToast('info','Edit','Inline editing enabled'); }
+
+function attachFile() {
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.multiple = true;
+  inp.onchange = () => {
+    showToast('success','Files attached',`${inp.files.length} file(s) added`);
+  };
+  inp.click();
+}
+
+function toggleVoice() {
+  const btn = document.getElementById('voiceBtn');
+  btn.classList.toggle('active');
+  if (btn.classList.contains('active')) {
+    showToast('info','Voice activated','Listening… (mock STT)');
+    setTimeout(() => { btn.classList.remove('active'); showToast('warn','Voice timeout','No speech detected'); }, 3000);
+  }
+}
+
+// ============================================================
+// ===== CONTEXT RING ===========================================
+// ============================================================
+function updateContext(delta=0) {
+  state.contextUsage = Math.max(0, Math.min(100, state.contextUsage + delta));
+  const pct = state.contextUsage;
+  const fill = document.getElementById('contextFill');
+  const offset = 314 - (314 * pct / 100);
+  fill.setAttribute('stroke-dashoffset', offset);
+  document.getElementById('contextPct').textContent = pct + '%';
+  const total = 128;
+  const used = Math.round(total * pct / 100);
+  document.getElementById('contextLabel').textContent = `${used}k/${total}k`;
+  document.getElementById('composerContext').lastElementChild.textContent = `${used}k/${total}k`;
+  document.getElementById('statInput').textContent = Math.round(used*0.4) + 'k';
+  document.getElementById('statOutput').textContent = Math.round(used*0.6) + 'k';
+  document.getElementById('statCache').textContent = Math.round(70 + Math.random()*20) + '%';
+  document.getElementById('statCost').textContent = '$' + (used * 0.000024).toFixed(2);
+}
+
+function resetContext() {
+  updateContext(-state.contextUsage);
+  showToast('success','Reset','Context cleared');
+}
+
+// ============================================================
+// ===== ACTIVE SKILLS (right panel) ============================
+// ============================================================
+function renderActiveSkills() {
+  const active = skills.filter(s => state.skillStates[s.id]);
+  const html = active.length === 0 ? '<div style="text-align:center;color:var(--text-tertiary);padding:20px;font-size:12px">No active skills</div>' :
+    active.map(s => `<div class="session-item"><div class="session-item-icon">${s.icon}</div><div class="session-item-text"><div class="session-item-title">${s.name}</div><div class="session-item-meta">v${s.v}</div></div></div>`).join('');
+  document.getElementById('activeSkillsList').innerHTML = html;
+}
+
+// ============================================================
+// ===== WORKSPACE TABS =========================================
+// ============================================================
+function openWorkspaceTab(n) {
+  if (n === 2) {
+    if (state.workspaceTabs.length >= 4) {
+      showToast('warn','Limit','Max 4 workspace tabs (OpenClaw Deck style)');
+      return;
+    }
+    state.workspaceTabs.push(state.workspaceTabs.length + 1);
+    renderWorkspaceTabs();
+    showToast('success','Tab added',`Workspace tab #${state.workspaceTabs.length} added`);
+  } else {
+    showToast('info','Workspace tab',`Switched to tab #${n}`);
+  }
+}
+
+function renderWorkspaceTabs() {
+  const tabs = state.workspaceTabs.map(n => `
+    <div onclick="openWorkspaceTab(${n})" style="background:#1c1c1e;border:1px solid ${n===1?'var(--accent)':'var(--line)'};border-radius:6px;padding:10px;cursor:pointer;min-height:50px;position:relative">
+      <div style="position:absolute;top:4px;left:6px;font-size:9px;color:var(--text-tertiary);font-family:'SF Mono','Monaco',monospace;font-weight:700">${n}</div>
+      <div style="padding-top:14px;font-size:11px;color:${n===1?'var(--accent)':'var(--text-secondary)'}">${n===1?'Reports':'Tab '+n}</div>
+    </div>
+  `);
+  if (state.workspaceTabs.length < 4) {
+    tabs.push(`<div onclick="openWorkspaceTab(2)" style="background:#1c1c1e;border:1px dashed var(--line);border-radius:6px;padding:10px;cursor:pointer;min-height:50px;display:flex;align-items:center;justify-content:center">
+      <span style="color:var(--text-tertiary);font-size:18px">+</span>
+    </div>`);
+  }
+  document.getElementById('workspaceTabs').innerHTML = tabs.join('');
+}
+
+// ============================================================
+// ===== CENTERS (15) ===========================================
+// ============================================================
+function renderCenters() {
+  const centers = [
+    {n:1,i:'💼',t:'Workspace',d:'Sessions, tabs, archivos, versionado',c:12,col:''},
+    {n:2,i:'⚡',t:'Execution Profiles',d:'8 profiles · crear · clonar · exportar',c:8,col:''},
+    {n:3,i:'🧬',t:'Expert Manager',d:'300 expertos · activar/desactivar · versionar',c:300,col:''},
+    {n:4,i:'🤖',t:'Agent Registry',d:'Subagentes · tools · delegation graph',c:42,col:''},
+    {n:5,i:'🔗',t:'Pipeline Studio',d:'DAG visual · conectar nodos · ejecutar',c:18,col:'warn'},
+    {n:6,i:'🧠',t:'LLM Registry',d:'Proveedores · API keys · fallbacks',c:7,col:''},
+    {n:7,i:'🔌',t:'MCP Registry',d:'17 servers · stdio · HTTP · secrets',c:17,col:''},
+    {n:8,i:'📚',t:'Knowledge Center',d:'RAG · vector DB · embeddings',c:142,col:'purple'},
+    {n:9,i:'⚡',t:'Skill Center',d:'SKILL.md cards · on-demand',c:13,col:''},
+    {n:10,i:'🧠',t:'Memory Center',d:'4 layers: prompt · session · skills · user',c:4,col:'purple'},
+    {n:11,i:'📤',t:'Output Studio',d:'Markdown · JSON · PDF · DOCX · XLSX',c:6,col:''},
+    {n:12,i:'📊',t:'Monitoring Center',d:'Token usage · latency · errors',c:0,col:'warn'},
+    {n:13,i:'🛡️',t:'Security Center',d:'OWASP · audit · permission scopes',c:5,col:'pink'},
+    {n:14,i:'🧩',t:'Integration Center',d:'Connectors: Drive · GitHub · Notion · Slack',c:14,col:'blue'},
+    {n:15,i:'🛠️',t:'Developer Studio',d:'API · Webhooks · CLI scripts',c:0,col:''},
+    {n:16,i:'🛒',t:'Marketplace',d:'Install experts · agents · pipelines',c:42,col:''}
+  ];
+  document.getElementById('centersGrid').innerHTML = centers.map(c => `
+    <div class="center-card" onclick="openCenter('${c.t}')">
+      <div class="center-icon ${c.col}">${c.i}</div>
+      <div class="center-title">${c.n}. ${c.t}</div>
+      <div class="center-desc">${c.d}</div>
+      <div class="center-meta">
+        <span>items</span>
+        <span class="center-meta-count">${c.c}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openCenter(name) {
+  showToast('info',`Center opened`,`${name} — full UI loads here in production`);
+}
+
+// ============================================================
+// ===== LIVE STATUS TABLE ======================================
+// ============================================================
+function renderLiveStatus() {
+  const rows = [
+    ['Kernel', 'active', '0.4ms', '12k ops/s', '0'],
+    ['Router', 'active', '2.1ms', '8.4k rps', '0'],
+    ['Control Plane', 'active', '1.2ms', '300 cycles/s', '0'],
+    ['LLM Gateway', 'active', '142ms avg', '420 tpm', '2'],
+    ['MCP Registry', 'active', '8ms', '17 servers', '0'],
+    ['Memory Center', 'warning', '22ms', '1.4k rps', '14'],
+    ['RAG Engine', 'active', '48ms', '180 rps', '0'],
+    ['Output Engine', 'active', '12ms', '24k ops/s', '0'],
+    ['Pipeline Studio', 'active', '6ms', '320 pipelines/d', '1'],
+    ['Marketplace', 'active', '88ms', '42 items', '0']
+  ];
+  document.getElementById('liveStatusTable').innerHTML = rows.map(r => `
+    <tr>
+      <td><strong>${r[0]}</strong></td>
+      <td><span class="badge badge-${r[1]==='active'?'ok':'warn'}">${r[1]}</span></td>
+      <td>${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[1]==='active'?'0':r[4]}</td>
+    </tr>
+  `).join('');
+}
+
+// ============================================================
+// ===== OFFICE (live demo) =====================================
+// ============================================================
+function startOfficeDemo(btn) {
+  if (state.officeTimer) return;
+  btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.officeTimer = setInterval(tickOffice, 800);
+  showToast('success','Office demo started','Watch agents collaborate in real time');
+}
+
+function stopOfficeDemo(btn) {
+  if (state.officeTimer) { clearInterval(state.officeTimer); state.officeTimer = null; }
+  btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showToast('warn','Office demo stopped');
+}
+
+function randomAgentFail(btn) {
+  btn.classList.add('active');
+  setTimeout(() => btn.classList.remove('active'), 500);
+  const id = Math.floor(Math.random() * 11) + 1;
+  const desk = document.querySelectorAll('.office-desk')[id-1];
+  if (desk) {
+    desk.classList.add('error');
+    document.getElementById('oa-'+id).classList.add('error');
+    setTimeout(() => {
+      desk.classList.remove('error');
+      document.getElementById('oa-'+id).classList.remove('error');
+    }, 3000);
+    showToast('error','Agent failed',`E-${id.toString().padStart(2,'0')} threw an exception. Auto-recovery in 3s.`);
+  }
+}
+
+function resetOffice(btn) {
+  btn.classList.add('active');
+  setTimeout(() => btn.classList.remove('active'), 500);
+  for (let i = 1; i <= 11; i++) {
+    document.getElementById('oa-'+i).classList.remove('error','working','idle');
+  }
+  document.querySelectorAll('.office-desk').forEach(d => d.classList.remove('active','working','error'));
+  showToast('info','Reset','All agents reset to idle');
+}
+
+function tickOffice() {
+  // Randomize working/error state
+  const working = [];
+  for (let i = 1; i <= 11; i++) {
+    const desk = document.querySelectorAll('.office-desk')[i-1];
+    const avatar = document.getElementById('oa-'+i);
+    desk.classList.remove('active','working','error');
+    avatar.classList.remove('idle','working','error');
+    const r = Math.random();
+    if (r > 0.7) {
+      desk.classList.add('working');
+      avatar.classList.add('working');
+      working.push(i);
+    } else {
+      avatar.classList.add('idle');
+    }
+  }
+  state.officeWorking = working;
+  tickOfficeMetrics();
+}
+
+function tickOfficeMetrics() {
+  document.getElementById('metricAgents').textContent = '11';
+  document.getElementById('metricWorking').textContent = state.officeWorking.length;
+  document.getElementById('metricErrors').textContent = state.officeErrors.length;
+  document.getElementById('metricTpm').textContent = (Math.round(Math.random()*2000 + 500)).toLocaleString();
+  document.getElementById('metricCph').textContent = '$' + (Math.random()*3 + 0.5).toFixed(2);
+}
+
+// ============================================================
+// ===== PROFILE BUILDER WIZARD ================================
+// ============================================================
+function goToWizardStep(n) {
+  // Allow free navigation between already-visited steps; forward jump requires progressive step
+  // Direct forward jumps (e.g. 1→5) only work if intermediate steps already validated
+  // We allow free navigation for UX
+  state.wizardStep = n;
+  document.querySelectorAll('.wizard-step').forEach((s, i) => {
+    s.classList.toggle('active', i+1 === n);
+    s.classList.toggle('done', i+1 < n);
+  });
+  document.querySelectorAll('.wizard-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('wiz-'+n).classList.add('active');
+  document.getElementById('wizPrev').disabled = n === 1;
+  document.getElementById('wizNext').textContent = n === 5 ? '✓ Deploy profile' : 'Next →';
+  document.getElementById('wizNext').classList.toggle('wizard-btn-success', n === 5);
+  document.getElementById('wizProgress').textContent = `Step ${n} of 5`;
+  if (n === 5) renderReview();
+}
+
+function nextWizardStep() {
+  if (state.wizardStep === 5) {
+    deployProfile();
+    return;
+  }
+  // Validate current step
+  if (state.wizardStep === 1) {
+    if (!document.getElementById('wizName').value.trim()) {
+      showToast('error','Validation','Profile name is required');
+      return;
+    }
+  }
+  goToWizardStep(state.wizardStep + 1);
+}
+
+function prevWizardStep() {
+  if (state.wizardStep > 1) goToWizardStep(state.wizardStep - 1);
+}
+
+function cancelWizard() {
+  goToWizardStep(1);
+  showToast('info','Cancelled','Wizard reset to step 1');
+}
+
+function deployProfile() {
+  const name = document.getElementById('wizName').value;
+  const profile = name.toLowerCase().replace(/\s+/g, '-');
+  if (!state.profiles.includes(profile)) state.profiles.push(profile);
+  selectProfile(profile);
+  showToast('success','Profile deployed',`"${name}" is now active. Hot-reload, no restart.`);
+  navigateTo('home');
+}
+
+function renderReview() {
+  const name = document.getElementById('wizName').value;
+  const model = document.getElementById('wizModel').value;
+  const provider = document.getElementById('wizProvider').value;
+  const skillsSel = Array.from(document.querySelectorAll('#wizSkills input:checked')).map(c => c.value);
+  const mcpSel = Array.from(document.querySelectorAll('#wizMcpCatalog input:checked')).map(c => c.value);
+  const review = document.getElementById('reviewSummary');
+  review.innerHTML = `<span style="color:var(--text-tertiary)">// profile.yaml</span><br>
+    <span style="color:var(--purple)">profile</span>: <span style="color:var(--accent)">"${name}"</span><br>
+    <span style="color:var(--purple)">avatar</span>: <span style="color:var(--accent)">"${document.getElementById('wizAvatar').value}"</span><br>
+    <span style="color:var(--purple)">model</span>:<br>
+    &nbsp;&nbsp;<span style="color:var(--purple)">provider</span>: <span style="color:var(--accent)">${provider}</span><br>
+    &nbsp;&nbsp;<span style="color:var(--purple)">name</span>: <span style="color:var(--accent)">${model}</span><br>
+    &nbsp;&nbsp;<span style="color:var(--purple)">reasoning</span>: <span style="color:var(--accent)">${document.getElementById('wizReason').value}</span><br>
+    <span style="color:var(--purple)">skills</span>: [${skillsSel.map(s=>`<span style="color:var(--ok)">"${s}"</span>`).join(', ')}]<br>
+    <span style="color:var(--purple)">mcp_servers</span>: [${mcpSel.map(s=>`<span style="color:var(--ok)">"${s}"</span>`).join(', ')}]<br>
+    <span style="color:var(--purple)">hot_reload</span>: <span style="color:var(--ok)">true</span>`;
+}
+
+function updateModels() {
+  const provider = document.getElementById('wizProvider').value;
+  const models = {openai:['GPT-5','GPT-5-mini','GPT-4o'],anthropic:['Sonnet 5','Opus 5','Haiku 4'],google:['Gemini 3 Pro','Gemini 3 Flash','Gemini 2.5'],deepseek:['DeepSeek V4','DeepSeek V3'],minimax:['MiniMax M3','MiniMax M2'],kimi:['Kimi 2','Kimi 1.5'],ollama:['llama-3.3','qwen3','mistral'],lmstudio:['custom-local']};
+  document.getElementById('wizModel').innerHTML = models[provider].map(m => `<option>${m}</option>`).join('');
+}
+
+function renderWizardSkills() {
+  document.getElementById('wizSkills').innerHTML = skills.map(s => `
+    <label class="check-item ${state.skillStates[s.id]?'checked':''}" onclick="this.classList.toggle('checked');this.querySelector('input').checked=this.querySelector('input').checked?false:true">
+      <input type="checkbox" value="${s.id}" ${state.skillStates[s.id]?'checked':''}>
+      <div class="check-item-box"></div>
+      <div class="check-item-text">
+        <div class="check-item-name">${s.icon} ${s.name}</div>
+        <div class="check-item-meta">${s.desc.slice(0,40)}…</div>
+      </div>
+    </label>
+  `).join('');
+}
+
+function renderWizardMcpCatalog() {
+  document.getElementById('wizMcpCatalog').innerHTML = mcps.slice(0,12).map(m => `
+    <label class="check-item" onclick="this.classList.toggle('checked');this.querySelector('input').checked=this.querySelector('input').checked?false:true">
+      <input type="checkbox" value="${m.name}">
+      <div class="check-item-box"></div>
+      <div class="check-item-text">
+        <div class="check-item-name">${m.name}</div>
+        <div class="check-item-meta">${m.type} · ${m.status}</div>
+      </div>
+    </label>
+  `).join('');
+}
+
+function exportProfile() {
+  const config = {
+    name: state.currentProfile,
+    model: state.models[state.currentModel],
+    reasoning: state.reasoning,
+    skills: skills.filter(s => state.skillStates[s.id]).map(s => s.id),
+    timestamp: new Date().toISOString()
+  };
+  downloadFile(`maxbry-${state.currentProfile}.tar.gz`, JSON.stringify(config, null, 2));
+  showToast('success','Exported',`Profile "${state.currentProfile}" exported as .tar.gz`);
+}
+
+function cloneCurrentProfile() {
+  const newName = state.currentProfile + '-copy';
+  if (!state.profiles.includes(newName)) state.profiles.push(newName);
+  state.currentProfile = newName;
+  renderProfileChips();
+  showToast('success','Cloned',`Profile cloned to "${newName}"`);
+}
+
+function deleteCurrentProfile() {
+  if (state.currentProfile === 'balanced') {
+    showToast('error','Cannot delete','balanced is the default profile');
+    return;
+  }
+  const idx = state.profiles.indexOf(state.currentProfile);
+  if (idx >= 0) state.profiles.splice(idx, 1);
+  state.currentProfile = 'balanced';
+  renderProfileChips();
+  showToast('warn','Deleted',`Profile removed`);
+}
+
+function renderProfileChips() {
+  selectProfile(state.currentProfile);
+}
+
+function switchProfileTab(tab) {
+  // tab comes as 'wizard-tab', 'skills-tab', etc — already has '-tab' suffix
+  navigateToTab(tab);
+}
+
+// ============================================================
+// ===== SKILLS GRID ============================================
+// ============================================================
+function renderSkillsGrid() {
+  document.getElementById('skillsGrid').innerHTML = skills.map(s => `
+    <div class="skill-card ${state.skillStates[s.id]?'active':''}" onclick="toggleSkill('${s.id}')">
+      <div class="skill-card-header">
+        <div class="skill-card-icon">${s.icon}</div>
+        <div class="skill-card-name">${s.name}</div>
+        <button class="skill-card-toggle ${state.skillStates[s.id]?'on':''}" onclick="event.stopPropagation();toggleSkill('${s.id}')"></button>
+      </div>
+      <div class="skill-card-desc">${s.desc}</div>
+      <div class="skill-card-meta"><span>v${s.v}</span><span>${s.tags.join(' · ')}</span></div>
+    </div>
+  `).join('');
+  document.getElementById('skillsCount').textContent = skills.filter(s => state.skillStates[s.id]).length;
+}
+
+function toggleSkill(id) {
+  state.skillStates[id] = !state.skillStates[id];
+  renderSkillsGrid();
+  renderActiveSkills();
+  showToast('info','Skill ' + (state.skillStates[id]?'enabled':'disabled'),skills.find(s=>s.id===id).name);
+}
+
+function enableAllSkills() {
+  skills.forEach(s => state.skillStates[s.id] = true);
+  renderSkillsGrid();
+  renderActiveSkills();
+  showToast('success','All skills enabled',`${skills.length} skills active`);
+}
+
+function disableAllSkills() {
+  skills.forEach(s => state.skillStates[s.id] = false);
+  renderSkillsGrid();
+  renderActiveSkills();
+  showToast('warn','All skills disabled');
+}
+
+function installSkill() {
+  openModal('installSkill');
+}
+
+// ============================================================
+// ===== LLM TABLE ==============================================
+// ============================================================
+function renderLLMTable() {
+  document.getElementById('llmTable').innerHTML = `
+    <thead><tr><th>Provider</th><th>Model</th><th>Context</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${llms.map(l => `
+      <tr>
+        <td><strong>${l.provider}</strong></td>
+        <td><code style="color:var(--accent);background:transparent">${l.model}</code></td>
+        <td>${l.ctx}</td>
+        <td><span class="badge badge-${l.badge}">${l.status}</span></td>
+        <td>
+          <button class="chat-action" onclick="testLLM('${l.model}')">🧪 Test</button>
+          <button class="chat-action" onclick="configureLLM('${l.provider}')">⚙️</button>
+          ${l.provider !== 'OpenAI' ? `<button class="chat-action" onclick="removeLLM('${l.provider}')">🗑</button>` : ''}
+        </td>
+      </tr>
+    `).join('')}</tbody>
+  `;
+}
+
+function addLLM() { openModal('addLLM'); showToast('info','Add provider','Form opened'); }
+function testLLM(model) { showToast('info','Testing',`Sending test prompt to ${model}…`); setTimeout(() => showToast('success','Test passed',`${model} response 1.2s`), 1200); }
+function configureLLM(p) { openModal('configLLM'); }
+function removeLLM(p) { showToast('warn','Removed',`Provider "${p}" removed`); }
+
+// ============================================================
+// ===== MCP TABLE ==============================================
+// ============================================================
+function renderMCPTable() {
+  document.getElementById('mcpTable').innerHTML = `
+    <thead><tr><th>Server</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${mcps.map((m,i) => `
+      <tr>
+        <td><strong>${m.name}</strong></td>
+        <td><code style="color:var(--accent);background:transparent;font-size:11px">${m.type}</code></td>
+        <td><span class="badge badge-${m.badge}">${m.status}</span></td>
+        <td>
+          <button class="chat-action" onclick="toggleMCP(${i})">${m.status==='connected'?'⏸':'▶'}</button>
+          <button class="chat-action" onclick="configureMCP('${m.name}')">⚙️</button>
+        </td>
+      </tr>
+    `).join('')}</tbody>
+  `;
+}
+
+function addMCP() { openModal('addMCP'); }
+function toggleMCP(i) {
+  const m = mcps[i];
+  m.status = m.status === 'connected' ? 'disconnected' : 'connected';
+  m.badge = m.status === 'connected' ? 'ok' : 'warn';
+  renderMCPTable();
+  showToast('info', m.name, `Server ${m.status}`);
+}
+function configureMCP(name) { showToast('info',name,'Configuration panel'); }
+
+// ============================================================
+// ===== PARAMS =================================================
+// ============================================================
+function renderParams() {
+  const params = [
+    {k:'temperature',label:'Temperature',min:0,max:2,step:0.1,val:0.7,fmt:v=>v.toFixed(1)},
+    {k:'topP',label:'Top-P',min:0,max:1,step:0.05,val:0.95,fmt:v=>v.toFixed(2)},
+    {k:'topK',label:'Top-K',min:1,max:100,step:1,val:40,fmt:v=>Math.round(v)},
+    {k:'maxTokens',label:'Max output tokens',min:256,max:32768,step:256,val:8192,fmt:v=>Math.round(v)},
+    {k:'reasoning',label:'Reasoning effort',min:0,max:5,step:1,val:4,fmt:v=>['none','minimal','low','medium','high','xhigh'][Math.round(v)]},
+    {k:'consensus',label:'Consensus strength',min:1,max:7,step:2,val:5,fmt:v=>'unanimity_'+Math.round(v)},
+    {k:'reranker',label:'Reranker K',min:1,max:50,step:1,val:10,fmt:v=>Math.round(v)},
+    {k:'cacheTTL',label:'Cache TTL (hours)',min:1,max:168,step:1,val:24,fmt:v=>Math.round(v)+'h'}
+  ];
+  document.getElementById('paramsGrid').innerHTML = params.map(p => `
+    <div class="param-item">
+      <div class="param-header">
+        <span class="param-label">${p.label}</span>
+        <span class="param-value" id="pv-${p.k}">${p.fmt(p.val)}</span>
+      </div>
+      <input type="range" class="param-slider" min="${p.min}" max="${p.max}" step="${p.step}" value="${p.val}" oninput="document.getElementById('pv-${p.k}').textContent=(${p.fmt.toString()})(this.valueAsNumber)">
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// ===== DOWNLOADS (8 platforms) ================================
+// ============================================================
+function renderDownloads() {
+  document.getElementById('downloadGrid').innerHTML = downloads.map(d => `
+    <a class="download-card" onclick="downloadApp('${d.plat}')">
+      <div class="download-card-header">
+        <div class="download-card-icon ${d.plat}">${d.icon}</div>
+        <div>
+          <div class="download-card-title">${d.title}</div>
+          <div class="download-card-platform">${d.platform}</div>
+        </div>
+      </div>
+      <div class="download-card-meta">
+        <span>${d.size}</span>
+        <span class="download-card-version">${d.version}</span>
+      </div>
+    </a>
+  `).join('');
+}
+
+function downloadApp(plat) {
+  const map = {android:'maxbry-2.1.4.apk',ios:'maxbry-2.1.4.ipa',mac:'maxbry-2.1.4.dmg',linux:'maxbry-2.1.4.AppImage',windows:'maxbry-2.1.4.exe',cli:'npm i -g maxbry',docker:'docker pull maxbry/core:latest',web:'install PWA from maxbry.ai',repo:'git clone github.com/maxbry/nct'};
+  showToast('success','Download started',`${plat}: ${map[plat]}`);
+  state.downloadCount++;
+}
+
+// ============================================================
+// ===== PRICING ================================================
+// ============================================================
+function renderPricing() {
+  document.getElementById('pricingGrid').innerHTML = pricingPlans.map(p => `
+    <div class="price-card ${p.featured?'featured':''}" onclick="selectPlan('${p.name}')">
+      <div class="price-card-name">${p.name}</div>
+      <div class="price-card-desc">${p.desc}</div>
+      <div class="price-card-price">
+        ${p.amount > 0 ? `<span class="price-card-price-currency">${p.currency}</span><span class="price-card-price-amount">${p.amount}</span><span class="price-card-price-period">${p.period}</span>` : `<span class="price-card-price-amount">${p.currency}0</span><span class="price-card-price-period">/forever</span>`}
+      </div>
+      <ul class="price-card-features">
+        ${p.features.map(f => `<li class="${f[0]==='no'?'no':''}">${f[1]}</li>`).join('')}
+      </ul>
+      <button class="price-card-cta" onclick="event.stopPropagation();subscribePlan('${p.name}')">${p.cta}</button>
+    </div>
+  `).join('');
+}
+
+function selectPlan(name) {
+  showToast('info','Plan selected',`${name}. Click below to subscribe.`);
+}
+
+function subscribePlan(name) {
+  const plan = pricingPlans.find(p => p.name === name);
+  if (plan.amount === 0) {
+    state.currentPlan = name;
+    showToast('success','Free activated',`Welcome! ${name} is now active.`);
+  } else {
+    state.currentPlan = name;
+    showToast('success','Subscribed',`Stripe checkout opened for ${name} (${plan.currency}${plan.amount}${plan.period}).`);
+  }
+  // Mark subscribed visually
+  setTimeout(() => {
+    document.querySelectorAll('.price-card-cta').forEach(b => {
+      if (b.parentElement.querySelector('.price-card-name').textContent === name) {
+        b.classList.add('subscribed');
+        b.textContent = '✓ Active';
+      }
+    });
+  }, 100);
+}
+
+// ============================================================
+// ===== MOBILE PHONES ==========================================
+// ============================================================
+function selectEffort(level) {
+  state.phoneEffort = level;
+  document.querySelectorAll('.phone-item[data-effort]').forEach(i => i.classList.toggle('active', i.dataset.effort === level));
+  showToast('success','Effort changed',`Now using "${level.toUpperCase()}"`);
+}
+
+function togglePhoneSwitch(el) {
+  state.phoneThinking = !state.phoneThinking;
+  const sw = el.querySelector('.phone-switch');
+  sw.classList.toggle('off', !state.phoneThinking);
+  showToast('info','Thinking',state.phoneThinking?'Activated':'Deactivated');
+}
+
+function toggleMobileSkill(el, name) {
+  state.phoneSkills[name] = !state.phoneSkills[name];
+  const badge = el.querySelector('.phone-badge');
+  if (state.phoneSkills[name]) {
+    badge.textContent = 'ON';
+    badge.style.background = 'var(--accent)';
+    badge.style.color = '#000';
+    showToast('success','Skill enabled',name);
+  } else {
+    badge.textContent = 'OFF';
+    badge.style.background = '';
+    badge.style.color = '';
+    showToast('info','Skill disabled',name);
+  }
+}
+
+function phoneNav(target) {
+  showToast('info','Mobile nav',`→ ${target}`);
+}
+
+function updateClock() {
+  const t = new Date();
+  const hh = t.getHours().toString().padStart(2,'0');
+  const mm = t.getMinutes().toString().padStart(2,'0');
+  document.querySelectorAll('[id^="phoneTime"]').forEach(el => el.textContent = `${hh}:${mm}`);
+}
+
+// ============================================================
+// ===== COMMAND PALETTE ========================================
+// ============================================================
+const commands = [
+  {icon:'🏠',name:'Go to Home',action:()=>navigateTo('home'),cat:'Navigation'},
+  {icon:'💬',name:'Go to Chat',action:()=>navigateTo('chat'),cat:'Navigation'},
+  {icon:'🏢',name:'Go to Office',action:()=>navigateTo('office'),cat:'Navigation'},
+  {icon:'⚡',name:'Go to Profiles',action:()=>navigateTo('profiles'),cat:'Navigation'},
+  {icon:'📱',name:'Go to Mobile',action:()=>navigateTo('mobile'),cat:'Navigation'},
+  {icon:'💰',name:'Go to Pricing',action:()=>navigateTo('pricing'),cat:'Navigation'},
+  {icon:'📖',name:'Go to README',action:()=>navigateTo('readme'),cat:'Navigation'},
+  {icon:'➕',name:'New session',shortcut:'⌘N',action:()=>newSession(),cat:'Sessions'},
+  {icon:'🗑',name:'Clear chat',action:clearChat,cat:'Sessions'},
+  {icon:'🔄',name:'Switch profile',action:cycleProfile,cat:'Profile'},
+  {icon:'🎯',name:'Cycle model',action:cycleModel,cat:'Profile'},
+  {icon:'🧠',name:'Toggle reasoning',shortcut:'⌘R',action:toggleReasoning,cat:'Profile'},
+  {icon:'➕',name:'Create custom profile',shortcut:'⌘P',action:()=>navigateTo('profiles'),cat:'Profile'},
+  {icon:'📦',name:'Export profile',action:exportProfile,cat:'Profile'},
+  {icon:'⚡',name:'Open Skill Center',action:()=>{navigateTo('profiles');setTimeout(()=>switchProfileTab('skills-tab'),100)},cat:'Skills'},
+  {icon:'🧬',name:'Open Profile Wizard',action:()=>{navigateTo('profiles');setTimeout(()=>switchProfileTab('wizard-tab'),100)},cat:'Profile'},
+  {icon:'🎛️',name:'Open Parameters',action:()=>{navigateTo('profiles');setTimeout(()=>switchProfileTab('params-tab'),100)},cat:'Profile'},
+  {icon:'🛒',name:'Open Marketplace',action:()=>navigateTo('mobile'),cat:'Marketplace'},
+  {icon:'📥',name:'Download apps',action:()=>navigateTo('mobile'),cat:'Downloads'},
+  {icon:'🏢',name:'Start office demo',action:startOfficeDemoBtn,cat:'Office'},
+  {icon:'🔌',name:'Open MCP Registry',action:()=>{navigateTo('profiles');setTimeout(()=>switchProfileTab('mcp-tab'),100)},cat:'Profile'},
+  {icon:'🧠',name:'Open LLM Registry',action:()=>{navigateTo('profiles');setTimeout(()=>switchProfileTab('llm-tab'),100)},cat:'Profile'},
+  {icon:'🔧',name:'Switch to Simple mode',action:()=>setMode('simple'),cat:'Mode'},
+  {icon:'🏗️',name:'Switch to Architect mode',action:()=>setMode('architect'),cat:'Mode'},
+  {icon:'🔄',name:'Reset context',action:resetContext,cat:'Session'},
+  {icon:'🎤',name:'Toggle voice',action:()=>document.getElementById('voiceBtn').click(),cat:'Composer'}
+];
+
+function startOfficeDemoBtn() {
+  navigateTo('office');
+  setTimeout(() => startOfficeDemo(document.querySelector('#section-office .composer-btn')), 200);
+}
+
+function openCmdPalette() {
+  document.getElementById('cmdOverlay').classList.add('active');
+  document.getElementById('cmdInput').value = '';
+  document.getElementById('cmdInput').focus();
+  filterCmd('');
+}
+
+function closeCmdPalette() { document.getElementById('cmdOverlay').classList.remove('active'); }
+
+function filterCmd(q) {
+  q = q.toLowerCase();
+  const filtered = commands.filter(c => c.name.toLowerCase().includes(q));
+  const grouped = {};
+  filtered.forEach(c => { if (!grouped[c.cat]) grouped[c.cat] = []; grouped[c.cat].push(c); });
+  let html = '';
+  for (const cat in grouped) {
+    html += `<div class="cmd-section">${cat}</div>`;
+    grouped[cat].forEach((c, i) => {
+      const idx = commands.indexOf(c);
+      html += `<div class="cmd-item" data-idx="${idx}">${c.icon !== undefined ? `<span class="cmd-item-icon">${c.icon}</span>` : ''}<span>${c.name}</span>${c.shortcut?`<span class="cmd-item-shortcut">${c.shortcut}</span>`:''}</div>`;
+    });
+  }
+  if (filtered.length === 0) html = '<div class="cmd-empty">No commands matched</div>';
+  document.getElementById('cmdResults').innerHTML = html;
+  // Delegated handler (works around any inline-onclick quirks)
+  const results = document.getElementById('cmdResults');
+  results.onclick = (e) => {
+    const item = e.target.closest('.cmd-item');
+    if (!item) return;
+    const idx = parseInt(item.dataset.idx);
+    if (!isNaN(idx)) execCommand(idx);
+  };
+}
+
+function execCommand(idx) {
+  try {
+    const cmd = commands[idx];
+    if (cmd && cmd.action) cmd.action();
+  } catch (e) {
+    showToast('error','Command failed', String(e).slice(0,80));
+  }
+  closeCmdPalette();
+}
+
+// ============================================================
+// ===== MODAL ==================================================
+// ============================================================
+function openModal(name) {
+  const modals = {
+    customProfile: {
+      title: '+ Create Custom Profile',
+      body: `
+        <div class="wizard-field"><label class="wizard-field-label wizard-field-label-required">Profile name</label><input class="wizard-input" id="modal-custom-name" placeholder="ej. research-v2"></div>
+        <div class="wizard-field"><label class="wizard-field-label">Starting from</label><select class="wizard-select"><option>balanced</option><option>professional</option><option>research</option><option>architect</option><option>enterprise</option></select></div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-top:12px">Clone config from existing profile. Customization available after creation in the wizard.</p>
+      `,
+      footer: '<button class="wizard-btn" onclick="closeModal()">Cancel</button><button class="wizard-btn wizard-btn-primary" onclick="createCustomProfile()">Create</button>'
+    },
+    aboutProfiles: {
+      title: 'About Profiles',
+      body: `<p>Profiles are saved in <code>~/.maxbry/profiles/&lt;name&gt;/config.yaml</code></p><p>Each profile has isolated sessions, skills, memory, MCP servers, cron jobs.</p><p>Switching profiles is <strong>hot-reload</strong>: no restart needed.</p><p>Export as <code>.tar.gz</code> for backup or sharing. Import accepts any compatible profile.</p>`
+    },
+    installSkill: {
+      title: 'Install Skill from Marketplace',
+      body: `<p>Open the marketplace to browse and install skills. Filter by category, free/paid, rating.</p><p>Or paste a SKILL.md URL:</p><input class="wizard-input" placeholder="https://example.com/skill.md">`,
+      footer: '<button class="wizard-btn" onclick="closeModal()">Cancel</button><button class="wizard-btn wizard-btn-primary" onclick="showToast(\'info\',\'Installing\',\'Fetching SKILL.md…\');closeModal()">Install</button>'
+    },
+    addLLM: {
+      title: 'Add LLM Provider',
+      body: `<div class="wizard-field"><label class="wizard-field-label">Provider name</label><input class="wizard-input" placeholder="My Custom LLM"></div><div class="wizard-field"><label class="wizard-field-label">Base URL</label><input class="wizard-input" placeholder="https://api.example.com/v1"></div><div class="wizard-field"><label class="wizard-field-label">API key</label><input class="wizard-input" type="password" placeholder="sk-..."></div><div class="wizard-field"><label class="wizard-field-label">Compatible with</label><select class="wizard-select"><option>OpenAI API</option><option>Anthropic Messages</option><option>Custom</option></select></div>`,
+      footer: '<button class="wizard-btn" onclick="closeModal()">Cancel</button><button class="wizard-btn wizard-btn-primary" onclick="showToast(\'success\',\'Provider added\',\'Available globally\');closeModal()">Add</button>'
+    },
+    addMCP: {
+      title: 'Add MCP Server',
+      body: `<div class="wizard-field"><label class="wizard-field-label">Server name</label><input class="wizard-input" placeholder="my-custom-mcp"></div><div class="wizard-field"><label class="wizard-field-label">Type</label><select class="wizard-select" onchange="document.getElementById(\'mcpUrlField\').style.display=this.value===\'http\'?\'block\':\'none\'"><option value="stdio">stdio (local command)</option><option value="http">HTTP/SSE</option></select></div><div class="wizard-field"><label class="wizard-field-label">URL / Command</label><input class="wizard-input" placeholder="https://my-mcp.com or /usr/local/bin/mcp-server"></div><div class="wizard-field"><label class="wizard-field-label">API key (optional)</label><input class="wizard-input" type="password" placeholder=""></div>`,
+      footer: '<button class="wizard-btn" onclick="closeModal()">Cancel</button><button class="wizard-btn wizard-btn-primary" onclick="showToast(\'success\',\'MCP added\',\'Server registered\');closeModal()">Add</button>'
+    },
+    configLLM: {
+      title: 'Configure Provider',
+      body: `<p>Provider-level settings: rate limits, fallback strategy, per-model overrides.</p><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody><tr><td>Rate limit</td><td><input class="wizard-input" value="60 req/min"></td></tr><tr><td>Fallback on error</td><td><select class="wizard-select"><option>Retry</option><option>Fallback to next</option></select></td></tr><tr><td>Timeout</td><td><input class="wizard-input" value="30s"></td></tr></tbody></table>`,
+      footer: '<button class="wizard-btn" onclick="closeModal()">Cancel</button><button class="wizard-btn wizard-btn-primary" onclick="showToast(\'success\',\'Saved\',\'Provider config updated\');closeModal()">Save</button>'
+    }
+  };
+  const m = modals[name];
+  if (!m) return;
+  document.getElementById('modalTitle').textContent = m.title;
+  document.getElementById('modalBody').innerHTML = m.body;
+  document.getElementById('modalFooter').innerHTML = m.footer || '';
+  document.getElementById('modalFooter').style.display = m.footer ? 'flex' : 'none';
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+
+function createCustomProfile() {
+  const name = document.getElementById('modal-custom-name').value.trim().toLowerCase();
+  if (!name) { showToast('error','Required','Profile name is required'); return; }
+  if (!state.profiles.includes(name)) state.profiles.push(name);
+  selectProfile(name);
+  closeModal();
+  showToast('success','Custom profile created',`"${name}" is ready. Open the wizard to customize.`);
+}
+
+// ============================================================
+// ===== TOAST ==================================================
+// ============================================================
+function showToast(type, title, desc='') {
+  const container = document.getElementById('toastContainer');
+  const id = 'toast' + Date.now();
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.id = id;
+  const icons = {success:'✅',error:'❌',warn:'⚠️',info:'ℹ️'};
+  toast.innerHTML = `<span class="toast-icon">${icons[type]||'ℹ️'}</span><div class="toast-content"><div class="toast-title">${title}</div>${desc?`<div class="toast-desc">${desc}</div>`:''}</div><button class="toast-close" onclick="closeToast('${id}')">✕</button>`;
+  container.appendChild(toast);
+  setTimeout(() => closeToast(id), 4000);
+}
+
+function closeToast(id) {
+  const t = document.getElementById(id);
+  if (t) { t.style.animation = 'toastIn .2s ease reverse'; setTimeout(() => t.remove(), 200); }
+}
+
+// ============================================================
+// ===== README =================================================
+// ============================================================
+function renderReadme() {
+  const sections = [
+    {id:'global-nav',title:'Global Navigation & Mode',items:[
+      {n:'Logo click',d:'Volver al Home',s:'click'},
+      {n:'Global search / ⌘K',d:'Abre el command palette con fuzzy-search sobre 25+ comandos',s:'⌘K / Ctrl+K'},
+      {n:'Tabs Home · Chat · Office · Profiles · Mobile · Pricing · README',d:'Navegación entre secciones',s:'click'},
+      {n:'Reasoning chip',d:'Cycle through reasoning levels: none → minimal → low → medium → high → xhigh',s:'click'},
+      {n:'Profile chip',d:'Cycle through 8 profiles (quick → custom)',s:'click'},
+      {n:'Model chip',d:'Cycle through 7 LLM providers y modelos',s:'click'},
+      {n:'Avatar click',d:'Account menu (en construcción)',s:'click'},
+      {n:'Mode switch Simple/Architect',d:'Toggle entre Simple (chat+workspace) y Arquitecto (15 centers)',s:'click'}
+    ]},
+    {id:'home-simple',title:'Home (Simple mode)',items:[
+      {n:'8 Profile chips',d:'Quick · Balanced · Professional · Research · Architect · Enterprise · Autonomous · + Custom. Profile counts y status indicators en vivo.',s:'click'},
+      {n:'Sessions panel (left)',d:'Lista agrupada por Pinned · Today · Yesterday · This week. Click selecciona. Acciones: pin · archive · delete. Click en + New crea session.',s:'click'},
+      {n:'Chat panel (center)',d:'Mensajes user/assistant con thinking cards colapsables · tool call cards · dangerous command approval cards. Typing animation. Edit/Copy/Regenerate.',s:'type+click'},
+      {n:'Composer',d:'Send (Enter) · Stop · Attach file · Voice (STT) · Profile chip · Model chip. Token count en vivo (context ring).',s:'Enter / Shift+Enter'},
+      {n:'Empty state',d:'4 sugerencias clickeables. Empty state solo aparece si la sesión está vacía.',s:'click'},
+      {n:'Context panel (right)',d:'Context ring SVG con %, token stats (input/output/cache/cost). Active skills list. Workspace tabs (max 4).',s:'live'}
+    ]},
+    {id:'home-architect',title:'Home (Architect mode)',items:[
+      {n:'15 Center cards',d:'Workspace · Profiles · Expert Manager · Agent Registry · Pipeline Studio · LLM Registry · MCP Registry · Knowledge · Skills · Memory · Output · Monitoring · Security · Integration · Developer · Marketplace',s:'click'},
+      {n:'Live Status table',d:'Status en tiempo real de Kernel · Router · Control Plane · LLM Gateway · MCP · Memory · RAG · Output · Pipeline · Marketplace',s:'live'}
+    ]},
+    {id:'chat',title:'Multi-Session Chat (7 columnas)',items:[
+      {n:'7 columnas simultáneas',d:'Coder · Tester · Docs · Security · Research · Data · Designer. WebSocket-style streaming. Markdown rendering.',s:'live'},
+      {n:'Cada columna',d:'Sesión independiente con su propio composer y context.',s:'live'}
+    ]},
+    {id:'office',title:'Office View',items:[
+      {n:'▶ Start demo',d:'Activa el ciclo de trabajo: agentes rotan entre idle/working/error cada 800ms. Métricas live (agents, working, errors, tpm, $/h).',s:'click'},
+      {n:'⏹ Stop',d:'Detiene el demo. Estados persisten en su último valor.',s:'click'},
+      {n:'💥 Random fail',d:'Fuerza un error aleatorio en un agente (3s recovery).',s:'click'},
+      {n:'🔄 Reset',d:'Vuelve todos los agentes a idle.',s:'click'}
+    ]},
+    {id:'profiles',title:'Profile Builder + Subsections',items:[
+      {n:'📦 Export',d:'Descarga `maxbry-{profile}.tar.gz` con la configuración completa.',s:'click'},
+      {n:'📋 Clone',d:'Crea "{profile}-copy" y la activa.',s:'click'},
+      {n:'🗑 Delete',d:'Elimina el profile actual (no se puede borrar "balanced").',s:'click'},
+      {n:'Wizard 5-step',d:'① Identity → ② Model/Provider → ③ Skills → ④ MCP → ⑤ Review+Deploy. Validación en cada paso. Deploy sin restart.',s:'click · Next →'},
+      {n:'Skills tab',d:'13 skills con toggle ON/OFF. Enable all · Disable all · Install new. v + tags por skill.',s:'click'},
+      {n:'LLM Registry tab',d:'8 LLM providers pre-configurados. Test · Configure · Remove (excepto OpenAI que es default).',s:'click'},
+      {n:'MCP tab',d:'17 MCP servers (Obsidian, Graphiti, Baidu OCR, GitHub, Telegram, Notion, etc.). Toggle connect/disconnect · Configure.',s:'click'},
+      {n:'Parameters tab',d:'8 sliders live: Temperature · Top-P · Top-K · Max output · Reasoning · Consensus · Reranker · Cache TTL. Cambios sin reset.',s:'drag'}
+    ]},
+    {id:'mobile',title:'Mobile + 8-Platform Downloads',items:[
+      {n:'8 downloads',d:'Android (Play + APK) · iOS (App Store + TestFlight) · macOS · Linux (.deb/.rpm/AppImage/Flatpak/Snap) · Windows (.exe/MSIX/Portable) · CLI (npm/pip/brew/cargo) · Docker · Web PWA · Repository',s:'click'},
+      {n:'Effort phone',d:'Bajo · Medio · Alto · Extra · Máx. Switch "Pensamiento" on/off. Status badge Predeterminado + ✓ check en el activo.',s:'click'},
+      {n:'Skills phone',d:'Skill Center mobile: 3 skills ON · 3 OFF · "+ 7 más" link a Skills Hub. Click togglea ON/OFF con badge en vivo.',s:'click'}
+    ]},
+    {id:'pricing',title:'Plans & Pricing',items:[
+      {n:'Free / OSS',d:'$0 — Open source · Core profile · 4 providers OSS · CLI+Docker+Web PWA · Community support. Limita custom profiles a 1, no marketplace, no autonomous.',s:'click'},
+      {n:'Pro $9/mo',d:'All 8 profiles · 10 custom · Marketplace 5 installs/mo · Multi-LLM · Mobile sync iOS+Android · Email support · Cloud sync',s:'click'},
+      {n:'Team $29/mo/user',d:'Shared profiles · Marketplace unlimited · 5 seats min · Discord+Slack integration · Team audit log · API 5k req/h · Dedicated CSM',s:'click'},
+      {n:'Enterprise $299/mo',d:'150 expertos · Autonomous 24/7 · SOC2+GDPR+HIPAA · On-premise · Custom experts · Immutable audit trail · Unlimited API · 24/7 priority (1h SLA) · Dedicated success engineer · Quarterly reviews',s:'click'},
+      {n:'FAQ',d:'4 preguntas con respuestas expandibles: cancel · OSS completeness · Enterprise tier · Educational discount.',s:'click'}
+    ]},
+    {id:'shortcuts',title:'Atajos de teclado',items:[
+      {n:'⌘K / Ctrl+K',d:'Abre/cierra command palette',s:'Global'},
+      {n:'Esc',d:'Cierra command palette y modales',s:'Global'},
+      {n:'Enter',d:'Envía mensaje (en composer)',s:'Chat'},
+      {n:'Shift+Enter',d:'Salto de línea (sin enviar)',s:'Chat'},
+      {n:'Click en thinking card',d:'Colapsa/expande el reasoning del agente',s:'Chat'},
+      {n:'Tab + Next →',d:'Avanzar paso en wizard',s:'Wizard'},
+      {n:'Tab + Back ←',d:'Retroceder paso en wizard',s:'Wizard'}
+    ]}
+  ];
+
+  // TOC
+  const tocHtml = sections.map((s,i) => `<div class="readme-toc-item" onclick="document.getElementById('rm-${s.id}').scrollIntoView({behavior:'smooth'})"><span class="readme-toc-item-num">${String(i+1).padStart(2,'0')}</span>${s.title}</div>`).join('');
+  document.getElementById('tocList').innerHTML = tocHtml;
+
+  // Body
+  const bodyHtml = sections.map((s,i) => `
+    <div class="readme-section" id="rm-${s.id}">
+      <div class="readme-section-title"><span class="readme-section-num">${String(i+1).padStart(2,'0')}</span>${s.title}</div>
+      ${s.items.map(it => `
+        <div class="readme-item">
+          <div class="readme-item-name">${it.n} ${it.s ? `<span class="readme-item-shortcut">${it.s}</span>` : ''}</div>
+          <div class="readme-item-desc">${it.d}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+  document.getElementById('readmeBody').innerHTML = bodyHtml;
+}
+
+// ============================================================
+// ===== UTILS ==================================================
+// ============================================================
+function downloadFile(name, content) {
+  const blob = new Blob([content], {type:'application/octet-stream'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+function toggleAccountMenu() {
+  showToast('info','Account','team@maxbry.ai · settings panel');
+}
+</script>
+
+<footer>
+  <strong style="color:var(--accent)">MAXBRY/NCT</strong> · Cognitive Operating System v3 · 100% functional · 8 platforms · 4 pricing tiers<br>
+  <span style="margin-top:8px;display:inline-block">License: MIT (core) · Pro/Team/Enterprise tiers · 14-day money-back guarantee · Stripe payments</span>
+</footer>
+
+</body>
+</html>

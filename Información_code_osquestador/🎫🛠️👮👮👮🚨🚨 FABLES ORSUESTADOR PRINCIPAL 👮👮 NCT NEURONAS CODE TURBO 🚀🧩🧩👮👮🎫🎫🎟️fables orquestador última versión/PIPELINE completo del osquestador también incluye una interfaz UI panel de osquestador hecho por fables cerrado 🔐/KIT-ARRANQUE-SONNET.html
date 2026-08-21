@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎅 KIT DE ARRANQUE SONNET — auditoría final: ¿falta algo? 🎄</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.tren{text-align:center;font-size:1.05em;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎅🎄 AUDITORÍA FINAL DE SANTA: ¿SONNET TIENE TODO? 🚂🎁</div>
+<h1>KIT DE ARRANQUE SONNET — veredicto + lo que faltaba (todo aquí, de una vez)</h1>
+
+<div class="cap">
+<h2>🎄 VEREDICTO HONESTO</h2>
+<b class="ok">El PIPELINE (14 vagones + parche) contiene el QUÉ y el CÓMO completos.</b> Pero simulando a Sonnet arrancando en una <b class="crit">sesión nueva y limpia</b>, encontré <b class="crit">5 cosas que le faltarían</b> — porque Sonnet nuevo NO tiene este chat ni la bandeja en su contexto. Todo se resuelve con este KIT (nada requiere rediseñar el PIPELINE).
+</div>
+
+<div class="cap">
+<h2>🎁 LO QUE FALTABA — LOS 5 REGALOS DEL KIT</h2>
+<table>
+<tr><th>#</th><th>Faltante</th><th>Solución (incluida aquí)</th></tr>
+<tr><td>K1</td><td><b class="crit">El código fuente físico.</b> Los vagones dicen "COPIAR SALIDA_01" — pero Sonnet nuevo no tiene esos archivos</td><td><b>MANIFIESTO DE CARGA</b> (abajo): los 14 documentos con código real que el Director debe subir a la sesión de Sonnet ANTES de arrancar. Sin ellos, Sonnet no puede copiar y violaría la regla anti-regeneración</td></tr>
+<tr><td>K2</td><td><b class="crit">El paquete B1-B8 del PROYECTO no existe aún</b> (UOOS P1 nunca se corrió sobre el PIPELINE)</td><td>SALIDA 0 de Sonnet = correr UOOS Parte 1 en MODO_A sobre el PIPELINE → genera B1-B8 → tu OK → recién ahí GO con Parte 2</td></tr>
+<tr><td>K3</td><td><b class="oro">deploy_config.yaml inicial concreto</b> (el v2.0 lo exige y nadie lo escribió)</td><td>Plantilla lista abajo — 5 repos + protected_patterns</td></tr>
+<tr><td>K4</td><td><b class="oro">Versiones exactas de dependencias</b> (Ley L06) — ningún vagón las fija</td><td>Lista pinned abajo (Sonnet la valida en SALIDA 0, paso B1)</td></tr>
+<tr><td>K5</td><td><b class="oro">La ORDEN MAESTRA de arranque</b> (el prompt exacto que le das a Sonnet)</td><td>Escrita abajo, copiar/pegar</td></tr>
+</table>
+</div>
+
+<div class="cap">
+<h2>📦 K1 · MANIFIESTO DE CARGA (subir estos 14 a la sesión de Sonnet)</h2>
+<div class="flujo">CÓDIGO REAL (7):  _SALIDA_01_KERNEL_NUCLEO.md · SALIDA_02_JUEZ_RECOVERY.md ·
+  SALIDA_04_DSL_DAG_SHERIFF.md · H1+H3+H4 (motor/router/planner) ·
+  execution_pipeline_dsl_-_Copiar.md · GUIA_B (GCL/Z3) · GUIA_C (loop) +
+  los 4 scripts de despliegue (organizador/desplegador/detector/subir.sh)
+DISEÑO (5):  los 14 vagones HTML + PARCHE-NAVIDAD · DIAGRAMA Partes 1-3 ·
+  CAMBIOS-CODIGO-BASE-01 · DESPLIEGUE-UNIVERSAL-v2 · UOOS Parte 1 + Parte 2
+DATOS (2):  MAX-SYSTEM-100X (schema SQL §11) · 30___deepseck (coordinador ~960 LOC spec)
+= 14 archivos. TODO lo demás (los ~130 docs restantes) ya está DESTILADO
+  dentro de los vagones — no hace falta subirlo.</div>
+</div>
+
+<div class="cap">
+<h2>📦 K3 · deploy_config.yaml inicial</h2>
+<div class="flujo">repos:
+  nct-backend:  ["input_fabric/","kernel/","router/","planner/","teams/","sandbox/",
+                 "motores/","loop_engine/","workers/","staff/","orquestadores_paralelos/",
+                 "monitores/","sentinela/","verificacion/","tribunal/","witness/",
+                 "memoria/","recovery/","entrega/","gateway/","gobernanza/","mejoras/","sql/"]
+  nct-brain:    ["*.manifest.json","registry/","contracts/","docs/","atlas/"]
+  nct-deploy:   ["despliegue/","ci.yaml","deploy_config.yaml"]
+  nct-tests:    ["tests/","test_*"]
+  nct-fichas:   ["fichas/","elfos/","*.yaml"]
+default_repo: nct-backend
+rama: main-build   # nunca main directo (L: checklist F5)
+protected_patterns: [".env","*key*","*.pem","secrets*","*token*"]</div>
+</div>
+
+<div class="cap">
+<h2>📦 K4 · Dependencias pinned (Ley L06)</h2>
+<div class="flujo">python==3.11 · networkx==3.3 · requests==2.32.3 · pydantic==2.8 ·
+psycopg[binary]==3.2 · pgvector==0.3 · pyyaml==6.0.1 · z3-solver==4.13 ·
+pytest==8.2 · docker==7.1 · fastapi==0.111 · uvicorn==0.30 · mcp==1.x(validar)
+(Sonnet valida disponibilidad real en SALIDA 0 — L05: nada inventado)</div>
+</div>
+
+<div class="cap">
+<h2>📦 K5 · ORDEN MAESTRA (copiar/pegar a Sonnet)</h2>
+<div class="flujo">Eres el constructor del orquestador NCT bajo UOOS. Cargados: 14 vagones HTML
+(diseño congelado, hash), código real (7 docs), UOOS P1+P2, CAMBIOS-BASE.
+REGLAS: lo existente se COPIA (regenerar=violación) · LOC ≤300 (>500 prohibido) ·
+tests con assertions ANTES del código · cada paso en formato UOOS §7 con
+evidencia · cada vagón cierra con su despliegue parcial D# y mi OK.
+SALIDA 0: corre UOOS Parte 1 MODO_A sobre los vagones → entrega B1 (manifest).
+Luego 1 bloque por respuesta. Tras mi GO: UOOS Parte 2 (E01-E12, RT-00→RT-90),
+ejecuta los pasos 001→1000 en orden. No analices, no propongas, no replanifiques.</div>
+</div>
+
+<div class="cap">
+<h2>🧮 LOC TOTAL Y PLAN DE SALIDAS DE SONNET</h2>
+<table>
+<tr><th>Concepto</th><th>LOC</th></tr>
+<tr><td>Código nuevo a escribir</td><td>~13.760</td></tr>
+<tr><td>Código copiado (con tests de humo)</td><td>~9.110</td></tr>
+<tr><td>Tests nuevos (incluidos en vagones)</td><td>~3.500 (dentro del total nuevo ya contado en V13)</td></tr>
+<tr><td><b class="oro">TOTAL del orquestador</b></td><td><b class="oro">~22.900 LOC</b> (+K3/K4 config ≈ 23.000)</td></tr>
+</table>
+<div class="flujo">RITMO REALISTA de Sonnet: ~500-700 LOC nuevas verificadas por salida
+(código+tests+evidencia UOOS §7) · pasos de COPIA rinden ~1.500 LOC/salida.
+
+PLAN: SALIDA 0 (B1-B8) ................................. 1 salida
+V1 F0 (1.400 nuevas) ................................... 3 salidas
+V2-V3 (mucha copia) .................................... 2 salidas
+V4 F3 (900) ............................................ 2 salidas
+V5 F4a (1.200 + copias) ................................ 3 salidas
+V6 F4b (1.400 + OpenClaw copia) ........................ 3 salidas
+V7 F5 (1.000) .......................................... 2 salidas
+V8 F6 (copia masiva + 400 glue) ........................ 2 salidas
+V9 F7 (1.200) .......................................... 3 salidas
+V10 F8 (500 + copias) .................................. 2 salidas
+V11 F9 (1.500) ......................................... 3 salidas
+V12 (1.400) ............................................ 3 salidas
+V13 tests+CI+simulaciones+CERTIFIED .................... 3 salidas
+────────────────────────────────────────────────────────────────
+TOTAL ESTIMADO: ~32 salidas de Sonnet (rango 28-36)
++ 13 pausas de despliegue D1-D13 con tu OK entre vagones 🎁</div>
+</div>
+
+<div class="regla"><b class="crit">⛔ Última verdad de Santa:</b> con el PIPELINE + este KIT, Sonnet tiene el 100%: qué construir (vagones), cómo entregarlo (UOOS), qué copiar (manifiesto K1), con qué versiones (K4), cómo desplegarlo (K3+v2.0) y la orden exacta (K5). <b class="ok">No falta nada más. El tren puede salir. 🎅🚂🎄</b></div>
+
+<div class="tren">🎄✨ ~23.000 LOC · ~32 salidas · 13 despliegues · 1 navidad 🎅🎁🚂✨🎄</div>
+</body></html>

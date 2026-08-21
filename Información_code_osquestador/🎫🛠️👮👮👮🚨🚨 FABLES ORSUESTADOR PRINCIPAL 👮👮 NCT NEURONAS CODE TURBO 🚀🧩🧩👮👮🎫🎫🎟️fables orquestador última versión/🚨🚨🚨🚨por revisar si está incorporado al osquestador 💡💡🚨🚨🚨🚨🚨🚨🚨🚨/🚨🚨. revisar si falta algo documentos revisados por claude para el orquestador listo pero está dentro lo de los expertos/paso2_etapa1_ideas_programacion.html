@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAXBRY/NCT · Paso 2 Etapa 1 — Ideas de Programación para el Orquestador</title>
+<style>
+:root{
+  --bg:#0a0e1a;
+  --panel:#111827;
+  --panel2:#1a2235;
+  --line:#2a3550;
+  --text:#e6ecff;
+  --muted:#9aa6c7;
+  --accent:#5eead4;
+  --accent2:#7dd3fc;
+  --warn:#fbbf24;
+  --err:#f87171;
+  --ok:#4ade80;
+  --purple:#a78bfa;
+  --pink:#f472b6;
+  --code-bg:#060912;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter','SF Pro Text',-apple-system,BlinkMacSystemFont,sans-serif;
+  line-height:1.7;
+  padding:32px 16px;
+}
+.container{max-width:1200px;margin:0 auto}
+header{
+  background:linear-gradient(135deg,#0d1424,#1a2640);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:36px;
+  margin-bottom:32px;
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:"";
+  position:absolute;
+  top:-50%;right:-10%;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(94,234,212,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.kicker{
+  color:var(--accent);
+  font-size:11px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:12px;
+  font-weight:700;
+}
+h1{
+  font-size:30px;
+  line-height:1.2;
+  margin-bottom:14px;
+  font-weight:800;
+  background:linear-gradient(90deg,#5eead4,#7dd3fc,#a78bfa);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.subtitle{
+  color:var(--muted);
+  font-size:15px;
+  max-width:900px;
+  margin-bottom:20px;
+}
+.meta{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+  margin-top:20px;
+}
+.meta-item{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  padding:12px 14px;
+  border-radius:8px;
+}
+.meta-label{
+  color:var(--muted);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:4px;
+}
+.meta-value{
+  color:var(--accent);
+  font-size:13px;
+  font-weight:700;
+}
+section{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:28px;
+  margin-bottom:24px;
+}
+h2{
+  color:var(--accent2);
+  font-size:22px;
+  margin-bottom:16px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+h2 .icon{font-size:26px}
+h3{
+  color:var(--accent);
+  font-size:18px;
+  margin:24px 0 12px;
+  padding-left:14px;
+  border-left:3px solid var(--accent);
+}
+h4{
+  color:var(--purple);
+  font-size:14px;
+  margin:16px 0 8px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+p{margin-bottom:14px}
+p strong{color:var(--accent2);font-weight:700}
+code,pre{font-family:'SF Mono','Monaco','Cascadia Code','Fira Code',monospace}
+code{
+  background:var(--panel2);
+  padding:2px 8px;
+  border-radius:4px;
+  color:var(--accent);
+  font-size:13px;
+}
+pre{
+  background:var(--code-bg);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:18px;
+  overflow-x:auto;
+  margin:14px 0;
+  font-size:12.5px;
+  line-height:1.6;
+  border-left:3px solid var(--accent);
+}
+pre .comment{color:#6b7280;font-style:italic}
+pre .key{color:var(--accent2);font-weight:600}
+pre .str{color:#fde68a}
+pre .num{color:#f9a8d4}
+pre .bool{color:var(--purple)}
+pre .cls{color:#fbbf24}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin:14px 0;
+  font-size:13px;
+}
+th{
+  background:var(--panel2);
+  color:var(--accent2);
+  text-align:left;
+  padding:12px 14px;
+  border-bottom:2px solid var(--line);
+  font-weight:700;
+  text-transform:uppercase;
+  font-size:11px;
+  letter-spacing:1px;
+}
+td{
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  color:var(--text);
+  vertical-align:top;
+}
+tr:hover td{background:rgba(94,234,212,.04)}
+.idea-card{
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:22px;
+  margin:18px 0;
+  position:relative;
+  border-left:4px solid var(--accent);
+}
+.idea-card.idea-1{border-left-color:var(--accent)}
+.idea-card.idea-2{border-left-color:var(--accent2)}
+.idea-card.idea-3{border-left-color:var(--purple)}
+.idea-card.idea-4{border-left-color:var(--pink)}
+.idea-card.idea-5{border-left-color:var(--warn)}
+.idea-card.idea-6{border-left-color:var(--ok)}
+.idea-card.idea-7{border-left-color:#fb923c}
+.idea-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:start;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.idea-num{
+  background:rgba(94,234,212,.15);
+  color:var(--accent);
+  padding:4px 12px;
+  border-radius:6px;
+  font-weight:800;
+  font-size:13px;
+  border:1px solid var(--accent);
+}
+.idea-title{
+  font-size:17px;
+  font-weight:700;
+  color:var(--text);
+  margin:4px 0 0;
+}
+.idea-section{
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px dashed var(--line);
+}
+.idea-section-label{
+  color:var(--accent2);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.benefit-list{
+  list-style:none;
+  padding-left:0;
+}
+.benefit-list li{
+  padding:6px 0 6px 24px;
+  position:relative;
+  color:var(--text);
+  font-size:14px;
+}
+.benefit-list li::before{
+  content:"→";
+  position:absolute;
+  left:0;
+  color:var(--accent);
+  font-weight:700;
+}
+.callout{
+  background:rgba(94,234,212,.05);
+  border-left:3px solid var(--accent);
+  padding:16px 20px;
+  border-radius:6px;
+  margin:18px 0;
+}
+.callout-title{
+  color:var(--accent);
+  font-weight:700;
+  margin-bottom:8px;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+}
+.callout p:last-child{margin-bottom:0}
+.source-badge{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  background:rgba(167,139,250,.15);
+  color:var(--purple);
+  border:1px solid var(--purple);
+}
+.tag{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:12px;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-right:6px;
+}
+.tag-flex{background:rgba(94,234,212,.15);color:var(--accent);border:1px solid var(--accent)}
+.tag-secure{background:rgba(125,211,252,.15);color:var(--accent2);border:1px solid var(--accent2)}
+.tag-trace{background:rgba(251,191,36,.15);color:var(--warn);border:1px solid var(--warn)}
+.tag-consistent{background:rgba(74,222,128,.15);color:var(--ok);border:1px solid var(--ok)}
+.tag-control{background:rgba(251,146,60,.15);color:#fb923c;border:1px solid #fb923c}
+.tag-intel{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid var(--purple)}
+.tag-cover{background:rgba(244,114,182,.15);color:var(--pink);border:1px solid var(--pink)}
+ul.checklist{list-style:none;padding-left:0}
+ul.checklist li{
+  padding:6px 0 6px 28px;
+  position:relative;
+  color:var(--text);
+  font-size:14px;
+}
+ul.checklist li::before{
+  content:"✓";
+  position:absolute;
+  left:0;
+  color:var(--ok);
+  font-weight:700;
+}
+footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:24px;
+  margin-top:32px;
+  border-top:1px solid var(--line);
+}
+.gap-box{
+  background:rgba(251,191,36,.05);
+  border:1px dashed var(--warn);
+  border-radius:8px;
+  padding:14px;
+  margin:14px 0;
+}
+.gap-title{
+  color:var(--warn);
+  font-weight:700;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:6px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="kicker">MAXBRY/NCT · Cognitive Operating System · Paso 2 / Etapa 1</div>
+  <h1>Ideas de Programación para el Orquestador</h1>
+  <p class="subtitle">
+    7 ideas extraídas del estado del arte (MCP, Memory servers, frameworks de orquestación)
+    que el Kernel MAXBRY puede借鉴 para mejorar su diseño sin cambiar su arquitectura base.
+    Cada idea incluye: código de ejemplo, prosa explicativa, ventaja concreta y función específica.
+  </p>
+  <div class="meta">
+    <div class="meta-item"><div class="meta-label">Etapa</div><div class="meta-value">1 / Input + Expertos</div></div>
+    <div class="meta-item"><div class="meta-label">Ideas</div><div class="meta-value">7 patrones</div></div>
+    <div class="meta-item"><div class="meta-label">Fuentes</div><div class="meta-value">MCP · KG · FSM</div></div>
+    <div class="meta-item"><div class="meta-label">Estado</div><div class="meta-value">Aprobado (incompleto)</div></div>
+    <div class="meta-item"><div class="meta-label">Próximo</div><div class="meta-value">Tu retroalimentación</div></div>
+  </div>
+</header>
+
+<section>
+<h2><span class="icon">🎯</span>Resumen Ejecutivo</h2>
+<p>
+  Tu diseño MAXBRY (Kernel + 6 responsabilidades + 3 Fabrics + Expert Pool + Registry + Memory + Output Engine)
+  es <strong>sólido y completo</strong>. Lo que se propone en este documento son <strong>7 patrones de programación</strong>
+  tomados del estado del arte actual que pueden mejorar áreas específicas del orquestador sin alterar
+  su estructura fundamental.
+</p>
+<p>
+  Las ideas provienen de tres fuentes investigadas:
+</p>
+<ul class="checklist">
+  <li><strong>MCP (Model Context Protocol)</strong> — protocolo universal de Anthropic ya adoptado por OpenAI, Google, Microsoft</li>
+  <li><strong>Servidores de memoria para AI</strong> — Cognee, MemoryMesh, ServerMemory (combinan vector DB + knowledge graph)</li>
+  <li><strong>Frameworks de orquestación</strong> — LangGraph (FSM, reducers), CrewAI (humano como agente), AutoGen, Swarms</li>
+</ul>
+
+<div class="callout">
+  <div class="callout-title">Principio rector</div>
+  <p>
+    Ninguna idea cambia tu diseño. Cada una se <strong>integra</strong> como un componente adicional o como
+    una mejora interna del componente existente. El Kernel sigue teniendo sus 6 responsabilidades,
+    los Fabrics siguen siendo 3, el Expert Pool sigue siendo dinámico.
+  </p>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">📚</span>Investigación: Fuentes Analizadas</h2>
+
+<h3>Fuente 1 — Adaptadores MCP (Model Context Protocol)</h3>
+<p>
+  MCP es un <strong>protocolo cliente-servidor sobre JSON-RPC 2.0</strong>. Define tres roles:
+</p>
+<ul>
+  <li><strong>Host</strong>: la aplicación que necesita herramientas externas (en MAXBRY: el Kernel)</li>
+  <li><strong>Client</strong>: el puente dentro del Host que habla con servidores</li>
+  <li><strong>Server</strong>: el servicio que expone herramientas (Tools) y datos (Resources)</li>
+</ul>
+<p>
+  El transporte es dual: <code>stdio</code> para conexiones locales, <code>HTTP + SSE</code> para remotas.
+  La autenticación usa OAuth 2.0 estandarizado. Ya existen <strong>4108+ servidores MCP</strong> públicos
+  (Playwright, GitHub, Slack, Notion, Postgres, arXiv, etc.).
+</p>
+
+<h3>Fuente 2 — Memory Servers para AI</h3>
+<p>
+  Servicios como <strong>Cognee, MemoryMesh, ServerMemory</strong> resuelven el problema de memoria persistente
+  para agentes combinando dos técnicas:
+</p>
+<ul>
+  <li><strong>Vector DB</strong> (Qdrant, Pinecone, pgvector) — para búsqueda por similitud semántica</li>
+  <li><strong>Knowledge Graph</strong> — para representar relaciones entre entidades</li>
+</ul>
+<p>
+  La potencia real está en la <strong>consulta híbrida</strong>: empezar por similitud y luego expandir
+  por relaciones, o viceversa.
+</p>
+
+<h3>Fuente 3 — Frameworks de Orquestación</h3>
+<p>
+  Los frameworks más maduros (<strong>LangGraph, CrewAI, AutoGen, Swarms</strong>) han cristalizado patrones
+  que resuelven problemas recurrentes:
+</p>
+<ul>
+  <li><strong>LangGraph</strong>: state machines explícitas + reducers determinísticos</li>
+  <li><strong>CrewAI</strong>: humano modelado como agente más del sistema</li>
+  <li><strong>AutoGen</strong>: conversaciones multi-agente con eventos</li>
+  <li><strong>Swarms</strong>: paralelismo masivo con priority queue</li>
+</ul>
+<p>De estos, los patrones más aplicables directamente a MAXBRY son los de <strong>LangGraph</strong> y <strong>CrewAI</strong>.</p>
+</section>
+
+<section>
+<h2><span class="icon">💡</span>Las 7 Ideas de Programación</h2>
+
+<!-- IDEA 1 -->
+<div class="idea-card idea-1">
+  <div class="idea-header">
+    <div>
+      <span class="idea-num">Idea #1</span>
+      <div class="idea-title">MCP Registry Dinámico</div>
+    </div>
+    <span class="tag tag-flex">+Flexibilidad</span>
+  </div>
+
+  <h4>Qué resuelve</h4>
+  <p>
+    Hoy tu Agent Registry es estático: alguien declara en YAML qué expertos existen.
+    Con esta idea, <strong>el Registry crece solo</strong> cuando se conectan nuevos servidores MCP.
+  </p>
+
+<pre><span class="comment"># Tu Kernel de MAXBRY actúa como MCP Host.</span>
+<span class="comment"># Cuando un nuevo server MCP se conecta, MAXBRY descubre sus tools automáticamente.</span>
+
+<span class="key">from</span> typing <span class="key">import</span> Protocol
+
+<span class="key">class</span> <span class="cls">MCPServer</span>(Protocol):
+    <span class="str">"""Interfaz que cualquier servidor MCP cumple."""</span>
+    <span class="key">name</span>: str
+    <span class="key">version</span>: str
+
+    <span class="key">async def</span> list_tools(self) -> list[<span class="str">"ToolSpec"</span>]: ...
+    <span class="key">async def</span> call_tool(self, name: str, args: dict) -> <span class="str">"ToolResult"</span>: ...
+    <span class="key">async def</span> list_resources(self) -> list[<span class="str">"ResourceSpec"</span>]: ...
+
+
+<span class="key">class</span> <span class="cls">MCPClient</span>:
+    <span class="key">def</span> __init__(self):
+        self._servers: dict[str, MCPServer] = {}
+
+    <span class="key">async def</span> connect(self, server: MCPServer) -> <span class="key">None</span>:
+        <span class="str">"""Cuando un server se conecta, MAXBRY descubre sus tools."""</span>
+        <span class="key">await</span> server.initialize()
+        self._servers[server.name] = server
+        <span class="comment"># Notifica al Agent Registry: hay nuevas capabilities disponibles</span>
+
+    <span class="key">async def</span> discover_all_tools(self) -> list[<span class="str">"ToolSpec"</span>]:
+        <span class="str">"""Pregunta a cada server qué tools ofrece."""</span>
+        all_tools = []
+        <span class="key">for</span> server <span class="key">in</span> self._servers.values():
+            tools = <span class="key">await</span> server.list_tools()
+            all_tools.extend(tools)
+        <span class="key">return</span> all_tools</pre>
+
+  <div class="idea-section">
+    <div class="idea-section-label">En prosa: cómo mejora MAXBRY</div>
+    <p>
+      Imagina que hoy MAXBRY tiene un agente "GitHub Expert" que sabe crear issues, leer PRs, etc.
+      Mañana conectas un servidor MCP de Jira. El sistema, automáticamente, registra un nuevo
+      "Jira Expert" sin que toques código. Tu Agent Registry pasa de ser una lista escrita a mano
+      a ser un <strong>directorio vivo</strong>.
+    </p>
+    <p>
+      El Router puede entonces decir: "este agente necesita la tool <code>jira:create_ticket</code>,
+      ¿qué server MCP la ofrece?" y el sistema lo encuentra solo.
+    </p>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Ventaja concreta</div>
+    <ul class="benefit-list">
+      <li>Tu Agent Registry deja de ser estático y se vuelve <strong>auto-extensible</strong></li>
+      <li>Los expertos pueden invocar 4108+ herramientas externas ya construidas</li>
+      <li>Cero reescritura de código cuando agregas una nueva fuente</li>
+    </ul>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Función específica que activa</div>
+    <p>
+      <code>AgentRegistry.discover_and_register_from_mcp_servers()</code> — se ejecuta al boot
+      y cada vez que un nuevo MCP server se conecta. Notifica al Router para que actualice su caché.
+    </p>
+  </div>
+</div>
+
+<!-- IDEA 2 -->
+<div class="idea-card idea-2">
+  <div class="idea-header">
+    <div>
+      <span class="idea-num">Idea #2</span>
+      <div class="idea-title">Host/Client/Server — Aislamiento de Capacidades</div>
+    </div>
+    <span class="tag tag-secure">+Seguridad</span>
+  </div>
+
+  <h4>Qué resuelve</h4>
+  <p>
+    Hoy tu Kernel podría quedar acoplado a los detalles de cómo se conecta con cada servicio externo.
+    Con esta idea, el Kernel <strong>no sabe ni necesita saber</strong> si una tool es local o remota,
+    autenticada con OAuth o sin auth, sobre stdio o sobre HTTP.
+  </p>
+
+<pre><span class="key">class</span> <span class="cls">MCPHost</span>:
+    <span class="str">"""El Kernel de MAXBRY actúa como Host."""</span>
+    <span class="key">def</span> __init__(self):
+        self._clients: list[<span class="str">"MCPClient"</span>] = []
+
+    <span class="key">def</span> add_client(self, client: <span class="str">"MCPClient"</span>) -> <span class="key">None</span>:
+        <span class="str">"""Cada client es un 'puente' aislado hacia un servidor MCP."""</span>
+        self._clients.append(client)
+
+
+<span class="key">class</span> <span class="cls">MCPClient</span>:
+    <span class="str">"""Aísla al Host de la complejidad del transporte."""</span>
+    <span class="key">def</span> __init__(self, transport: <span class="str">"stdio | http_sse"</span>, server: MCPServer):
+        self._transport = transport
+        self._server = server
+
+    <span class="key">async def</span> call(self, tool: str, args: dict) -> <span class="str">"ToolResult"</span>:
+        <span class="str">"""El Host no sabe si la tool es local o remota."""</span>
+        <span class="key">return await</span> self._server.call_tool(tool, args)</pre>
+
+  <div class="idea-section">
+    <div class="idea-section-label">En prosa: cómo mejora MAXBRY</div>
+    <p>
+      Tu Kernel queda protegido: un experto del Execution Fabric pide "consultar GitHub" y
+      no tiene que saber que GitHub está en un servidor remoto autenticado con OAuth. El Client
+      es quien lidia con eso. Si mañana cambias GitHub por GitLab, el Kernel no se entera.
+    </p>
+    <p>
+      Esto también permite <strong>aislar fallos</strong>: si el transporte HTTP de un servidor MCP
+      se cae, solo ese Client falla. El resto del sistema sigue funcionando.
+    </p>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Ventaja concreta</div>
+    <ul class="benefit-list">
+      <li>El Kernel no se acopla a proveedores externos específicos</li>
+      <li>Cambiar GitHub por GitLab no requiere tocar el orquestador</li>
+      <li>Aislamiento de fallos: una conexión rota no tumba el sistema</li>
+      <li>Permisos granulares: cada Client puede tener scope distinto</li>
+    </ul>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Función específica que activa</div>
+    <p>
+      <code>Kernel.execute_tool_via_mcp(tool_name, args)</code> — el Kernel nunca sabe dónde
+      vive la tool, solo que existe. Delega al Client apropiado.
+    </p>
+  </div>
+</div>
+
+<!-- IDEA 3 -->
+<div class="idea-card idea-3">
+  <div class="idea-header">
+    <div>
+      <span class="idea-num">Idea #3</span>
+      <div class="idea-title">Knowledge Graph + Vector Search Híbrido</div>
+    </div>
+    <span class="tag tag-intel">+Inteligencia</span>
+  </div>
+
+  <h4>Qué resuelve</h4>
+  <p>
+    Tu <code>memory.global</code> es actualmente un almacén de datos. Con esta idea, se vuelve
+    un sistema que <strong>entiende relaciones</strong> entre entidades y permite consultas
+    mucho más ricas.
+  </p>
+
+<pre><span class="key">from</span> dataclasses <span class="key">import</span> dataclass
+
+<span class="key">@dataclass</span>(frozen=<span class="bool">True</span>)
+<span class="key">class</span> <span class="cls">Entity</span>:
+    <span class="str">"""Un nodo en el knowledge graph."""</span>
+    <span class="key">entity_id</span>: str
+    <span class="key">entity_type</span>: str          <span class="comment"># "user", "task", "expert", "artifact"</span>
+    <span class="key">properties</span>: dict
+    <span class="key">embedding</span>: tuple[float, ...]   <span class="comment"># 768-dim vector</span>
+
+
+<span class="key">@dataclass</span>(frozen=<span class="bool">True</span>)
+<span class="key">class</span> <span class="cls">Relation</span>:
+    <span class="str">"""Una arista en el KG."""</span>
+    <span class="key">source_id</span>: str
+    <span class="key">target_id</span>: str
+    <span class="key">relation_type</span>: str        <span class="comment"># "created_by", "depends_on", "uses"</span>
+    <span class="key">weight</span>: float
+
+
+<span class="key">class</span> <span class="cls">HybridMemory</span>:
+    <span class="str">"""memory.global + memory.long_term con KG + vectors."""</span>
+    <span class="key">def</span> __init__(self):
+        self._kg: list[tuple[Entity, Relation, Entity]] = []
+        self._vector_index = ...  <span class="comment"># HNSW o similar</span>
+
+    <span class="key">def</span> store(self, entity: Entity, relations: list[Relation]) -> <span class="key">None</span>:
+        self._kg.append((entity, relations))
+        self._vector_index.add(entity.embedding, entity.entity_id)
+
+    <span class="key">def</span> query_by_traversal(self, start_id: str, depth: int = <span class="num">3</span>) -> list[Entity]:
+        <span class="str">"""BFS/DFS por el grafo: encuentra entidades relacionadas."""</span>
+        ...
+
+    <span class="key">def</span> query_by_similarity(self, embedding: tuple, k: int = <span class="num">10</span>) -> list[Entity]:
+        <span class="str">"""Encuentra entidades semánticamente similares."""</span>
+        ...
+
+    <span class="key">def</span> hybrid_query(
+        self,
+        embedding: tuple,
+        seed_id: str,
+        k: int = <span class="num">10</span>
+    ) -> list[Entity]:
+        <span class="str">"""Combina: empieza desde un nodo y expande por similitud."""</span>
+        similar = self.query_by_similarity(embedding, k)
+        related = self.query_by_traversal(seed_id, depth=<span class="num">2</span>)
+        <span class="key">return</span> self._rank(similar, related)</pre>
+
+  <div class="idea-section">
+    <div class="idea-section-label">En prosa: cómo mejora MAXBRY</div>
+    <p>
+      Tu <code>memory.global</code> deja de ser un blob inerte. Ahora el sistema sabe que
+      "este experto fue creado por esta tarea, que usó este paper, que cita a este otro paper,
+      que refuta esta hipótesis". Las entidades se conectan por relaciones tipadas y
+      consultables.
+    </p>
+    <p>
+      Cuando el Fusion Engine está consolidando respuestas, puede preguntar:
+      "¿qué entidades se relacionan con este concepto?" y el sistema navega el grafo
+      para darle contexto histórico relevante.
+    </p>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Ventaja concreta</div>
+    <ul class="benefit-list">
+      <li><strong>Contexto rico</strong>: las respuestas se enriquecen con relaciones históricas</li>
+      <li><strong>Trazabilidad total</strong>: cada decisión puede rastrear su linaje completo</li>
+      <li><strong>Detección de contradicciones</strong>: el sistema puede comparar propuestas nuevas con conocimiento previo</li>
+      <li><strong>Búsqueda híbrida</strong>: similitud semántica + navegación estructural</li>
+    </ul>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Función específica que activa</div>
+    <p>
+      <code>MemoryManager.hybrid_search(query_embedding, seed_entity_id, k=10)</code> —
+      devuelve entidades relevantes combinando similitud vectorial y proximidad en el grafo.
+    </p>
+  </div>
+</div>
+
+<!-- IDEA 4 -->
+<div class="idea-card idea-4">
+  <div class="idea-header">
+    <div>
+      <span class="idea-num">Idea #4</span>
+      <div class="idea-title">Multi-Source Ingester Normalizado</div>
+    </div>
+    <span class="tag tag-cover">+Cobertura</span>
+  </div>
+
+  <h4>Qué resuelve</h4>
+  <p>
+    Hoy tu Input Cognitive Fabric necesita implementar una integración específica por cada
+    fuente de datos (GitHub, Notion, PDF, etc.). Con esta idea, defines una vez el contrato
+    <strong>NormalizedChunk</strong> y cualquier fuente lo cumple.
+  </p>
+
+<pre><span class="key">class</span> <span class="cls">MultiSourceIngester</span>:
+    <span class="str">"""El Input Cognitive Fabric puede吸取 datos de N fuentes."""</span>
+
+    SUPPORTED_SOURCES = [
+        <span class="str">"github_pr"</span>, <span class="str">"notion_page"</span>, <span class="str">"slack_thread"</span>, <span class="str">"pdf"</span>,
+        <span class="str">"code_repo"</span>, <span class="str">"csv"</span>, <span class="str">"json_api"</span>, <span class="str">"database_query"</span>,
+        <span class="str">"web_search"</span>, <span class="str">"arxiv_paper"</span>, <span class="str">"video_transcript"</span>,
+    ]
+
+    <span class="key">async def</span> ingest(self, source: str, locator: str) -> <span class="str">"NormalizedChunk"</span>:
+        <span class="key">if</span> source <span class="key">not in</span> self.SUPPORTED_SOURCES:
+            <span class="key">raise</span> ValueError(<span class="str">f"Unsupported source: {source}"</span>)
+
+        raw = <span class="key">await</span> self._fetch(source, locator)
+        chunks = self._chunkify(raw)
+        <span class="key">return</span> NormalizedChunk(
+            source=source,
+            locator=locator,
+            chunks=chunks,
+            embeddings=self._embed(chunks),
+            timestamp=now(),
+        )</pre>
+
+  <div class="idea-section">
+    <div class="idea-section-label">En prosa: cómo mejora MAXBRY</div>
+    <p>
+      Tu Input Fabric (los ~100 expertos de comprensión) puede absorber contexto de
+      GitHub, papers, docs internas, PDFs, videos transcriptos, bases de datos, sin que
+      cada experto implemente su propia integración. El contrato <code>NormalizedChunk</code>
+      es la lingua franca.
+    </p>
+    <p>
+      Un experto del Input Fabric dice: "necesito papers sobre MoE" y el Ingester va a buscar
+      a arXiv. Otro dice: "necesito issues abiertos" y va a GitHub. Mismo flujo, distintas fuentes.
+    </p>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Ventaja concreta</div>
+    <ul class="benefit-list">
+      <li>Interfaz uniforme: <code>ingest(source, locator)</code> siempre devuelve lo mismo</li>
+      <li>Extensible: añadir una fuente nueva solo requiere implementar el fetcher</li>
+      <li>Los expertos no se acoplan a formatos específicos (PDF vs Markdown vs JSON)</li>
+      <li>Embeddings generados una vez, reutilizados por todos los expertos</li>
+    </ul>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Función específica que activa</div>
+    <p>
+      <code>InputFabric.ingest_from_sources(sources: list[tuple[str, str]])</code> —
+      procesa N fuentes en paralelo y devuelve chunks normalizados listos para que los
+      expertos de comprensión trabajen sobre ellos.
+    </p>
+  </div>
+</div>
+
+<!-- IDEA 5 -->
+<div class="idea-card idea-5">
+  <div class="idea-header">
+    <div>
+      <span class="idea-num">Idea #5</span>
+      <div class="idea-title">State Machines Explícitas por Tarea</div>
+    </div>
+    <span class="tag tag-trace">+Trazabilidad</span>
+  </div>
+
+  <h4>Qué resuelve</h4>
+  <p>
+    Hoy el Kernel sabe qué tarea está corriendo, pero el estado interno de cada tarea puede
+    ser ambiguo. Con esta idea, cada tarea pasa por <strong>estados bien definidos</strong>
+    y el Kernel puede auditar en cualquier momento.
+  </p>
+
+<pre><span class="key">from</span> enum <span class="key">import</span> Enum
+
+<span class="key">class</span> <span class="cls">TaskState</span>(str, Enum):
+    PENDING = <span class="str">"pending"</span>
+    DECOMPOSING = <span class="str">"decomposing"</span>     <span class="comment"># Input Fabric trabajando</span>
+    EXECUTING = <span class="str">"executing"</span>          <span class="comment"># Execution Fabric trabajando</span>
+    VALIDATING = <span class="str">"validating"</span>        <span class="comment"># Output Fabric trabajando</span>
+    CONSOLIDATING = <span class="str">"consolidating"</span>  <span class="comment"># Fusion Engine trabajando</span>
+    COMPLETED = <span class="str">"completed"</span>
+    FAILED = <span class="str">"failed"</span>
+    ESCALATED = <span class="str">"escalated"</span>          <span class="comment"># Requiere humano</span>
+
+
+<span class="key">class</span> <span class="cls">TaskFSM</span>:
+    <span class="str">"""Finite State Machine para cada tarea."""</span>
+    TRANSITIONS = {
+        TaskState.PENDING: [TaskState.DECOMPOSING],
+        TaskState.DECOMPOSING: [TaskState.EXECUTING, TaskState.FAILED],
+        TaskState.EXECUTING: [TaskState.VALIDATING, TaskState.FAILED],
+        TaskState.VALIDATING: [TaskState.CONSOLIDATING, TaskState.EXECUTING],
+        TaskState.CONSOLIDATING: [TaskState.COMPLETED, TaskState.ESCALATED],
+        TaskState.COMPLETED: [],
+        TaskState.FAILED: [],
+        TaskState.ESCALATED: [TaskState.EXECUTING],
+    }
+
+    <span class="key">def</span> __init__(self, task_id: str):
+        self.task_id = task_id
+        self.state = TaskState.PENDING
+        self.history: list[tuple[TaskState, datetime]] = []
+
+    <span class="key">def</span> transition(self, new_state: TaskState) -> <span class="key">None</span>:
+        <span class="key">if</span> new_state <span class="key">not in</span> self.TRANSITIONS[self.state]:
+            <span class="key">raise</span> InvalidTransition(self.state, new_state)
+        self.state = new_state
+        self.history.append((new_state, datetime.now()))</pre>
+
+  <div class="idea-section">
+    <div class="idea-section-label">En prosa: cómo mejora MAXBRY</div>
+    <p>
+      Tu Kernel nunca pierde el control. Cada tarea pasa por estados bien definidos:
+      <code>PENDING → DECOMPOSING → EXECUTING → VALIDATING → CONSOLIDATING → COMPLETED</code>.
+      Si algo falla, sabes <strong>exactamente</strong> en qué punto.
+    </p>
+    <p>
+      El log no es texto libre — es una máquina de estados auditables. Si una tarea intenta
+      pasar de <code>PENDING</code> directo a <code>COMPLETED</code>, el sistema la rechaza
+      con un error claro.
+    </p>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Ventaja concreta</div>
+    <ul class="benefit-list">
+      <li><strong>Auditoría en tiempo real</strong>: "¿dónde está esta tarea?" → estado + historial</li>
+      <li><strong>Prevención de bugs</strong>: transiciones inválidas se detectan al instante</li>
+      <li><strong>Replay posible</strong>: el historial permite reproducir qué pasó</li>
+      <li><strong>Debug simplificado</strong>: si algo falla, sabes el último estado válido</li>
+    </ul>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Función específica que activa</div>
+    <p>
+      <code>Kernel.get_task_status(task_id)</code> — devuelve estado actual + historial
+      de transiciones + timestamp de cada cambio. El Kernel puede responder en &lt;1ms.
+    </p>
+  </div>
+</div>
+
+<!-- IDEA 6 -->
+<div class="idea-card idea-6">
+  <div class="idea-header">
+    <div>
+      <span class="idea-num">Idea #6</span>
+      <div class="idea-title">Reducers Determinísticos para Memoria Compartida</div>
+    </div>
+    <span class="tag tag-consistent">+Consistencia</span>
+  </div>
+
+  <h4>Qué resuelve</h4>
+  <p>
+    Cuando múltiples expertos escriben a <code>memory.task_shared</code> simultáneamente,
+    tu sistema necesita reglas claras de fusión. Con esta idea, cada tipo de dato tiene un
+    <strong>reducer determinístico</strong> predefinido.
+  </p>
+
+<pre><span class="key">from</span> typing <span class="key">import</span> Callable, Any
+
+<span class="key">class</span> <span class="cls">DeterministicReducer</span>:
+    <span class="str">"""Memory Manager define cómo fusionar actualizaciones concurrentes."""</span>
+
+    <span class="key">def</span> __init__(self):
+        self._reducers: dict[str, Callable] = {
+            <span class="str">"append_only"</span>: <span class="key">lambda</span> existing, new: existing + [new],
+            <span class="str">"set_union"</span>: <span class="key">lambda</span> existing, new: existing | new,
+            <span class="str">"max_value"</span>: <span class="key">lambda</span> existing, new: max(existing, new),
+            <span class="str">"merge_dict"</span>: <span class="key">lambda</span> existing, new: {**existing, **new},
+            <span class="str">"vote_count"</span>: <span class="key">lambda</span> existing, new: self._tally_vote(existing, new),
+        }
+
+    <span class="key">def</span> reduce(self, key: str, existing: Any, new: Any) -> Any:
+        reducer = self._reducers.get(key)
+        <span class="key">if</span> reducer <span class="key">is</span> <span class="key">None</span>:
+            <span class="key">raise</span> ValueError(<span class="str">f"No reducer for key: {key}"</span>)
+        <span class="key">return</span> reducer(existing, new)</pre>
+
+  <div class="idea-section">
+    <div class="idea-section-label">En prosa: cómo mejora MAXBRY</div>
+    <p>
+      Cuando 10 expertos escriben al mismo tiempo en <code>memory.task_shared</code>, el sistema
+      <strong>no entra en pánico</strong>. Cada tipo de dato tiene una regla de fusión
+      predefinida. Si dos expertos proponen votos distintos, se cuenta el voto. Si dos
+      proponen listas, se concatenan. Si dos proponen contadores, se toma el máximo.
+    </p>
+    <p>
+      Cero ambigüedad, cero race conditions. El comportamiento es siempre el mismo ante la
+      misma secuencia de eventos.
+    </p>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Ventaja concreta</div>
+    <ul class="benefit-list">
+      <li><strong>Sin race conditions</strong>: las fusiones son determinísticas</li>
+      <li><strong>Reproducibilidad</strong>: misma secuencia → mismo resultado</li>
+      <li><strong>Tipos seguros</strong>: cada reducer valida el tipo de dato</li>
+      <li><strong>Extensible</strong>: puedes añadir reducers customizados por dominio</li>
+    </ul>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Función específica que activa</div>
+    <p>
+      <code>MemoryManager.merge_into_shared(key, value, reducer_type)</code> —
+      aplica el reducer correspondiente. Si dos expertos escriben al mismo tiempo,
+      el Memory Manager serializa la fusión.
+    </p>
+  </div>
+</div>
+
+<!-- IDEA 7 -->
+<div class="idea-card idea-7">
+  <div class="idea-header">
+    <div>
+      <span class="idea-num">Idea #7</span>
+      <div class="idea-title">Humano como Experto Tipado (Human-in-the-Loop)</div>
+    </div>
+    <span class="tag tag-control">+Control</span>
+  </div>
+
+  <h4>Qué resuelve</h4>
+  <p>
+    Cuando el Output Engine no puede resolver un problema (consensus no se alcanza, datos
+    sensibles detectados, baja confianza), necesitas escalar. Con esta idea, el humano es
+    <strong>un experto más</strong> con un <code>expert_id</code> reservado y permisos totales.
+  </p>
+
+<pre><span class="key">class</span> <span class="cls">HumanExpert</span>:
+    <span class="str">"""El humano es un expert_id especial con capabilities = ALL."""</span>
+    expert_id = <span class="str">"HUMAN-001"</span>
+    capabilities = frozenset([<span class="str">"*"</span>])  <span class="comment"># todas</span>
+    priority = <span class="num">100</span>
+
+    <span class="key">async def</span> run(self, input_state: <span class="str">"InputState"</span>) -> <span class="str">"ExpertResult"</span>:
+        <span class="comment"># Pausa la ejecución y notifica al humano</span>
+        <span class="key">await</span> self._notify_human(input_state)
+        <span class="comment"># Espera la respuesta humana (con timeout)</span>
+        response = <span class="key">await</span> self._await_human_response(timeout=<span class="num">3600</span>)
+        <span class="key">return</span> ExpertResult(
+            expert_id=self.expert_id,
+            result=response,
+            confidence=<span class="num">1.0</span>,  <span class="comment"># humano = 100% confianza</span>
+        )</pre>
+
+  <div class="idea-section">
+    <div class="idea-section-label">En prosa: cómo mejora MAXBRY</div>
+    <p>
+      Cuando MAXBRY no sabe qué hacer, pausa y te pregunta. Tu respuesta se trata igual que
+      la de cualquier experto — con la misma trazabilidad, el mismo log, las mismas métricas.
+    </p>
+    <p>
+      El humano aparece en los reportes con su <code>expert_id = "HUMAN-001"</code>,
+      prioridad 100 (la más alta), y confianza 1.0. El Fusion Engine lo cuenta como un voto
+      más cuando consolida resultados.
+    </p>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Ventaja concreta</div>
+    <ul class="benefit-list">
+      <li><strong>Tipado</strong>: el humano tiene una interfaz como cualquier experto</li>
+      <li><strong>Trazabilidad</strong>: las intervenciones humanas quedan registradas</li>
+      <li><strong>Timeout configurable</strong>: si no respondes en X tiempo, se aplica fallback</li>
+      <li><strong>Notificaciones</strong>: el Kernel te avisa por el canal que prefieras</li>
+    </ul>
+  </div>
+
+  <div class="idea-section">
+    <div class="idea-section-label">Función específica que activa</div>
+    <p>
+      <code>OutputEngine.escalate_to_human(reason, context, timeout=3600)</code> —
+      cuando los checks del Output Engine fallan irreparablemente, escala al humano
+      con contexto completo y razón documentada.
+    </p>
+  </div>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">📊</span>Resumen de las 7 Ideas</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Idea</th>
+      <th>Mejora a MAXBRY</th>
+      <th>Beneficio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1</strong></td>
+      <td>MCP Registry Dinámico</td>
+      <td>Expertos descubren tools en runtime</td>
+      <td><span class="tag tag-flex">+Flexibilidad</span></td>
+    </tr>
+    <tr>
+      <td><strong>2</strong></td>
+      <td>Host/Client/Server aislado</td>
+      <td>Kernel no conoce transportes</td>
+      <td><span class="tag tag-secure">+Seguridad</span></td>
+    </tr>
+    <tr>
+      <td><strong>3</strong></td>
+      <td>KG + Vector híbrido</td>
+      <td>Memory navega grafos + similitud</td>
+      <td><span class="tag tag-intel">+Inteligencia</span></td>
+    </tr>
+    <tr>
+      <td><strong>4</strong></td>
+      <td>Multi-source ingester</td>
+      <td>Input Fabric absorbe 30+ fuentes</td>
+      <td><span class="tag tag-cover">+Cobertura</span></td>
+    </tr>
+    <tr>
+      <td><strong>5</strong></td>
+      <td>State machines explícitas</td>
+      <td>Kernel audita cada tarea</td>
+      <td><span class="tag tag-trace">+Trazabilidad</span></td>
+    </tr>
+    <tr>
+      <td><strong>6</strong></td>
+      <td>Reducers determinísticos</td>
+      <td>Memory fusiona sin race conditions</td>
+      <td><span class="tag tag-consistent">+Consistencia</span></td>
+    </tr>
+    <tr>
+      <td><strong>7</strong></td>
+      <td>Humano como experto</td>
+      <td>Human-in-the-loop tipado</td>
+      <td><span class="tag tag-control">+Control</span></td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+<section>
+<h2><span class="icon">🔄</span>Cómo se Integran a tu Diseño Original</h2>
+
+<p>
+  Ninguna idea <strong>sustituye</strong> algo de tu diseño. Cada una se <strong>añade</strong>
+  o <strong>refuerza</strong> un componente existente:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Componente MAXBRY</th>
+      <th>Ideas que lo mejoran</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Kernel</strong></td>
+      <td>#5 (state machines para auditoría)</td>
+    </tr>
+    <tr>
+      <td><strong>Agent Registry</strong></td>
+      <td>#1 (MCP dinámico), #2 (aislamiento)</td>
+    </tr>
+    <tr>
+      <td><strong>Input Cognitive Fabric</strong></td>
+      <td>#4 (multi-source ingester)</td>
+    </tr>
+    <tr>
+      <td><strong>Memory Manager</strong></td>
+      <td>#3 (KG + vector), #6 (reducers)</td>
+    </tr>
+    <tr>
+      <td><strong>Output Engine</strong></td>
+      <td>#7 (escalación a humano)</td>
+    </tr>
+    <tr>
+      <td><strong>Fusion Engine</strong></td>
+      <td>#3 (consultas híbridas al KG)</td>
+    </tr>
+    <tr>
+      <td><strong>Router</strong></td>
+      <td>#1 (consulta MCP registry dinámico)</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+<section>
+<h2><span class="icon">📝</span>Prosa Libre — Qué Cambia en la Práctica</h2>
+
+<p>
+  Con la <strong>Idea #1</strong>, tu Agent Registry pasa de ser una lista fija escrita en YAML
+  a ser un <strong>directorio vivo</strong>. Hoy declaras qué expertos existen. Mañana,
+  conectas un nuevo servidor MCP (por ejemplo, Jira) y MAXBRY automáticamente registra un
+  nuevo "Jira Expert" sin que toques una sola línea del orquestador.
+</p>
+
+<p>
+  Con la <strong>Idea #3</strong>, tu <code>memory.global</code> deja de ser un almacén plano
+  de datos. El sistema entiende relaciones: "este experto fue creado por esta tarea, que usó
+  este paper, que cita a este otro paper". Cuando un experto nuevo llega, el sistema puede
+  mostrarle todo el contexto histórico relevante en una sola consulta híbrida.
+</p>
+
+<p>
+  Con la <strong>Idea #5</strong>, tu Kernel nunca pierde el control. Cada tarea pasa por
+  estados bien definidos. Si algo falla, sabes exactamente en qué punto. El log no es texto
+  libre que alguien tiene que interpretar — es una máquina de estados que se audita sola.
+</p>
+
+<p>
+  Con la <strong>Idea #6</strong>, cuando 10 expertos escriben al mismo tiempo en memoria
+  compartida, el sistema no entra en pánico. Cada tipo de dato tiene una regla de fusión
+  predefinida. Votos se cuentan, listas se concatenan, contadores se suman. Cero ambigüedad.
+</p>
+
+<p>
+  Con la <strong>Idea #7</strong>, cuando MAXBRY no puede resolver algo (consensus no se
+  alcanza, datos sensibles, baja confianza), pausa y te pregunta. Tu respuesta se trata
+  igual que la de cualquier experto — con la misma trazabilidad, el mismo log, las mismas
+  métricas. No es una excepción al sistema, es <strong>parte</strong> del sistema.
+</p>
+</section>
+
+<section>
+<h2><span class="icon">⚠️</span>Lo que NO se hizo (esperando tu retroalimentación)</h2>
+
+<div class="gap-box">
+  <div class="gap-title">Estado actual</div>
+  <p>
+    Aprobaste la propuesta pero la marcaste como <strong>incompleta</strong>. Este documento
+    contiene las 7 ideas con código, prosa explicativa, ventajas y funciones específicas.
+    Falta lo que tú me digas que falta.
+  </p>
+</div>
+
+<ul class="checklist">
+  <li>Las 7 ideas están documentadas con código + prosa + ventaja concreta</li>
+  <li>Cada idea respeta tu diseño original (Kernel, Fabrics, Registry, Memory, Output)</li>
+  <li>El código es ejecutable conceptualmente (sintaxis Python válida)</li>
+  <li>Las prosa explica qué cambia en la práctica, no solo qué hace el código</li>
+</ul>
+</section>
+
+<footer>
+  MAXBRY/NCT · Paso 2 / Etapa 1 · 7 Ideas de Programación para el Orquestador<br>
+  Estado: <strong>Aprobado (incompleto)</strong> · Esperando tu retroalimentación para completar<br>
+  Próximo paso: <strong>Paso 2 Etapa 2 — Procesamiento de los Expertos</strong> tras tu aprobación final
+</footer>
+
+</div>
+</body>
+</html>

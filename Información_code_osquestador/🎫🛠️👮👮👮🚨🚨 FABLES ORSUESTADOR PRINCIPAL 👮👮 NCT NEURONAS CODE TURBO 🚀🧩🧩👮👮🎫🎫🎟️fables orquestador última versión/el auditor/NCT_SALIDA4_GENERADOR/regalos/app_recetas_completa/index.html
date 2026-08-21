@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>proyecto_recetas</title>
+<style>
+body{font-family:system-ui;background:#111;
+  color:#eee;max-width:760px;margin:0 auto;padding:24px}
+h1{font-size:26px} h2{font-size:18px;margin:18px 0 8px}
+.alta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+input{padding:8px;border-radius:8px;border:1px solid #444;
+  background:#222;color:inherit}
+button{padding:8px 14px;border-radius:8px;border:none;color:#fff;cursor:pointer}
+ul{list-style:none;padding:0} li{padding:7px 10px;border-bottom:1px solid #333}
+</style></head><body>
+<h1>proyecto_recetas</h1>
+<!-- componente generado: receta -->
+<section class="ent" id="sec-receta">
+  <h2>Recetas</h2>
+  <form class="alta" onsubmit="return crear_receta(event)">
+      <input id="f-nombre" placeholder="nombre" type="text">
+      <input id="f-ingredientes" placeholder="ingredientes" type="text">
+      <input id="f-pasos" placeholder="pasos" type="text">
+      <button style="background:#7EBE2C">Agregar</button>
+  </form>
+  <ul id="lista-receta"></ul>
+</section>
+<script>
+function v(id){return document.getElementById(id).value}
+async function cargar_receta(){
+  const r = await fetch('/recetas'); const xs = await r.json();
+  document.getElementById('lista-receta').innerHTML = xs.map(x =>
+    `<li>#${x.id} ${x.nombre} · ${x.ingredientes} · ${x.pasos}
+     <button onclick="borrar_receta(${x.id})">✕</button></li>`).join('');
+}
+async function crear_receta(e){
+  e.preventDefault();
+  await fetch('/recetas', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({nombre: v('f-nombre'), ingredientes: v('f-ingredientes'), pasos: v('f-pasos')})});
+  cargar_receta(); return false;
+}
+async function borrar_receta(id){
+  await fetch(`/recetas/${id}`, {method:'DELETE'});
+  cargar_receta();
+}
+cargar_receta();
+</script>
+<!-- componente generado: usuario -->
+<section class="ent" id="sec-usuario">
+  <h2>Usuarios</h2>
+  <form class="alta" onsubmit="return crear_usuario(event)">
+      <input id="f-email" placeholder="email" type="text">
+      <input id="f-password_hash" placeholder="password_hash" type="text">
+      <button style="background:#7EBE2C">Agregar</button>
+  </form>
+  <ul id="lista-usuario"></ul>
+</section>
+<script>
+function v(id){return document.getElementById(id).value}
+async function cargar_usuario(){
+  const r = await fetch('/usuarios'); const xs = await r.json();
+  document.getElementById('lista-usuario').innerHTML = xs.map(x =>
+    `<li>#${x.id} ${x.email} · ${x.password_hash}
+     <button onclick="borrar_usuario(${x.id})">✕</button></li>`).join('');
+}
+async function crear_usuario(e){
+  e.preventDefault();
+  await fetch('/usuarios', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email: v('f-email'), password_hash: v('f-password_hash')})});
+  cargar_usuario(); return false;
+}
+async function borrar_usuario(id){
+  await fetch(`/usuarios/${id}`, {method:'DELETE'});
+  cargar_usuario();
+}
+cargar_usuario();
+</script>
+
+</body></html>

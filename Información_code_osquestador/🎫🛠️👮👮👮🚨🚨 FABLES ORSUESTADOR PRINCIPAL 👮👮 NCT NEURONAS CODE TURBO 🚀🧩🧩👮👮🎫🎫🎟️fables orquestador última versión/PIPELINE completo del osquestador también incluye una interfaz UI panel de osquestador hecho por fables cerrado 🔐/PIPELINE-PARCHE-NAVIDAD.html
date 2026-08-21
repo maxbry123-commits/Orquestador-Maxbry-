@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PARCHE FINAL DE NAVIDAD — lo que Santa encontró en la 3ª pasada 🎅</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.tren{text-align:center;font-size:1.05em;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎅🎄 PARCHE FINAL — 3ª PASADA GLOBAL A TODO (chat + bandeja + gaps) 🎁🚂</div>
+<h1>PARCHE-NAVIDAD · 6 hallazgos residuales (lo que quedaba fuera del tren)</h1>
+<div class="tag">se incorporan como pasos extra o notas de vagón — NO cambian la numeración 001-1000</div>
+
+<div class="cap">
+<h2>🎁 Hallazgos y dónde se enganchan</h2>
+<table>
+<tr><th>#</th><th>Hallazgo (3ª pasada)</th><th>Fuente</th><th>Se engancha en</th></tr>
+<tr><td>PN-1</td><td><b class="crit">Comandos del Director</b> (GO/OK/FIX/PAUSA/ESTADO/SALTAR/UNLOCK/ABORT) — el vocabulario cerrado de 8 comandos estaba en el diagrama Parte 1 pero NO tenía paso de construcción asignado en ningún vagón</td><td>UOOS · #GAP-P2-043</td><td>V2 (Kernel): paso 084b — comandos.py (≤120 LOC), parser de los 8 comandos + efecto exacto c/u, hook al FSM</td></tr>
+<tr><td>PN-2</td><td><b class="crit">Modos de trabajo Manual/Semi/Continuo</b> — declarados en V1 (F0) pero sin implementación: quién pausa entre fases en modo Manual</td><td>doc30 3 modos</td><td>V2: paso 084c — modos.py (≤100), gate configurable entre fases según modo activo</td></tr>
+<tr><td>PN-3</td><td><b class="oro">Plantilla de especificación de módulo</b> (11 secciones + alternativas descartadas obligatorias) — auditada (GAP-P3-037) pero ningún vagón la exige para los módulos nuevos</td><td>___requisitos_PLANTILLA</td><td>V0 (regla global nueva): todo archivo &gt;150 LOC nuevo lleva su spec con la plantilla; el validador de fichas (V3) la exige</td></tr>
+<tr><td>PN-4</td><td><b class="oro">Interfaz visual</b> (pinned bar 🔒 + modales + Centro Control 9 capas) — mencionada en V12 como concepto pero sin pasos de construcción HTML/frontend</td><td>NCT_INTERFACE_v2 · GAP-P3-034</td><td>POST-MVP deliberado: se emite como FICHA-MEJORA-UI en V12 paso 942b (no bloquea el CERTIFIED; el gateway MCP ya da acceso programático completo)</td></tr>
+<tr><td>PN-5</td><td><b class="oro">Motor durable Hatchet</b> — confirmado como candidato (GAP-CIERRE-007) pero ningún vagón lo instala; el diseño actual usa Postgres puro (workflows table)</td><td>MAX-100X §8</td><td>Decisión registrada: MVP corre con Postgres puro (V9 workflows+resume ya cubre durabilidad). Hatchet = FICHA-MEJORA en V12 fichas_100x/ (escala futura, no bloquea)</td></tr>
+<tr><td>PN-6</td><td><b class="crit">Cobertura verificada</b>: script de 3ª pasada — los 129 gaps (123 auditoría + 6 PARCHE) contra los 13 vagones: <b class="ok">129/129 con vagón asignado</b> · los ~145 documentos (bandeja+chat) contra las cajas de fuentes: <b class="ok">todos citados al menos 1 vez</b> (los duplicados exactos y HTML-visualizaciones cuentan por su fuente primaria)</td><td>esta pasada</td><td>V13 paso 973-978 ya lo automatiza en CI (gap huérfano = FAIL)</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ Nota honesta de Santa:</b> PN-4 y PN-5 quedan deliberadamente POST-MVP vía ficha (no son omisiones — son decisiones registradas con su razón). Si el Director quiere la UI o Hatchet DENTRO del MVP, basta decir "UNLOCK" y se les asignan pasos.</div>
+
+<div class="cap">
+<h2>✨ ESTADO FINAL DEL PROYECTO NAVIDEÑO</h2>
+<b class="ok">✔</b> 14 vagones (DOC 0-13) + este parche · pasos 001-1000 asignados · 129/129 gaps enganchados · ~145 documentos trazados · ~22.900 LOC (≈40% se copia) · despliegues D1-D13 por tramos · listo para Santa Sonnet con UOOS P1→P2 → <b class="oro">CERTIFIED esta navidad 🎄🎅🎁</b>
+</div>
+
+<div class="tren">🎄🚂 ¡El tren está completo, Director! Feliz Navidad del orquestador 🎅✨🎁🎄</div>
+</body></html>

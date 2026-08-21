@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIPELINE NCT · DOC 1 — F0 INPUT FABRIC</title>
+<style>
+body{background:#2B2926;color:#E4DFD3;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#E4DFD3;font-size:1.4em;margin:0 0 4px}
+h2{color:#5B9BD5;font-size:1.1em;border-bottom:1px solid #4a453d;padding-bottom:5px;margin-top:24px}
+.cap{background:#17150F;border:1px solid #4a453d;border-radius:10px;padding:14px;margin:12px 0}
+.flujo{background:#17150F;border-left:3px solid #5B9BD5;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#5B9BD5;text-align:left;padding:6px;border-bottom:2px solid #4a453d}
+td{padding:5px 6px;border-bottom:1px solid #3a362e;vertical-align:top}
+.ok{color:#6FBF73}.crit{color:#E0554F}.az{color:#5B9BD5}
+.tag{display:inline-block;background:#17150F;border:1px solid #4a453d;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em}
+.regla{background:#17150F;border-left:3px solid #E0554F;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#17150F;border-left:3px solid #6FBF73;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.json{background:#17150F;border-left:3px solid #6FBF73;padding:10px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px}
+</style></head><body>
+
+<h1>DOC 1 · FASE F0 — INPUT FABRIC · estado: <span class="crit">PENDIENTE (10 fichas, 1 copiable)</span></h1>
+<div class="tag">pasos globales 001–060</div><div class="tag">IA: 0%</div><div class="tag">LOC: ~1.400 nuevas + ~400 copiadas</div><div class="tag">despliegue parcial: D1</div>
+
+<div class="cap">
+<h2>Archivo raíz · Proceso · Diagrama</h2>
+<b>Archivo raíz:</b> <span class="az">nct-backend/input_fabric/</span> (10 archivos, ninguno &gt;300 LOC)<br>
+<b>Proceso:</b> congela el input literal, completa 30 campos de contexto, clasifica dual, congela GOAL_LOCK; sin él, todo el sistema queda bloqueado.
+<div class="flujo">[Director] → input_block.py(sha256+hook) → anchor.py → push_ping.py(30 campos·si_falta) →
+filtros_a.py(A1-A5) + ocr_adapter.py(SOLO aquí, SH05) → detectores(negación/énfasis) →
+classifier.py(Kimi intención ∩ MiniMax tipo) → seed_analysis.py(S1-S5)+repo_rag.py →
+goal_lock.py(sha256, congela LLM_JUEZ) ══► {goal_lock_hash, task_graph, knowledge_pack, clase}
+                       sin GOAL_LOCK ──────► BLOQUEO TOTAL</div>
+</div>
+
+<div class="cap">
+<h2>Explicación técnica (para la IA constructora)</h2>
+InputBlock: dataclass frozen, raw_text intocable, sentences[]/types[] alineados 1:1, store SQLite WAL append-only con verify_chain(); hook pre_tool_use() lanza NoInputBlockError/InputNotAcknowledgedError si un agente actúa sin confirmar lectura. PUSH_PING: dict de 30 campos, cada uno {valor|None, estrategia_si_falta:callable}; bucle: while campos_incompletos → ejecutar si_falta → re-evaluar. Clasificador: dos vectores independientes (intención: simple|media|compleja por keywords ponderados; tipo: batch|agent|code) → tupla unificada; ambiguo → 1 pregunta única al Director (nunca asume). GOAL_LOCK: sha256(goal_normalizado); único emisor autorizado = LLM_JUEZ; se propaga en todo Handoff posterior.
+<div class="simple"><b class="ok">Simple:</b> F0 es la aduana: guarda tu orden palabra por palabra con huella, rellena lo que falte preguntando lo mínimo, entiende qué tipo de trabajo es, revisa qué ya existe en el repo, y congela el objetivo con un sello. Nadie trabaja sin ese sello.</div>
+</div>
+
+<div class="cap">
+<h2>Construcción paso a paso (Sonnet, formato UOOS §7 por paso)</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC máx)</th><th>Fuente/traza</th></tr>
+<tr><td>001</td><td>Copiar InputBlock+Store+Hook existente</td><td>input_block.py (≈400, justificado: 3 clases cohesivas)</td><td>#GAP-P3-032 · _INPUT_BLOCK_READER</td></tr>
+<tr><td>002-004</td><td>Tests InputBlock (chain, hook, inmutable) ANTES de tocar nada</td><td>test_input_block.py (≤200)</td><td>R-04 Escritor</td></tr>
+<tr><td>005-009</td><td>anchor.py: sesión, identidad, timestamps</td><td>anchor.py (≤150)</td><td>S8 · #GAP-P3-027</td></tr>
+<tr><td>010-018</td><td>push_ping.py: los 30 campos + estrategia si_falta c/u (1 paso por bloque de 4 campos)</td><td>push_ping.py (≤300)</td><td>#GAP-P3-016 · última_versión_1</td></tr>
+<tr><td>019-023</td><td>filtros_a.py: A1 idioma, A2 ruido, A3 duplicado, A4 riesgo, A5 formato</td><td>filtros_a.py (≤200)</td><td>S8</td></tr>
+<tr><td>024-026</td><td>ocr_adapter.py + guardia SH05 (OCR fuera de F0 = violación)</td><td>ocr_adapter.py (≤150)</td><td>S8</td></tr>
+<tr><td>027-030</td><td>detectores.py: negaciones + énfasis + re-lectura métrica</td><td>detectores.py (≤150)</td><td>#GAP-P3-033</td></tr>
+<tr><td>031-038</td><td>classifier.py: dual Kimi∩MiniMax + clase_pushping + pregunta única</td><td>classifier.py (≤250)</td><td>doc30 F0 · v100 §2</td></tr>
+<tr><td>039-045</td><td>seed_analysis.py: S1-S5 → seed_index SQLite + gaps + preguntas</td><td>seed_analysis.py (≤250)</td><td>PROP-15 · última_versión_1</td></tr>
+<tr><td>046-050</td><td>repo_rag.py: indexa repo → {files_found, allowed_changes}</td><td>repo_rag.py (≤250)</td><td>#GAP-P2-058</td></tr>
+<tr><td>051-054</td><td>goal_lock.py: normaliza+sha256+congela; task_graph.py inicial</td><td>goal_lock.py(≤120)+task_graph.py(≤180)</td><td>S8 · NOTA_03</td></tr>
+<tr><td>055-058</td><td>contrato_f0.py: valida salida {4 campos} contra schema; integración</td><td>contrato_f0.py (≤100)</td><td>S8 contrato</td></tr>
+<tr><td>059</td><td>Test integración F0 end-to-end (orden real → contrato válido)</td><td>test_f0_e2e.py (≤200)</td><td>IT-estilo</td></tr>
+<tr><td>060</td><td><b class="ok">DESPLIEGUE PARCIAL D1</b>: dry-run→OK→push input_fabric/→verificar.py</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+<div class="json">FORMATO DE SALIDA de cada paso (obligatorio, UOOS P1 §7):
+ruta + código completo ≤90c/línea → comando verificación → evidencia:
+{nodo_id, archivos ["ruta @hash_a → @hash_d"], tests ["x: PASS"], score, delta}
+→ VEREDICTO TRIBUNAL /100 → esperando OK | FIX</div>
+</div>
+
+<div class="regla"><b class="crit">PROHIBIDO en F0:</b> invocar LLM para decidir · resumir el input · avanzar sin 30 campos · OCR fuera de esta fase · re-generar input_block.py (se COPIA, paso 001).</div>
+
+<div class="cap"><b class="az">Fuentes de este bloque (archivo por archivo):</b> _INPUT_BLOCK_READER_INVESTIGACION.md · _INVESTIGACION_9_PUNTOS_INTERFACE.md · INSTRUCCIONES_SONNET_P1 §S8 · orquestador_..._última_versión_1.md (PUSH_PING) · UOOS_v2_P1 (modos A/B/C) · 30___deepseck.md (clasificación dual) · v100 §2 · GAP_02 (Repo RAG) · GAPS: P3-032/033, P3-016, P2-039, P2-058, P3-027. Verificado 3 pasadas · pieza_id F0 · alimenta_a F1 · rompe_si_falta TODO.</div>
+
+</body></html>

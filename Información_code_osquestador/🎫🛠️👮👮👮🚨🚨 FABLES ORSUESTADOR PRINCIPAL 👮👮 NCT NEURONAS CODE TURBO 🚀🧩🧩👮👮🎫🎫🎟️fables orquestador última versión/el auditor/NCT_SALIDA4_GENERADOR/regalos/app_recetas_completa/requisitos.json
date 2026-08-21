@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "origen": "embudo_entrada",
+  "idea_original": "app de recetas con login y buscador",
+  "hash_idea": "5d2eb26c0088",
+  "proyecto": {
+    "nombre": "proyecto_recetas",
+    "dominio": "recetas",
+    "tipo": "app"
+  },
+  "personas": [
+    {
+      "rol": "usuario_final",
+      "necesidad": "usar la solución de recetas fácilmente"
+    },
+    {
+      "rol": "administrador",
+      "necesidad": "gestionar el contenido de recetas"
+    }
+  ],
+  "requisitos_funcionales": [
+    {
+      "id": "RF-001",
+      "feature": "autenticacion",
+      "prioridad": "alta"
+    },
+    {
+      "id": "RF-002",
+      "feature": "busqueda",
+      "prioridad": "alta"
+    }
+  ],
+  "requisitos_no_funcionales": [],
+  "huecos": [],
+  "listo_para_pipeline": true
+}

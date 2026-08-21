@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "origen": "embudo_entrada",
+  "idea_original": "tienda con login y buscador",
+  "hash_idea": "571371fc17cd",
+  "proyecto": {
+    "nombre": "proyecto_general",
+    "dominio": "general",
+    "tipo": "web"
+  },
+  "personas": [
+    {
+      "rol": "usuario_final",
+      "necesidad": "usar la solución de general fácilmente"
+    },
+    {
+      "rol": "administrador",
+      "necesidad": "gestionar el contenido de general"
+    }
+  ],
+  "requisitos_funcionales": [
+    {
+      "id": "RF-001",
+      "feature": "autenticacion",
+      "prioridad": "alta"
+    },
+    {
+      "id": "RF-002",
+      "feature": "busqueda",
+      "prioridad": "alta"
+    }
+  ],
+  "requisitos_no_funcionales": [],
+  "huecos": [
+    "dominio_ambiguo"
+  ],
+  "listo_para_pipeline": false,
+  "pregunta_al_director": "Detecté huecos: dominio_ambiguo. ¿Confirmas o das más detalle? (Ley L14: 1 pregunta, nunca asumir)"
+}

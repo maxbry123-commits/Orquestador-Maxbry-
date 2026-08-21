@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PIPELINE NCT · VAGÓN 6 — F4b WORKERS + STAFF 🚂</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.tren{text-align:center;font-size:1.05em;letter-spacing:1px;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎄🚂💨 [V0]═[V1]═[V2]═[V3]═[V4]═[V5]═<b>[V6★]</b>═[V7]═[V8]═[V9]═[V10]═[V11]═[V12]═[V13] 🎁🎄</div>
+<h1>🎅 VAGÓN 6 · F4b — WORKERS PARALELOS + STAFF + RENOS EXTERNOS</h1>
+<div class="tag">pasos 321–420</div><div class="tag">IA: plena (bajo presupuesto 90/10)</div><div class="tag">LOC: ~1.400 nuevas + ~1.441 copiadas</div><div class="tag">🎁 despliegue D6</div>
+
+<div class="cap">
+<h2>🚂 Raíz · Proceso · Diagrama</h2>
+<b>Raíz:</b> <span class="oro">nct-backend/workers/</span> + <span class="oro">nct-backend/staff/</span> + <span class="oro">nct-backend/orquestadores_paralelos/</span><br>
+<b>Proceso:</b> el músculo paralelo — 100 trineos a la vez, cada uno con su mini-equipo, más los renos externos (staff OSS) y el orquestador OpenClaw corriendo entero en paralelo.
+<div class="flujo">objeto(F4a) → WORKER POOL (fusión Kimi∥MiniMax, doc30):
+  hasta 100 workers asyncio.gather (Kimi) · dentro de c/u: Team Engine
+  leader→worker→verifier ×3 rondas (MiniMax) · granularidad adaptativa (router
+  elige 1-grande vs N-chicos) · TEAM mode: equipos COMPITEN, coordinador elige
+→ BATCHING: llamadas LLM en lotes 8-16 (nunca 1-a-1) · MULTI-POOL por concern
+  (code/research/audit/deploy — cola+auto-scale+budget propios) · llm_pct≤0.10 vigilado
+→ LLM_ESCRITOR (O1-O6·R01-R10): tests con assertions ANTES del código ·
+  NUNCA dice "funciona" · solo recibe INSTRUCTION/RETRY del Juez (máx 3)
+→ STAFF EXTERNO (pipelines intercambiables): code_gen→Claude Code/OpenCode ·
+  research→5 investigadores (GitHub/HF/Web/YouTube/MCP, 2-5 rondas, stop≥85%) ·
+  refactor→Aider/OpenClaw · generic→micro-agente propio (15 MA-*, spawn→run→die)
+→ ORQUESTADOR PARALELO: execution_pipeline_dsl.py (OpenClaw, 15 nodos N00-N13,
+  COPIADO tal cual) — recibe orden DSL, devuelve firmado, Witness certifica
+→ FLOTA HF SPACES: 10-20 workers remotos MCP (Compute 80/Hybrid 15/LLM 5)
+DISCIPLINA E01-E12: tras GO prohibido replanificar/proponer/divagar</div>
+</div>
+
+<div class="cap">
+<h2>⚙️ Explicación técnica</h2>
+worker_pool.py implementa el patrón doc30: pool asíncrono con semáforo (máx 100), cada worker envuelve un TeamEngine de 3 roles con 3 rondas máximo; granularidad la decide router_core (parche V2) según tipo/tamaño de tarea. batcher.py agrupa llamadas al mismo modelo en ventana de 200ms o lote lleno (8-16) — multiplicador ×4 del parche 100x. multi_pool.py: 4 colas independientes con auto-scale por profundidad (pre-warming: spawn ANTES del pico si la cola crece X% en Y seg). escritor.py aplica GRUPO_F al pie de la letra: protocolo JSON de 4 turnos con el Juez, jamás contacto directo con Director/Runtime. execution_pipeline_dsl.py se copia ÍNTEGRO (1.441 LOC probadas 15/15) a orquestadores_paralelos/ — 0 líneas nuevas, solo un adaptador de entrada/salida (≤150 LOC) que traduce Handoff↔formato OpenClaw.
+<div class="simple"><b class="ok">🎄 Simple:</b> V6 es la flota de trineos: cien salen a la vez, cada uno con piloto, cargador y revisor; los pedidos al taller mágico van en sacos (lotes), no de uno en uno; los renos alquilados (staff OSS) tiran primero antes de criar renos propios; y hay un trineo-fábrica completo (OpenClaw) que trabaja solo y entrega firmado.</div>
+</div>
+
+<div class="cap">
+<h2>🎁 Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Traza</th></tr>
+<tr><td>321-334</td><td>worker_pool.py: 100 workers asyncio + semáforo + TeamEngine 3 roles×3 rondas</td><td>workers/worker_pool.py (≤300) + team_engine.py (≤250)</td><td>doc30 F4 · v100 §4 · #GAP-CIERRE-008</td></tr>
+<tr><td>335-342</td><td>granularidad.py: adaptativa 1-grande vs N-chicos + TEAM mode competitivo</td><td>workers/granularidad.py (≤200)</td><td>v200 · #GAP-P2-033</td></tr>
+<tr><td>343-352</td><td>batcher.py: lotes 8-16, ventana 200ms, por modelo destino</td><td>workers/batcher.py (≤200)</td><td>PARCHE-100X ×4 · MAX-100X §1</td></tr>
+<tr><td>353-364</td><td>multi_pool.py: 4 colas por concern + auto-scale + pre-warming + budget</td><td>workers/multi_pool.py (≤300)</td><td>PARCHE-100X · #GAP-CIERRE-008</td></tr>
+<tr><td>365-372</td><td>presupuesto.py: llm_pct≤0.10 medido en vivo (PROP-18) + corte por budget</td><td>workers/presupuesto.py (≤150)</td><td>PROP-18 · N5</td></tr>
+<tr><td>373-384</td><td>escritor.py: O1-O6+R01-R10 + protocolo 4 turnos con Juez</td><td>staff/escritor.py (≤300)</td><td>GRUPO_F §2 · #GAP-P3-019/021</td></tr>
+<tr><td>385-394</td><td>staff_router.py: pipelines intercambiables (code/research/refactor/generic) + 5 investigadores como pipeline research</td><td>staff/staff_router.py (≤250) + investigadores.py (≤300)</td><td>MAPA_TEAM · serie MAXBRY (5 agentes) · #GAP-P2-032</td></tr>
+<tr><td>395-400</td><td>micro_agentes/: los 15 MA-* (spawn→run→emit→die, ≤200 c/u) — SOLO plantilla + 3 críticos (MA-BUILD, MA-BUILD-EXEC, MA-RUNTIME-CHECK); resto = fichas planeadas</td><td>staff/micro_agentes/</td><td>GRUPO_F cierre · #GAP-P3-021</td></tr>
+<tr><td>401-406</td><td><b>COPIAR</b> execution_pipeline_dsl.py íntegro + adaptador Handoff↔OpenClaw</td><td>orquestadores_paralelos/ (1.441 copiadas + ≤150)</td><td>#GAP-CIERRE-003 · PIPELINE_MASTER</td></tr>
+<tr><td>407-412</td><td>flota_hf.py: cliente MCP para 10-20 workers remotos + circuit breaker por space</td><td>workers/flota_hf.py (≤250)</td><td>PROP-17 · v200</td></tr>
+<tr><td>413-418</td><td>Tests: batching real, competencia TEAM, presupuesto corta, OpenClaw end-to-end</td><td>test_f4b_*.py (4×≤250)</td><td>evidencia L11</td></tr>
+<tr><td>419-420</td><td><b class="ok">🎁 DESPLIEGUE D6</b>: workers/ + staff/ + orquestadores_paralelos/</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ PROHIBIDO:</b> llamadas LLM 1-a-1 fuera del batcher · Escritor hablando con el Director · staff propio antes de agotar OSS · modificar execution_pipeline_dsl.py (se copia intacto) · superar llm_pct 0.10 sin ficha justificada.</div>
+
+<div class="cap"><b class="oro">🎄 Fuentes:</b> 30___deepseck (worker pool/team engine) · v100+v200 (fusión Kimi/MiniMax/HF fleet) · GRUPO_F (Escritor/protocolo) · execution_pipeline_dsl_-_Copiar.md + PIPELINE_MASTER (OpenClaw) · MAPA_MD_TEAM_AGENTE (pipelines staff) · serie MAXBRY 07-agentes (5 investigadores) · MAX-100X (batching/multi-pool/pre-warm) · GAPS: P2-032/033, P3-019/021, CIERRE-003/008, PROP-17/18. ✔3 pasadas · V6 ← V5 → V7.</div>
+
+</body></html>

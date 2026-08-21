@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAXBRY/NCT · Paso 2 Etapa 2 — Execution Cognitive Fabric</title>
+<style>
+:root{
+  --bg:#0a0e1a;
+  --panel:#111827;
+  --panel2:#1a2235;
+  --line:#2a3550;
+  --text:#e6ecff;
+  --muted:#9aa6c7;
+  --accent:#5eead4;
+  --accent2:#7dd3fc;
+  --warn:#fbbf24;
+  --err:#f87171;
+  --ok:#4ade80;
+  --purple:#a78bfa;
+  --pink:#f472b6;
+  --code-bg:#060912;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter','SF Pro Text',-apple-system,sans-serif;line-height:1.7;padding:32px 16px}
+.container{max-width:1280px;margin:0 auto}
+header{background:linear-gradient(135deg,#0d1424,#1a2640);border:1px solid var(--line);border-radius:16px;padding:36px;margin-bottom:32px}
+.kicker{color:var(--accent);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;font-weight:700}
+h1{font-size:30px;line-height:1.2;margin-bottom:14px;font-weight:800;background:linear-gradient(90deg,#5eead4,#7dd3fc,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{color:var(--muted);font-size:15px;max-width:900px;margin-bottom:20px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:20px}
+.meta-item{background:rgba(255,255,255,.03);border:1px solid var(--line);padding:12px 14px;border-radius:8px}
+.meta-label{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.meta-value{color:var(--accent);font-size:13px;font-weight:700}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px;margin-bottom:24px}
+h2{color:var(--accent2);font-size:22px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+h2 .icon{font-size:26px}
+h3{color:var(--accent);font-size:18px;margin:24px 0 12px;padding-left:14px;border-left:3px solid var(--accent)}
+h4{color:var(--purple);font-size:14px;margin:16px 0 8px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+p{margin-bottom:14px}
+p strong{color:var(--accent2);font-weight:700}
+code,pre{font-family:'SF Mono','Monaco','Cascadia Code','Fira Code',monospace}
+code{background:var(--panel2);padding:2px 8px;border-radius:4px;color:var(--accent);font-size:13px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:18px;overflow-x:auto;margin:14px 0;font-size:12.5px;line-height:1.6;border-left:3px solid var(--accent)}
+pre .comment{color:#6b7280;font-style:italic}
+pre .key{color:var(--accent2);font-weight:600}
+pre .str{color:#fde68a}
+pre .num{color:#f9a8d4}
+pre .bool{color:var(--purple)}
+pre .cls{color:#fbbf24}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--panel2);color:var(--accent2);text-align:left;padding:12px 14px;border-bottom:2px solid var(--line);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px}
+td{padding:12px 14px;border-bottom:1px solid var(--line);color:var(--text);vertical-align:top}
+tr:hover td{background:rgba(94,234,212,.04)}
+.source-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:20px;margin:16px 0;border-left:4px solid var(--accent)}
+.source-name{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:6px;font-family:'SF Mono',monospace}
+.source-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.tag-paper{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid var(--purple)}
+.tag-fw{background:rgba(125,211,252,.15);color:var(--accent2);border:1px solid var(--accent2)}
+.tag-lib{background:rgba(94,234,212,.15);color:var(--accent);border:1px solid var(--accent)}
+.improvement-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:22px;margin:18px 0;border-left:4px solid var(--purple)}
+.improvement-num{background:rgba(167,139,250,.15);color:var(--purple);padding:4px 12px;border-radius:6px;font-weight:800;font-size:13px;border:1px solid var(--purple);display:inline-block;margin-bottom:8px;font-family:'SF Mono',monospace}
+.improvement-title{font-size:17px;font-weight:700;color:var(--text);margin:8px 0}
+ul.checklist{list-style:none;padding-left:0}
+ul.checklist li{padding:6px 0 6px 28px;position:relative;color:var(--text);font-size:14px}
+ul.checklist li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:24px;margin-top:32px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="kicker">MAXBRY/NCT · Paso 2 Etapa 2 · 3 Tareas Ejecutadas</div>
+  <h1>Execution Cognitive Fabric — Procesamiento de Expertos</h1>
+  <p class="subtitle">
+    Los 9 expertos del Execution Fabric (Code Generator, Validator, Test Runner, Repair, Reviewer, Optimizer, 
+    Simulator, Consensus, Artifact Builder) ejecutan el trabajo. Investigación + Mejoras al diseño + Mejoras 100x 
+    al input original.
+  </p>
+  <div class="meta">
+    <div class="meta-item"><div class="meta-label">Paso</div><div class="meta-value">2 / Etapa 2</div></div>
+    <div class="meta-item"><div class="meta-label">Expertos</div><div class="meta-value">9 execution</div></div>
+    <div class="meta-item"><div class="meta-label">Fuentes</div><div class="meta-value">6 investigadas</div></div>
+    <div class="meta-item"><div class="meta-label">Mejoras 100x</div><div class="meta-value">6 al execution</div></div>
+  </div>
+</header>
+
+<section>
+<h2><span class="icon">🔍</span>TAREA 1 — Investigación</h2>
+<p>Fuentes que借鉴 para mejorar el Execution Cognitive Fabric.</p>
+
+<div class="source-card">
+  <div class="source-name">TDFlow (arXiv 2510.23761)</div>
+  <div class="source-meta"><span class="tag tag-paper">Paper</span><span class="tag">Stanford</span></div>
+  <h4>Qué es</h4>
+  <p>Framework que usa TDD como workflow agentic: propone, revisa y depura parches a escala de repositorio resolviendo tests escritos por humanos.</p>
+  <h4>Qué借鉴</h4>
+  <p>El flujo TDD obligatorio: <strong>test rojo → implementación verde → refactor</strong>. Sin test previo, no se escribe código de implementación.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Code Generator y Test Runner trabajan en pares TDD: el Test Runner escribe el test primero, Code Generator escribe lo mínimo para pasarlo.</p>
+</div>
+
+<div class="source-card">
+  <div class="source-name">DSPy (Stanford)</div>
+  <div class="source-meta"><span class="tag tag-fw">Framework</span><span class="tag">Stanford NLP</span></div>
+  <h4>Qué es</h4>
+  <p>Compilador que optimiza prompts automáticamente usando machine learning en vez de ajuste manual.</p>
+  <h4>Qué借鉴</h4>
+  <p>El concepto de <strong>compilador de prompts</strong>: el sistema evalúa outputs contra métricas y ajusta los prompts automáticamente.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Optimizer puede usar DSPy-style: si un experto tiene bajo rendimiento, ajusta su prompt automáticamente basándose en feedback.</p>
+</div>
+
+<div class="source-card">
+  <div class="source-name">OpenHands / Cursor Agent</div>
+  <div class="source-meta"><span class="tag tag-fw">Framework</span><span class="tag">Production</span></div>
+  <h4>Qué es</h4>
+  <p>Agentes de código que ejecutan en sandboxes Docker aislados, paralelizan con git worktrees, corren tests reales.</p>
+  <h4>Qué借鉴</h4>
+  <p>El patrón de <strong>sandbox seguro</strong> con Docker + <strong>git worktrees</strong> para paralelización sin conflictos.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Execution Fabric corre cada code-generator en un Docker container aislado con sus propios worktrees.</p>
+</div>
+
+<div class="source-card">
+  <div class="source-name">AG2 / AutoGen (Microsoft)</div>
+  <div class="source-meta"><span class="tag tag-fw">Framework</span><span class="tag">Microsoft</span></div>
+  <h4>Qué es</h4>
+  <p>Framework con patrón "group chat" donde múltiples agentes con roles distintos conversan para resolver tareas.</p>
+  <h4>Qué借鉴</h4>
+  <p>El patrón de <strong>roles tipados</strong> con speaking order configurable y termination conditions explícitas.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Consensus puede implementar un group chat entre N expertos donde votan hasta alcanzar threshold.</p>
+</div>
+
+<div class="source-card">
+  <div class="source-name">Parallel Code Review (agent-skills)</div>
+  <div class="source-meta"><span class="tag tag-lib">Skill Pack</span></div>
+  <h4>Qué es</h4>
+  <p>Patrón de code review que lanza 5 sub-agentes en paralelo, cada uno con foco especializado (correctness, architecture, types, security, vision).</p>
+  <h4>Qué借鉴</h4>
+  <p>El patrón de <strong>5-lens parallel review</strong>: 5 agentes analizan el código simultáneamente, luego se sintetiza.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Reviewer usa exactamente este patrón: 5 sub-agentes paralelos + síntesis.</p>
+</div>
+
+<div class="source-card">
+  <div class="source-name">OI-MAS (arXiv 2601.04861)</div>
+  <div class="source-meta"><span class="tag tag-paper">Paper</span></div>
+  <h4>Qué es</h4>
+  <p>Multi-agent system con confidence-aware routing: cada experto declara su confidence y el sistema elige la mejor combinación.</p>
+  <h4>Qué借鉴</h4>
+  <p>El patrón de <strong>confidence-aware consensus</strong>: cada voto lleva su confidence, el sistema pondera.</p>
+  <h4>Aplicación a MAXBRY</h4>
+  <p>Tu Consensus pondera votos por confidence: un experto 0.95 confidence pesa más que uno 0.6.</p>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">💻</span>TAREA 2 — Mejoras al Diseño + Tareas</h2>
+
+<div class="improvement-card">
+  <span class="improvement-num">MEJORA #1</span>
+  <div class="improvement-title">Execution como Pipeline Tipado</div>
+  <p>Cada stage del Execution tiene un contrato I/O estricto.借鉴 de AutoGen.</p>
+
+<pre><span class="key">from</span> typing <span class="key">import</span> TypedDict
+
+<span class="key">class</span> <span class="cls">ExecutionState</span>(TypedDict):
+    <span class="key">task_node</span>: <span class="str">"TaskNode"</span>
+    <span class="key">code_artifacts</span>: list[<span class="str">"CodeArtifact"</span>]
+    <span class="key">test_results</span>: list[<span class="str">"TestResult"</span>]
+    <span class="key">validation_errors</span>: list[<span class="str">"ValidationError"</span>]
+    <span class="key">review_verdict</span>: <span class="str">"ReviewVerdict | None"</span>
+    <span class="key">optimization_report</span>: <span class="str">"OptimizationReport | None"</span>
+    <span class="key">consensus_votes</span>: list[<span class="str">"Vote"</span>]
+    <span class="key">retry_count</span>: int
+    <span class="key">status</span>: Literal[<span class="str">"running"</span>, <span class="str">"passed"</span>, <span class="str">"failed"</span>, <span class="str">"escalated"</span>]
+
+
+<span class="key">class</span> <span class="cls">ExecutionPipeline</span>:
+    <span class="str">"""Pipeline tipado con stages secuenciales."""</span>
+
+    <span class="key">def</span> __init__(self):
+        self.stages = [
+            CodeGenerator(),
+            Validator(),
+            TestRunner(),
+            Repair(),       <span class="comment"># solo si Validator/TestRunner falla</span>
+            Reviewer(),
+            Optimizer(),    <span class="comment"># opcional, si se pidió perf</span>
+            Consensus(),    <span class="comment"># solo si consensus=true en Control Plane</span>
+            ArtifactBuilder(),
+        ]
+
+    <span class="key">async def</span> execute(self, task: <span class="str">"TaskNode"</span>) -> <span class="str">"ExecutionResult"</span>:
+        state = ExecutionState(task_node=task, status=<span class="str">"running"</span>)
+        <span class="key">for</span> stage <span class="key">in</span> self.stages:
+            <span class="key">if</span> <span class="key">not</span> stage.should_run(state):
+                <span class="key">continue</span>
+            state = <span class="key">await</span> stage.run(state)
+            <span class="key">if</span> state.status == <span class="str">"escalated"</span>:
+                <span class="key">break</span>
+        <span class="key">return</span> state</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">MEJORA #2</span>
+  <div class="improvement-title">Tareas Concretas por Experto</div>
+
+<table>
+  <thead>
+    <tr><th>Experto</th><th>Tarea concreta</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Code Generator</strong></td><td>Recibe TaskNode + specs + language. Escribe código + tests siguiendo TDD (test rojo primero). Produce CodeArtifact.</td></tr>
+    <tr><td><strong>Validator</strong></td><td>Recibe CodeArtifact. Corre linter + type-checker + compilador. Devuelve lista de ValidationError.</td></tr>
+    <tr><td><strong>Test Runner</strong></td><td>Recibe CodeArtifact + tests. Ejecuta suite en sandbox Docker. Devuelve TestResult (passed/failed + cobertura).</td></tr>
+    <tr><td><strong>Repair</strong></td><td>Recibe ValidationError + TestResult. Itera: corrige código, re-corre Validator y Test Runner, hasta que pasen o se acaben retries.</td></tr>
+    <tr><td><strong>Reviewer</strong></td><td>Recibe CodeArtifact. Lanza 5 sub-agentes paralelos (correctness/architecture/types/security/vision). Sintetiza verdict final.</td></tr>
+    <tr><td><strong>Optimizer</strong></td><td>Recibe CodeArtifact. Profile + identifica hotspots + propone mejoras de performance. Solo se ejecuta si el Control Plane lo pide.</td></tr>
+    <tr><td><strong>Simulator</strong></td><td>Recibe CodeArtifact. Corre el código en sandbox con escenarios sintéticos (carga, fallos, edge cases). Devuelve SimulationReport.</td></tr>
+    <tr><td><strong>Consensus</strong></td><td>Recibe CodeArtifact + N expertos configurados. Lanza los N en paralelo + recibe votos ponderados por confidence. Devuelve veredicto final.</td></tr>
+    <tr><td><strong>Artifact Builder</strong></td><td>Recibe todos los outputs anteriores. Empaqueta en Artifact final con versionado Git (hash, autor, timestamp, commit message).</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2><span class="icon">🚀</span>TAREA 3 — Mejoras 100x al Execution Original</h2>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #1</span>
+  <div class="improvement-title">TDD Obligatorio</div>
+<pre><span class="key">class</span> <span class="cls">TDDPair</span>:
+    <span class="str">"""Code Generator + Test Runner en pares TDD (借鉴 TDFlow)."""</span>
+
+    <span class="key">async def</span> implement(self, task: <span class="str">"TaskNode"</span>) -> <span class="str">"CodeArtifact"</span>:
+        <span class="comment"># RED: escribir test que falle</span>
+        test = <span class="key">await</span> self.test_runner.write_failing_test(task)
+        result = <span class="key">await</span> self.test_runner.run(test)
+        <span class="key">assert</span> result.status == <span class="str">"failed"</span>, <span class="str">"Test debe fallar antes de implementar"</span>
+
+        <span class="comment"># GREEN: mínima implementación que pase el test</span>
+        code = <span class="key">await</span> self.code_generator.write_minimal(task, test)
+        result = <span class="key">await</span> self.test_runner.run(test)
+        <span class="key">while</span> result.status != <span class="str">"passed"</span>:
+            code = <span class="key">await</span> self.code_generator.fix(code, result.errors)
+            result = <span class="key">await</span> self.test_runner.run(test)
+
+        <span class="comment"># REFACTOR: mejorar sin romper tests</span>
+        code = <span class="key">await</span> self.code_generator.refactor(code)
+        <span class="key">return</span> code</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #2</span>
+  <div class="improvement-title">Sandbox Seguro con Docker</div>
+<pre><span class="key">class</span> <span class="cls">DockerSandbox</span>:
+    <span class="str">"""Cada Code Generator corre en Docker aislado (借鉴 OpenHands)."""</span>
+
+    <span class="key">def</span> __init__(self, image: str = <span class="str">"python:3.11-slim"</span>):
+        self._client = docker.from_env()
+        self._image = image
+
+    <span class="key">async def</span> execute(self, code: str, tests: str) -> <span class="str">"TestResult"</span>:
+        container = self._client.containers.run(
+            self._image,
+            command=<span class="str">"bash -c 'python -m pytest'"</span>,
+            volumes={<span class="str">"/tmp/code"</span>: {<span class="str">"bind"</span>: <span class="str">"/app"</span>, <span class="str">"mode"</span>: <span class="str">"ro"</span>}},
+            mem_limit=<span class="str">"512m"</span>,
+            cpu_quota=<span class="num">50000</span>,
+            network_disabled=<span class="bool">True</span>,  <span class="comment"># sin red</span>
+            detach=<span class="bool">True</span>,
+            remove=<span class="bool">True</span>,
+        )
+        result = container.wait()
+        logs = container.logs().decode(<span class="str">"utf-8"</span>)
+        <span class="key">return</span> TestResult(
+            exit_code=result[<span class="str">"StatusCode"</span>],
+            logs=logs,
+            passed=result[<span class="str">"StatusCode"</span>] == <span class="num">0</span>,
+        )</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #3</span>
+  <div class="improvement-title">Code Review 5-Lens Paralelo</div>
+<pre><span class="key">class</span> <span class="cls">FiveLensReviewer</span>:
+    <span class="str">"""5 sub-agentes paralelos con foco especializado (借鉴 agent-skills)."""</span>
+
+    <span class="key">async def</span> review(self, code: <span class="str">"CodeArtifact"</span>) -> <span class="str">"ReviewVerdict"</span>:
+        lenses = [
+            self._correctness_lens,
+            self._architecture_lens,
+            self._types_lens,
+            self._security_lens,
+            self._vision_lens,
+        ]
+        <span class="comment"># Lanzar 5 en paralelo</span>
+        results = <span class="key">await</span> asyncio.gather(*[
+            lens.analyze(code) <span class="key">for</span> lens <span class="key">in</span> lenses
+        ])
+        <span class="comment"># Sintetizar</span>
+        <span class="key">return</span> self._synthesize(results)</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #4</span>
+  <div class="improvement-title">Repair con Backoff Exponencial</div>
+<pre><span class="key">class</span> <span class="cls">RepairWithBackoff</span>:
+    <span class="str">"""Retry inteligente con backoff exponencial."""</span>
+
+    MAX_RETRIES = <span class="num">5</span>
+
+    <span class="key">async def</span> repair(self, code: str, errors: list) -> str:
+        <span class="key">for</span> attempt <span class="key">in</span> range(self.MAX_RETRIES):
+            <span class="key">try</span>:
+                fixed = <span class="key">await</span> self._apply_fix(code, errors)
+                <span class="key">if await</span> self._validate(fixed):
+                    <span class="key">return</span> fixed
+            <span class="key">except</span> Exception <span class="key">as</span> e:
+                errors = [str(e)]
+
+            <span class="comment"># Backoff exponencial: 1s, 2s, 4s, 8s, 16s</span>
+            <span class="key">await</span> asyncio.sleep(<span class="num">2</span> ** attempt)
+
+        <span class="key">raise</span> RepairFailed(<span class="str">f"Could not repair after {self.MAX_RETRIES} attempts"</span>)</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #5</span>
+  <div class="improvement-title">Consensus Configurable</div>
+<pre><span class="key">class</span> <span class="cls">ConfigurableConsensus</span>:
+    <span class="str">"""3 mayoría o 5 unanimidad según criticidad (借鉴 OI-MAS)."""</span>
+
+    <span class="key">async def</span> vote(self, code: <span class="str">"CodeArtifact"</span>, strategy: str) -> <span class="str">"Verdict"</span>:
+        <span class="key">if</span> strategy == <span class="str">"majority_3"</span>:
+            voters = [<span class="str">"code_reviewer_a"</span>, <span class="str">"code_reviewer_b"</span>, <span class="str">"code_reviewer_c"</span>]
+            threshold = <span class="num">2</span>  <span class="comment"># 2 de 3</span>
+        <span class="key">elif</span> strategy == <span class="str">"unanimity_5"</span>:
+            voters = [<span class="key">f</span> <span class="str">"code_reviewer_{chr(ord('a') + i)}"</span> <span class="key">for</span> i <span class="key">in</span> range(<span class="num">5</span>)]
+            threshold = <span class="num">5</span>  <span class="comment"># 5 de 5</span>
+
+        votes = <span class="key">await</span> asyncio.gather(*[self._get_vote(v, code) <span class="key">for</span> v <span class="key">in</span> voters])
+        approvals = sum(<span class="num">1</span> <span class="key">for</span> v <span class="key">in</span> votes <span class="key">if</span> v.approved)
+        <span class="key">return</span> Verdict(
+            approved=approvals >= threshold,
+            votes=votes,
+            strategy=strategy,
+        )</pre>
+</div>
+
+<div class="improvement-card">
+  <span class="improvement-num">100x #6</span>
+  <div class="improvement-title">Artifact Versioning tipo Git</div>
+<pre><span class="key">class</span> <span class="cls">ArtifactBuilder</span>:
+    <span class="str">"""Cada artefacto versionado con hash + autor + commit (借鉴 Git)."""</span>
+
+    <span class="key">def</span> build(self, code: str, review: <span class="str">"ReviewVerdict"</span>) -> <span class="str">"Artifact"</span>:
+        content_hash = hashlib.sha256(code.encode()).hexdigest()[:<span class="num">12</span>]
+        <span class="key">return</span> Artifact(
+            id=<span class="str">f"art-{content_hash}"</span>,
+            content_hash=content_hash,
+            author=<span class="str">"execution-fabric"</span>,
+            timestamp=datetime.utcnow().isoformat(),
+            commit_message=self._generate_commit_message(review),
+            parent_hash=self._get_previous_hash(),
+            files=self._extract_files(code),
+        )</pre>
+</div>
+</section>
+
+<footer>
+  MAXBRY/NCT · Paso 2 Etapa 2 · Execution Cognitive Fabric · 3 Tareas Ejecutadas<br>
+  Próximo: <strong>Paso 2 Etapa 3 — Output Cognitive Fabric</strong>
+</footer>
+
+</div>
+</body>
+</html>

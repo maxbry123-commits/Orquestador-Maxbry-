@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIPELINE NCT · DOC 0 — ÍNDICE MAESTRO</title>
+<style>
+body{background:#2B2926;color:#E4DFD3;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#E4DFD3;font-size:1.5em;margin:0 0 4px}
+h2{color:#5B9BD5;font-size:1.15em;border-bottom:1px solid #4a453d;padding-bottom:5px;margin-top:26px}
+.cap{background:#17150F;border:1px solid #4a453d;border-radius:10px;padding:14px;margin:12px 0}
+.flujo{background:#17150F;border-left:3px solid #5B9BD5;padding:12px;white-space:pre;overflow-x:auto;font-size:.82em;border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:.85em}
+th{color:#5B9BD5;text-align:left;padding:7px;border-bottom:2px solid #4a453d}
+td{padding:6px 7px;border-bottom:1px solid #3a362e;vertical-align:top}
+.ok{color:#6FBF73}.crit{color:#E0554F}.az{color:#5B9BD5}
+.tag{display:inline-block;background:#17150F;border:1px solid #4a453d;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em}
+.regla{background:#17150F;border-left:3px solid #E0554F;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#17150F;border-left:3px solid #6FBF73;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+</style></head><body>
+
+<h1>PIPELINE NCT — DOC 0 · ÍNDICE MAESTRO Y CADENA COMPLETA</h1>
+<div class="tag">version 1.0</div><div class="tag">regla de oro: DENTRO = aprobado · falta = pendiente · nunca se asume, se audita</div>
+
+<div class="cap">
+<h2>1 · CÓMO FUNCIONA TODO EN CADENA (explicación detallada)</h2>
+<div class="flujo">DIRECTOR ──orden──► F0 INPUT FABRIC (lee literal, congela GOAL_LOCK sha256, clasifica dual)
+                        │ contrato {goal_lock_hash, task_graph, knowledge_pack, clase}
+                        ▼
+              F1 KERNEL (ADN 6 leyes + Guardian booleano + FSM; ningún LLM decide transiciones)
+                        ▼
+              F2 PLANNER OFFLINE (sequence.json inmutable + hash; el orden se decide UNA vez)
+                        ▼
+              F3 HANDOFF (sobre firmado sha256) + SANDBOX POOL (1-10, desechables con memoria)
+                        ▼
+              F4 EJECUCIÓN — única fase con IA plena:
+                 Mythos(FM)→motor F0-F11→cadena control 12 capas→LoopEngine 9 fases→
+                 ExpertPool 300 YAML→FusionEngine 1 commit→WorkerPool 100 (Kimi∥MiniMax)→
+                 Escritor(nunca dice "funciona")→staff externo→OpenClaw paralelo
+                        ▼ (F5 vigila EN PARALELO: Guardian+watchdog30s+PAD/Ansiedad/Drift+6 detectores)
+              F6 ADUANA G2: N0-N5(AST)→GCL/Z3/SC1-6→Jueces 3 niveles(default RETRY)→
+                 Witness L1-L4(evidence_hash)→GOAL_CHECK(pasar≠cumplir)
+                        ▼
+              F7 MEMORIA (Postgres+pgvector, 4 tiers, Dream/Distill, Knowledge Graph)
+                        ▼ (si falla algo → F8: RETRY→ROLLBACK→CHECKPOINT→REPLAN→ESCALATE
+                           + 200 estrategias + Sentinela con ledger)
+              F9 ENTREGA (3 archivos+ID hash+QG01-08+Sheriff SH01-07+atlas+18 checks)
+                        ▼
+              POST DESPLIEGUE v2.0 (0% LLM: dry-run→organizar→versionar→push→verificar)
+              TRANSVERSAL: CAPA 9 gobernanza + ciclo auto-mejora (consenso→FICHA-MEJORA)
+                           + Output Gateway MCP/API</div>
+<div class="simple"><b class="ok">Simple:</b> una orden entra por una aduana que la entiende y congela; un cerebro sin IA decide el camino; el plan se escribe una sola vez; la IA solo piensa en el taller (F4) mientras tres vigilantes la miran; nada sale sin pasar la aduana de salida y probarse de verdad; todo se recuerda; si algo falla hay una escalera fija de reparación; y el envío a GitHub lo hacen scripts que no piensan.</div>
+</div>
+
+<div class="cap">
+<h2>2 · ÍNDICE DE DOCUMENTOS DEL PIPELINE</h2>
+<table>
+<tr><th>Doc</th><th>Fase</th><th>Pasos de construcción (numeración global)</th><th>Despliegue parcial al cerrar</th></tr>
+<tr><td>DOC 0</td><td>Índice + reglas</td><td>—</td><td>—</td></tr>
+<tr><td>DOC 1</td><td>F0 Input Fabric</td><td>001–060</td><td>D1: repo nct-backend/input_fabric</td></tr>
+<tr><td>DOC 2</td><td>F1 Kernel</td><td>061–100</td><td>D2: kernel/ (copiado+glue)</td></tr>
+<tr><td>DOC 3</td><td>F2 Planner</td><td>101–140</td><td>D3: planner/ + raíces</td></tr>
+<tr><td>DOC 4</td><td>F3 Handoff+Sandbox</td><td>141–200</td><td>D4: teams/ + sandbox/</td></tr>
+<tr><td>DOC 5</td><td>F4 Ejecución (a: motor)</td><td>201–320</td><td>D5: motores/ + loop_engine/</td></tr>
+<tr><td>DOC 6</td><td>F4 (b: workers+staff)</td><td>321–420</td><td>D6: workers/ + staff/</td></tr>
+<tr><td>DOC 7</td><td>F5 Monitoreo</td><td>421–500</td><td>D7: monitores/ + sentinela/</td></tr>
+<tr><td>DOC 8</td><td>F6 Verificación</td><td>501–620</td><td>D8: verificacion/ + tribunal/ + witness/</td></tr>
+<tr><td>DOC 9</td><td>F7 Memoria</td><td>621–720</td><td>D9: memoria/ + SQL</td></tr>
+<tr><td>DOC 10</td><td>F8 Recovery</td><td>721–790</td><td>D10: recovery/</td></tr>
+<tr><td>DOC 11</td><td>F9 Entrega + Gateway</td><td>791–880</td><td>D11: entrega/ + gateway/</td></tr>
+<tr><td>DOC 12</td><td>Transversal + auto-mejora + 100x</td><td>881–960</td><td>D12: gobernanza/ + mejoras/</td></tr>
+<tr><td>DOC 13</td><td>Tests + integración + cierre</td><td>961–1000</td><td>D13: tests/ + CI + CERTIFIED 18/18</td></tr>
+</table>
+</div>
+
+<div class="cap">
+<h2>3 · REGLAS GLOBALES DE CONSTRUCCIÓN (aplican a TODOS los docs)</h2>
+<div class="regla"><b class="crit">LOC:</b> ≤150 ideal · 150–300 máximo normal · 300–500 SOLO con justificación escrita en la ficha · &gt;500 PROHIBIDO (fragmentar). Cohesión &gt; conteo.</div>
+<div class="regla"><b class="crit">Anti-pérdida:</b> cada paso numerado lleva su fuente (#GAP-xxx o documento) — traza bidireccional verificable por script; gap sin paso = FAIL del doc.</div>
+<div class="regla"><b class="crit">Copiar antes que escribir:</b> si la pieza existe (columna "copiar" de cada doc), Sonnet recibe la RUTA y copia. Re-generar código existente = violación.</div>
+<div class="regla"><b class="crit">Formato de salida de cada paso</b> (formato UOOS Parte 1 §7): ruta + código completo copiable ≤90 chars/línea + comando de verificación + evidencia §6.4 {archivos @hash, tests PASS/FAIL, score}. Segmentos &gt;80 líneas → bloques ~60 numerados.</div>
+<div class="regla"><b class="crit">Despliegue por partes:</b> al cerrar cada DOC, se corre el despliegue determinista v2.0 SOLO de ese bloque (dry-run→OK Director→push→verificar.py). Se construye y se despliega por tramos, nunca todo al final.</div>
+<div class="regla"><b class="crit">Ejecución:</b> todo el paquete corre bajo UOOS Parte 2 v3 (E01-E12 + RT-00→RT-90). Cada DOC = un tramo del DAG; cada paso = un nodo con contrato.</div>
+</div>
+
+<div class="cap">
+<h2>4 · TRAZABILIDAD GLOBAL (de dónde sale la información)</h2>
+<table>
+<tr><th>Fuente raíz</th><th>Alimenta a</th></tr>
+<tr><td>Diagramas Partes 1-3 + PARCHE-100X (este chat)</td><td>estructura de TODAS las fases</td></tr>
+<tr><td>CAMBIOS-CODIGO-BASE-01</td><td>qué se copia / modifica / escribe / elimina</td></tr>
+<tr><td>SALIDA_01/02/04, H1-H4, GUIA_B/C, GRUPO_F</td><td>código copiable (F1,F4,F6,F8,F9)</td></tr>
+<tr><td>doc30 deepseck + v100/v200 (fusión Kimi/MiniMax)</td><td>F0 clasificador, F4 workers, F5 monitores, F7 EROS</td></tr>
+<tr><td>UOOS P1 v2 + P2 v3</td><td>formato de salida, leyes, runtime de construcción</td></tr>
+<tr><td>10 salidas de auditoría (123 gaps)</td><td>cada paso numerado cita su gap</td></tr>
+<tr><td>despliegue/ 4 scripts + v2.0</td><td>POST + despliegues parciales D1-D13</td></tr>
+</table>
+</div>
+
+<div class="cap"><b class="az">Fuentes de este bloque:</b> GUIA_MAESTRA_PIPELINE_NCT_v2.html · ESPECIFICACION_PIPELINE_NCT_v2.html · UOOS P1/P2 · las 3 partes del diagrama aprobado · PARCHE-FINAL-100X · CAMBIOS-CODIGO-BASE-01. Verificado 3 pasadas.</div>
+
+</body></html>

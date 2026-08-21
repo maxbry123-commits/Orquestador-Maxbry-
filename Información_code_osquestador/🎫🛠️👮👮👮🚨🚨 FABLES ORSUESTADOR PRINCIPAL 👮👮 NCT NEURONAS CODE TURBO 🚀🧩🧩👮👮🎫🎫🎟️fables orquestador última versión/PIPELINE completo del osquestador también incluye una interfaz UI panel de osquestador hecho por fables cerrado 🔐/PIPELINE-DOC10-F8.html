@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PIPELINE NCT · VAGÓN 10 — F8 RECOVERY 🚂</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.tren{text-align:center;font-size:1.05em;letter-spacing:1px;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎄🚂💨 [V0]═[V1]═[V2]═[V3]═[V4]═[V5]═[V6]═[V7]═[V8]═[V9]═<b>[V10★]</b>═[V11]═[V12]═[V13] 🎁🎄</div>
+<h1>🎅 VAGÓN 10 · F8 — RECOVERY (el taller de reparación de juguetes)</h1>
+<div class="tag">pasos 721–790</div><div class="tag">IA: 0% en la escalera</div><div class="tag">LOC: ~500 nuevas + ~900 copiadas</div><div class="tag">🎁 despliegue D10</div>
+
+<div class="cap">
+<h2>🚂 Raíz · Proceso · Diagrama</h2>
+<b>Raíz:</b> <span class="oro">nct-backend/recovery/</span> + <span class="oro">nct-backend/sentinela/</span> (mejora)<br>
+<div class="flujo">fallo(cualquier fase) → RT-80 RECOVERY_GATE: ¿auto_recuperable o Director?
+→ ESCALERA 5 NIVELES (código real confirmado): 1 RETRY único → 2 ROLLBACK estable →
+  3 CHECKPOINT replay (workflows.current_step) → 4 REPLAN → 5 ESCALATE
+  + on_failure POR PASO: fallback|abort|compensate (saga por paso, NO nivel 6)
+→ REPAIR PIPELINE (doc30, orden estricto): reintento→fallback modelo→checkpoint→
+  compresión→escalado · DELTA obligatorio: repetir intento idéntico = PROHIBIDO
+→ 200 ESTRATEGIAS (SHERIFF_V7): rotación por tipo de fallo ANTES de escalar
+→ ERR_* 10 códigos política 1:1 (ERR_HASH→RELOAD×3→REJECT...)
+→ P0 ROBUSTEZ: atomic_write · SIGTERM limpio · CircuitBreaker · backoff+jitter ·
+  DLQ · HealthChecker · idempotency_keys · outbox
+→ FAILURE REGISTRY (hash-chain) → causas_frecuentes() → SENTINELA:
+  observer(≥3 repeticiones) → proposer(SOLO config_runtime/YAML) →
+  gatekeeper(valida vs Guardian) → firma Director en ledger → patch_engine 10 pasos
+  (rollback auto si falla paso 7) · 2 recoveries mismo nodo → Director automático</div>
+</div>
+
+<div class="cap">
+<h2>⚙️ Explicación + 🎄 Simple</h2>
+recovery_engine.py + failure_registry.py se COPIAN (SALIDA_02, 5 niveles confirmados en auditoría — GAP-P3-043 cerró la discrepancia 5-vs-6: compensate es atributo por paso). Nuevo: gate.py (RT-80 clasificador), estrategias_200.py (catálogo YAML rotativo por tipo de fallo), err_codes.py (tabla 1:1), robustez.py (los 8 P0 como decoradores reusables), y la Sentinela ejecutable (observer/proposer/gatekeeper de S14) con su ledger.
+<div class="simple"><b class="ok">🎄 Simple:</b> cuando un juguete falla, el taller no entra en pánico: sube una escalera fija de cinco peldaños, y antes de molestar a Santa prueba hasta 200 trucos distintos — nunca el mismo dos veces. Y un duende aparte (Sentinela) estudia los fallos repetidos y propone mejorar el método — pero solo con la firma de Santa.</div>
+</div>
+
+<div class="cap">
+<h2>🎁 Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Traza</th></tr>
+<tr><td>721-724</td><td><b>COPIAR</b> recovery_engine + failure_registry</td><td>recovery/ (~600 copiadas)</td><td>SALIDA_02 · #GAP-P3-043</td></tr>
+<tr><td>725-730</td><td>gate.py: RT-80 clasificador auto/Director + regla 2-recoveries→Director</td><td>recovery/gate.py (≤150)</td><td>UOOS RT-80 · §8</td></tr>
+<tr><td>731-740</td><td>estrategias_200.py: catálogo YAML + selector rotativo por tipo + delta obligatorio</td><td>recovery/estrategias_200.py (≤250)+YAML</td><td>SHERIFF_V7 · #GAP-P2-029</td></tr>
+<tr><td>741-746</td><td>err_codes.py: 10 ERR_* con política 1:1</td><td>recovery/err_codes.py (≤120)</td><td>DOC7/DOC9 · #GAP-P2-022</td></tr>
+<tr><td>747-756</td><td>robustez.py: 8 decoradores P0 (atomic_write/circuit/backoff/DLQ/health/...)</td><td>recovery/robustez.py (≤300)</td><td>INPUT_BLOCK B7 · #GAP-P2-027</td></tr>
+<tr><td>757-766</td><td><b>COPIAR</b> Sentinela S14 (observer/proposer/gatekeeper) + ledger</td><td>sentinela/ (~300 copiadas + ≤100)</td><td>S14 · GUIA_E · #GAP-P3-029</td></tr>
+<tr><td>767-772</td><td><b>COPIAR</b> patch_engine 10 pasos + conectar a ledger</td><td>recovery/patch_engine.py (~200+≤50)</td><td>DOC7/DOC9 · #GAP-P2-023</td></tr>
+<tr><td>773-784</td><td>Tests: escalera completa · rotación nunca repite · compensate por paso · Sentinela no toca ADN · patch rollback en paso 7</td><td>test_f8_*.py (5×≤250)</td><td>SIM B parche</td></tr>
+<tr><td>785-788</td><td>Test integración caos (fallo inyectado en cada fase → recuperación correcta)</td><td>test_f8_caos.py (≤300)</td><td>IT03-estilo</td></tr>
+<tr><td>789-790</td><td><b class="ok">🎁 DESPLIEGUE D10</b>: recovery/ + sentinela/</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ PROHIBIDO:</b> reintento idéntico · saltar peldaños · Sentinela tocando ADN/Guardian/Juez/contracts · aplicar parche sin firma en ledger · borrar evidencia de fallos.</div>
+<div class="cap"><b class="oro">🎄 Fuentes:</b> SALIDA_02_JUEZ_RECOVERY (código) · UOOS §8+RT-80 · PIPELINE_DSL_DAG_SHERIFF_V7 (200 estrategias) · DOC7/DOC9 (ERR/patch/self-audit) · INPUT_BLOCK bloque 7 (P0) · S14+GUIA_E (Sentinela) · doc30 (repair pipeline) · GAPS: P2-022/023/027/029, P3-029/043. ✔3 pasadas · V10 ← V7/V8 → V11.</div>
+</body></html>

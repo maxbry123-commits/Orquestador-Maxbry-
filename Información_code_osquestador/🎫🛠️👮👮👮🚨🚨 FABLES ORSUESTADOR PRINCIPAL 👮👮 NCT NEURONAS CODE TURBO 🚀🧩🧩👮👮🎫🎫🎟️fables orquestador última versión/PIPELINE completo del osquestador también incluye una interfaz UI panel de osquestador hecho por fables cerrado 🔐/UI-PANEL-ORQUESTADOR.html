@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NCT · Panel de Control del Orquestador</title>
+<style>
+:root{--bg:#0e0e10;--panel:#17171a;--panel2:#1e1e22;--border:#2c2c31;--txt:#d6d6da;
+--dim:#8a8a92;--acc:#b8b8c0;--ok:#9aa89a;--warn:#b0a58a;--err:#a88a8a;--hi:#f0f0f4}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:'IBM Plex Mono',monospace;margin:0;font-size:13px}
+.top{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--border)}
+.logo{font-family:Georgia,serif;font-weight:800;font-size:1.1em;color:var(--hi);letter-spacing:1px}
+.pill{border:1px solid var(--border);border-radius:20px;padding:2px 12px;font-size:.8em;color:var(--dim)}
+.pill.on{color:var(--ok);border-color:var(--ok)}
+.wrap{display:grid;grid-template-columns:210px 1fr 300px;min-height:calc(100vh - 46px)}
+.nav{background:var(--panel);border-right:1px solid var(--border);padding:14px 0}
+.nav a{display:block;padding:9px 18px;color:var(--dim);text-decoration:none;border-left:2px solid transparent}
+.nav a.act{color:var(--hi);border-left-color:var(--acc);background:var(--panel2)}
+.nav a:hover{color:var(--txt)}
+.main{padding:18px;overflow:auto}
+.side{background:var(--panel);border-left:1px solid var(--border);padding:14px}
+h2{font-family:Georgia,serif;font-size:1em;color:var(--hi);margin:0 0 10px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #222226}
+.row:last-child{border:0}
+label{color:var(--dim)}
+input,select{background:var(--panel2);border:1px solid var(--border);color:var(--txt);padding:5px 9px;border-radius:5px;font-family:inherit;font-size:.9em;width:210px}
+.sw{width:36px;height:19px;background:var(--border);border-radius:10px;position:relative;cursor:pointer}
+.sw.on{background:var(--ok)}
+.sw::after{content:"";position:absolute;width:15px;height:15px;background:var(--hi);border-radius:50%;top:2px;left:2px;transition:.15s}
+.sw.on::after{left:19px}
+.btn{background:var(--panel2);border:1px solid var(--acc);color:var(--hi);padding:6px 16px;border-radius:6px;cursor:pointer;font-family:inherit}
+.btn:hover{background:var(--acc);color:var(--bg)}
+.btn.danger{border-color:var(--err);color:var(--err)}
+.mono{background:#0a0a0c;border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.82em;white-space:pre;overflow-x:auto;color:var(--acc)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.d-ok{background:var(--ok)}.d-warn{background:var(--warn)}.d-err{background:var(--err)}
+.ev{padding:6px 0;border-bottom:1px solid #222226;font-size:.82em;color:var(--dim)}
+.ev b{color:var(--txt)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.kv{font-size:.85em;color:var(--dim)}.kv b{color:var(--txt)}
+.lockbar{background:#141416;border:1px solid var(--warn);border-radius:6px;padding:8px 12px;margin-bottom:14px;font-size:.85em;color:var(--warn)}
+</style></head><body>
+
+<div class="top">
+  <span class="logo">NCT · ORQUESTADOR</span>
+  <span class="pill on">● RUNNING</span>
+  <span class="pill">FSM: EXECUTE</span>
+  <span class="pill">nodo T-014 · V6</span>
+  <span class="pill">llm_pct 0.07 / 0.10</span>
+  <span style="flex:1"></span>
+  <span class="pill">Director: MAX 🔑</span>
+</div>
+
+<div class="wrap">
+<nav class="nav">
+  <a class="act" href="#">◈ Panel</a>
+  <a href="#">⇄ Router / Conexiones</a>
+  <a href="#">⚙ Configuración</a>
+  <a href="#">☰ Pipeline (vagones)</a>
+  <a href="#">◎ Monitores</a>
+  <a href="#">✎ Fichas & Mejoras</a>
+  <a href="#">🗝 Gobernanza</a>
+  <a href="#">≡ Logs / Eventos</a>
+</nav>
+
+<main class="main">
+  <div class="lockbar">🔒 INPUT_BLOCK activo — hash a3f9…c21 · GOAL_LOCK congelado · <u>ver literal</u></div>
+
+  <div class="grid2">
+  <div class="card">
+    <h2>⇄ ROUTER — Conexión del orquestador</h2>
+    <div class="row"><label>Modo de salida</label>
+      <select><option>MCP server (tools por capability)</option><option>API REST</option><option>Ambos</option></select></div>
+    <div class="row"><label>Endpoint del Router</label><input value="https://router.nct.local/v1"></div>
+    <div class="row"><label>MCP: registrar capabilities como tools</label><div class="sw on"></div></div>
+    <div class="row"><label>API key (env: NCT_ROUTER_KEY)</label><input type="password" value="••••••••••"></div>
+    <div class="row"><label>Webhook de eventos</label><input value="https://router.nct.local/hooks/nct"></div>
+    <div class="row"><label>Heartbeat al router</label><select><option>30 s</option><option>60 s</option></select></div>
+    <div class="row"><label>Estado conexión</label><span><span class="dot d-ok"></span>conectado · 12 tools registrados</span></div>
+    <button class="btn">Probar conexión</button> <button class="btn">Re-registrar tools</button>
+  </div>
+
+  <div class="card">
+    <h2>⚙ COMPORTAMIENTO (config_runtime — lo único editable)</h2>
+    <div class="row"><label>Modo de trabajo</label>
+      <select><option>SEMI-AUTO (pausa entre fases)</option><option>MANUAL</option><option>CONTINUO</option></select></div>
+    <div class="row"><label>Nivel por defecto</label>
+      <select><option>0 · AUTO</option><option>1 · RÁPIDO</option><option>2 · BÁSICO</option><option>3 · AVANZADO</option><option>4 · TURBO</option></select></div>
+    <div class="row"><label>Workers máx en paralelo</label><input value="40" style="width:80px"></div>
+    <div class="row"><label>Presupuesto llm_pct</label><input value="0.10" style="width:80px"></div>
+    <div class="row"><label>Batching LLM (8-16)</label><div class="sw on"></div></div>
+    <div class="row"><label>Timeout adaptativo p95×1.5</label><div class="sw on"></div></div>
+    <div class="row"><label>Simulación 5x pre-planes complejos</label><div class="sw on"></div></div>
+    <div class="row"><label>Staff externo permitido</label><div class="sw on"></div></div>
+    <button class="btn">Guardar (firma ledger)</button>
+  </div>
+  </div>
+
+  <div class="card">
+    <h2>☰ TREN — estado de vagones</h2>
+    <div class="mono">[V0✓]═[V1✓]═[V2✓]═[V3✓]═[V4✓]═[V5●]═[V6·]═[V7·]═[V8·]═[V9·]═[V10·]═[V11·]═[V12·]═[V13·]
+✓ desplegado (D1-D4 con evidence.json) · ● en construcción · · pendiente
+paso actual: 287/1000 · último despliegue: D4 hace 2h · próxima pausa OK: fin V5</div>
+  </div>
+
+  <div class="card">
+    <h2>🗝 GOBERNANZA — acciones que esperan al Director</h2>
+    <div class="ev"><b>FICHA-MEJORA-003</b> (timeout adaptativo) · consenso 4/5 ✓ · <button class="btn">FIRMAR</button> <button class="btn danger">RECHAZAR</button></div>
+    <div class="ev"><b>UNLOCK solicitado</b>: modificar gcl_rules.yaml (Sentinela, patrón ×4) · <button class="btn">UNLOCK</button></div>
+    <div class="ev"><b>DESTRUCTIVA bloqueada</b>: drop tabla test_old · snapshot listo · requiere doble confirmación</div>
+  </div>
+</main>
+
+<aside class="side">
+  <h2>◎ Monitores (F5)</h2>
+  <div class="kv"><span class="dot d-ok"></span><b>Guardian</b> · 0 violaciones</div>
+  <div class="kv"><span class="dot d-ok"></span><b>Watchdog</b> · hb 4s</div>
+  <div class="kv"><span class="dot d-warn"></span><b>PAD</b> arousal 0.61</div>
+  <div class="kv"><span class="dot d-ok"></span><b>Drift KL</b> 0.006</div>
+  <div class="kv"><span class="dot d-ok"></span><b>Ansiedad</b> L0</div>
+  <h2 style="margin-top:16px">≡ Eventos</h2>
+  <div class="ev"><b>12:41</b> V5 paso 287 PASS · evidence 9f2…</div>
+  <div class="ev"><b>12:39</b> Tribunal T-013: 84/100 ✓</div>
+  <div class="ev"><b>12:35</b> loop.mutate → estrategia B</div>
+  <div class="ev"><b>12:31</b> D4 verificado remoto==local</div>
+  <div class="ev"><b>12:28</b> batch ×12 llamadas → 1</div>
+  <h2 style="margin-top:16px">Comandos</h2>
+  <div class="mono">GO · OK · FIX &lt;x&gt; · PAUSA
+ESTADO · SALTAR · UNLOCK &lt;doc&gt; · ABORT</div>
+</aside>
+</div>
+</body></html>

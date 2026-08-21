@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎄 PIPELINE NCT · VAGÓN 9 — F7 MEMORIA 🚂</title>
+<style>
+body{background:#0d1f12;color:#f2e8d5;font-family:'IBM Plex Mono',monospace;margin:0;padding:18px;line-height:1.55;font-size:14px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:800}
+h1{color:#ffd76e;font-size:1.4em;margin:0 0 4px;text-shadow:0 0 8px #7a1f1f}
+h2{color:#e85d5d;font-size:1.1em;border-bottom:2px dashed #2e5d3a;padding-bottom:5px;margin-top:24px}
+.cap{background:#132a1a;border:2px solid #2e5d3a;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #000}
+.flujo{background:#0a1810;border-left:4px solid #e85d5d;padding:12px;white-space:pre;overflow-x:auto;font-size:.8em;border-radius:6px;color:#bfe8c5}
+table{width:100%;border-collapse:collapse;font-size:.83em}
+th{color:#ffd76e;text-align:left;padding:6px;border-bottom:2px solid #7a1f1f}
+td{padding:5px 6px;border-bottom:1px solid #2e5d3a;vertical-align:top}
+.ok{color:#7fe08a}.crit{color:#ff8f8f}.oro{color:#ffd76e}
+.tag{display:inline-block;background:#7a1f1f;border:1px solid #ffd76e;border-radius:14px;padding:1px 10px;margin:2px;font-size:.78em;color:#ffd76e}
+.regla{background:#2a1212;border-left:4px solid #ff8f8f;padding:10px;border-radius:6px;margin:10px 0;font-size:.88em}
+.simple{background:#10241a;border-left:4px solid #7fe08a;padding:10px;border-radius:6px;margin:10px 0;font-size:.9em}
+.tren{text-align:center;font-size:1.05em;letter-spacing:1px;margin:6px 0;color:#ffd76e}
+</style></head><body>
+
+<div class="tren">🎄🚂💨 [V0]═[V1]═[V2]═[V3]═[V4]═[V5]═[V6]═[V7]═[V8]═<b>[V9★]</b>═[V10]═[V11]═[V12]═[V13] 🎁🎄</div>
+<h1>🎅 VAGÓN 9 · F7 — MEMORIA (el libro de Santa: quién hizo qué)</h1>
+<div class="tag">pasos 621–720</div><div class="tag">IA: 0%</div><div class="tag">LOC: ~1.200 nuevas + ~200 copiadas (SQL)</div><div class="tag">🎁 despliegue D9</div>
+
+<div class="cap">
+<h2>🚂 Raíz · Proceso · Diagrama</h2>
+<b>Raíz:</b> <span class="oro">nct-backend/memoria/</span> + <span class="oro">sql/schema.sql</span><br>
+<b>Proceso:</b> todo lo aprobado se convierte en conocimiento — UNA sola base, cuatro niveles de importancia, dos sueños de consolidación, y un grafo que detecta contradicciones.
+<div class="flujo">certificado(F6) → EROS 3-tier (doc30): Executors logs crudos → Controllers
+  Strategic Pulses → Orchestrator &lt;5% del contexto · Coordinator integra ·
+  doble compactación (EROS SOBRE structured summaries)
+→ POSTGRES + PGVECTOR (1 sola DB, -66% costo):
+  agent_memory(embedding 1536, importance 1-10, episodic/semantic/procedural/pref)
+  workflows(current_step→resume) · sandboxes · idempotency_keys(TTL 7d) · outbox(CDC)
+  boot_sequence() SQL: identidad+recientes+críticas(≥7) en 1 query = PUSH_PING real
+→ 4 TIERS: T0 RAW efímero → T1 SESSION → T2 STRATEGIC → T3 PROJECT permanente
+  Event Sourcing puro: hash chain sha256 · time-travel · rollback ≤10s
+→ KNOWLEDGE GRAPH: aristas tipadas (version_de/contradice/refina/depende_de/
+  cita_a/autoridad_sobre) → contradicciones O(grado), no O(n²)
+→ CRON: Dream Loop semanal (consolida→T3) · Distill Loop diario (lecciones+dedup)
+→ embeddings de FALLOS (drift/ansiedad) guardados → se reconocen antes la próxima</div>
+</div>
+
+<div class="cap">
+<h2>⚙️ Explicación técnica</h2>
+schema.sql se COPIA de MAX-100X §11 (tablas ya escritas) y se extiende con: events (hash chain, prev_hash+payload+sha256), kg_edges (grafo tipado), tiers como columna+política de retención. memoria.py expone API única: escribir(evento)→outbox→commit atómico (patrón outbox: el estado y el mensaje salen de la MISMA transacción — mata el race condition señalado en añadir_2). boot_sequence() es función SQL pura invocada por F0/F1 al arrancar. dream.py/distill.py son crons deterministas: dream agrupa sesiones de la semana, promueve a T3 lo con importance≥7 y ≥2 referencias; distill deduplica por similitud de embedding >0.95 y extrae "lecciones" (patrón fallo→delta que lo resolvió, alimentado desde F8). El Knowledge Graph detecta contradicción al insertar: nueva memoria con arista "contradice" → evento a gobernanza (V12), nunca resolución silenciosa.
+<div class="simple"><b class="ok">🎄 Simple:</b> el libro de Santa: cada regalo entregado se anota con huella; lo importante sube de nivel y lo trivial se borra solo; los domingos Santa "sueña" (consolida la semana) y cada noche destila lecciones; y si dos páginas del libro se contradicen, el libro mismo lo avisa — no se tapa.</div>
+</div>
+
+<div class="cap">
+<h2>🎁 Construcción paso a paso</h2>
+<table>
+<tr><th>#</th><th>Qué construye</th><th>Archivo (LOC)</th><th>Traza</th></tr>
+<tr><td>621-626</td><td><b>COPIAR</b> schema SQL (agent_memory/workflows/sandboxes/idempotency/outbox) + extender (events hash-chain, kg_edges, tiers)</td><td>sql/schema.sql (~200+≤150)</td><td>MAX-100X §11 · #GAP-CIERRE-010</td></tr>
+<tr><td>627-634</td><td>memoria.py: API única escribir/leer + transacción outbox atómica</td><td>memoria/memoria.py (≤300)</td><td>outbox pattern · #GAP-P2-069</td></tr>
+<tr><td>635-640</td><td>boot_sequence.sql + wrapper: contexto de arranque en 1 query</td><td>sql/boot_sequence.sql + memoria/boot.py (≤120)</td><td>#GAP-CIERRE-009</td></tr>
+<tr><td>641-650</td><td>tiers.py: T0→T3, políticas de retención y promoción</td><td>memoria/tiers.py (≤250)</td><td>#GAP-P3-017 · última_versión_1</td></tr>
+<tr><td>651-660</td><td>event_sourcing.py: hash chain + verify + time-travel + rollback ≤10s</td><td>memoria/event_sourcing.py (≤300)</td><td>#GAP-P3-017 · state_manager DOC7</td></tr>
+<tr><td>661-670</td><td>knowledge_graph.py: aristas tipadas + detección contradicción al insertar</td><td>memoria/knowledge_graph.py (≤300)</td><td>#GAP-P3-017 KG</td></tr>
+<tr><td>671-678</td><td>eros.py: consolidación 3-tier + Coordinator + doble compactación</td><td>memoria/eros.py (≤250)</td><td>doc30 F7 · v100 §6</td></tr>
+<tr><td>679-686</td><td>dream.py + distill.py: crons semanales/diarios deterministas</td><td>memoria/dream.py+distill.py (2×≤200)</td><td>#GAP-P3-017 · última_versión_1</td></tr>
+<tr><td>687-692</td><td>memoria_fallos.py: embeddings de drift/ansiedad guardados y consultables</td><td>memoria/memoria_fallos.py (≤150)</td><td>doc30 "recuerda cómo se sintió fallar"</td></tr>
+<tr><td>693-712</td><td>Tests: outbox atómico bajo concurrencia · chain verify detecta alteración · rollback a punto arbitrario · contradicción emite evento · dream promueve correcto · boot 1 query</td><td>test_f7_*.py (6×≤250)</td><td>evidencia L11</td></tr>
+<tr><td>713-718</td><td>Test integración F6→F7 (certificado entra, memoria consultable, resume tras kill)</td><td>test_f7_e2e.py (≤250)</td><td>SIM 3 preliminar</td></tr>
+<tr><td>719-720</td><td><b class="ok">🎁 DESPLIEGUE D9</b>: memoria/ + sql/</td><td>—</td><td>despliegue v2.0</td></tr>
+</table>
+</div>
+
+<div class="regla"><b class="crit">⛔ PROHIBIDO:</b> escribir estado directo sin evento (L10) · segunda base de datos (una sola: PG+pgvector) · resolver contradicciones en silencio · borrar evidencia de fallos · tocar el chain sin nueva entrada encadenada.</div>
+
+<div class="cap"><b class="oro">🎄 Fuentes:</b> MAX-SYSTEM-100X-FINAL §11 (SQL) · 30___deepseck (EROS/Coordinator/embeddings de fallos) · v100 §6 (memory keeper) · orquestador_última_versión_1 (4 tiers/Dream/Distill/KG/event sourcing) · añadir_al_osquestador (memoria por capas) · DOC7 (state_manager hash chain) · GAPS: P2-057/069, P3-017, CIERRE-009/010. ✔3 pasadas · V9 ← V8 → V10.</div>
+
+</body></html>

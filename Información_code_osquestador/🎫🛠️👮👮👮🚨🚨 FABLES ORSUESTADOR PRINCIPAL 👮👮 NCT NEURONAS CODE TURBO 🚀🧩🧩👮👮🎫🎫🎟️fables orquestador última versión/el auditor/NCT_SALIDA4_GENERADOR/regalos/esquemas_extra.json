@@ -1,0 +1,6 @@
+{"_": "🎁 R8 — agrega estos dominios a ESQUEMAS_DOMINIO para ampliar el generador",
+ "gastos": {"gasto": [["concepto","TEXT"],["monto","REAL"],["fecha","TEXT"]]},
+ "inventario": {"articulo": [["nombre","TEXT"],["cantidad","INTEGER"],["ubicacion","TEXT"]]},
+ "citas": {"cita": [["paciente","TEXT"],["fecha","TEXT"],["motivo","TEXT"]]},
+ "biblioteca": {"libro": [["titulo","TEXT"],["autor","TEXT"],["prestado","INTEGER"]]},
+ "eventos": {"evento": [["nombre","TEXT"],["fecha","TEXT"],["lugar","TEXT"]]}}
