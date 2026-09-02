@@ -1,0 +1,138 @@
+name: inventory-forensic-v3-recovery-provenance-v2-Orquestador-Maxbry-
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/inventory-forensic-v3-recovery-provenance-v2-Orquestador-Maxbry-.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  provenance_v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout main history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          filter: blob:none
+
+      - name: NUL-safe archive provenance and exclusion audit
+        env:
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          SERVER_URL: ${{ github.server_url }}
+        run: |
+          set -euo pipefail
+          mkdir -p audit-v3-provenance-v2
+          python3 - <<'PY'
+          import json, os, re, subprocess
+
+          repo=os.environ["REPOSITORY"]
+          def cmd(args, check=True):
+              p=subprocess.run(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=check)
+              return p.stdout
+
+          head=cmd(["git","rev-parse","HEAD"]).decode().strip()
+          names=cmd(["git","ls-tree","-r","-z","--name-only","HEAD"])
+          paths=[x.decode("utf-8","replace") for x in names.split(b"\x00") if x]
+
+          zips=sorted(p for p in paths if p.lower().endswith(".zip"))
+          download_manifests=sorted(p for p in paths if p.endswith("RESEARCH_DOWNLOAD_MANIFEST.jsonl"))
+
+          url_re=re.compile(r"https?://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:\.git)?")
+          sha_re=re.compile(r"\b[0-9a-fA-F]{40}\b")
+          text_ext=(".md",".txt",".json",".jsonl",".yml",".yaml",".py",".html")
+          text_paths=[p for p in paths if p.lower().endswith(text_ext)]
+
+          records=[]
+          for zp in zips:
+              blob_sha=cmd(["git","rev-parse","HEAD:"+zp]).decode().strip()
+              size=int(cmd(["git","cat-file","-s","HEAD:"+zp]).decode().strip())
+              add=cmd(["git","log","--diff-filter=A","--format=%H","--",zp],check=False).decode().splitlines()
+              refs=[]
+              candidates=[]
+              base=os.path.basename(zp)
+              for tp in text_paths:
+                  data=cmd(["git","show","HEAD:"+tp],check=False).decode("utf-8","replace")
+                  if base not in data and zp not in data:
+                      continue
+                  lines=data.splitlines()
+                  for i,line in enumerate(lines):
+                      if base not in line and zp not in line:
+                          continue
+                      lo=max(0,i-12); hi=min(len(lines),i+13)
+                      window="\n".join(lines[lo:hi])
+                      urls=sorted(set(url_re.findall(window)))
+                      shas=sorted(set(sha_re.findall(window)))
+                      refs.append({"file":tp,"line":i+1,"urls":urls,"shas":shas})
+                      if len(urls)==1 and len(shas)==1:
+                          candidates.append({"source_url":urls[0],"source_commit":shas[0],"file":tp,"line":i+1})
+
+              uniq={}
+              for c in candidates:
+                  key=(c["source_url"].lower().removesuffix(".git"),c["source_commit"].lower())
+                  uniq[key]=c
+              verified=list(uniq.values())
+
+              if len(verified)==1:
+                  classification="COMPONENT_CANDIDATE_REQUIRES_MANIFEST_LINK"
+              elif not download_manifests and len(verified)==0:
+                  classification="EXCLUDED_UNASSOCIATED_ARCHIVE"
+              else:
+                  classification="INSUFFICIENT_EVIDENCE"
+
+              records.append({
+                  "path":zp,
+                  "git_blob_sha":blob_sha,
+                  "size":size,
+                  "added_in_commit":add[0] if add else "INSUFFICIENT_EVIDENCE",
+                  "references":refs,
+                  "provenance_candidates":verified,
+                  "classification":classification
+              })
+
+          result={
+              "schema":"YAIWES-INVENTORY-INDEXES-V3-PROVENANCE-V2",
+              "repository":repo,
+              "branch":"main",
+              "main_commit":head,
+              "workflow_run_url":os.environ["SERVER_URL"]+"/"+repo+"/actions/runs/"+os.environ["RUN_ID"],
+              "download_manifests":download_manifests,
+              "archives":records,
+              "counts":{
+                  "zip_archives":len(records),
+                  "download_manifests":len(download_manifests),
+                  "component_candidates":sum(r["classification"]=="COMPONENT_CANDIDATE_REQUIRES_MANIFEST_LINK" for r in records),
+                  "excluded_unassociated_archives":sum(r["classification"]=="EXCLUDED_UNASSOCIATED_ARCHIVE" for r in records),
+                  "insufficient_evidence":sum(r["classification"]=="INSUFFICIENT_EVIDENCE" for r in records)
+              }
+          }
+          with open("audit-v3-provenance-v2/provenance-v2.json","w",encoding="utf-8") as f:
+              json.dump(result,f,ensure_ascii=False,indent=2)
+          with open("audit-v3-provenance-v2/provenance-v2.md","w",encoding="utf-8") as f:
+              f.write("# Provenance V2 — "+repo+"\n\n")
+              for k,v in result["counts"].items():
+                  f.write("- "+k+": "+str(v)+"\n")
+              f.write("\n")
+              for r in records:
+                  f.write("- "+r["path"]+" — "+r["classification"]+"\n")
+          PY
+
+      - name: Validate
+        run: |
+          test -s audit-v3-provenance-v2/provenance-v2.json
+          python3 -m json.tool audit-v3-provenance-v2/provenance-v2.json >/dev/null
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: inventory-forensic-v3-provenance-v2-Orquestador-Maxbry-
+          path: audit-v3-provenance-v2/
+          if-no-files-found: error
+          retention-days: 30
